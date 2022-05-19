@@ -1,4 +1,12 @@
-## Lido API Template
+## Governance data bot
+
+## Description
+This bot collect some governance info and report it to notion tables.
+
+- ☑️ EasyTrack motions
+- Snapshot voting
+- Research forum posts
+- Aragon voting
 
 ## Installation
 

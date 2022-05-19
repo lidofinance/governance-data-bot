@@ -6,6 +6,7 @@ import {
   IsOptional,
   validateSync,
   Min,
+  IsUrl,
 } from 'class-validator';
 import { Environment, LogLevel, LogFormat } from './interfaces';
 
@@ -17,6 +18,15 @@ const toNumber =
   };
 
 export class EnvironmentVariables {
+  @IsString()
+  NOTION_INTEGRATION_TOKEN: string;
+
+  @IsString()
+  NOTION_DATABASE_ID: string;
+
+  @IsUrl()
+  ETH_RPC_URL: string;
+
   @IsEnum(Environment)
   NODE_ENV: Environment = Environment.development;
 
