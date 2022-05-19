@@ -1,4 +1,3 @@
-import { JsonRpcProvider } from '@ethersproject/providers/src.ts/json-rpc-provider';
 import { BigNumber, Contract } from 'ethers';
 import {
   abi,
@@ -10,9 +9,12 @@ import {
 import { filterArgs } from './easytrack.helpers';
 import fetch from 'node-fetch';
 import { formatEther } from 'ethers/lib/utils';
+import { Injectable } from '@nestjs/common';
+import { EasytrackProviderService } from './easytrack.provider.service';
 
+@Injectable()
 export class EasytrackProvider {
-  constructor(private provider: JsonRpcProvider) {}
+  constructor(private provider: EasytrackProviderService) {}
 
   async getContract(address: string, abi: any): Promise<Contract> {
     return new Contract(address, abi, this.provider);

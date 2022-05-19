@@ -13,24 +13,17 @@ import {
 import { EasytrackDescriptionCollector } from './easytrack.description.collector';
 import { EasytrackEventCollector } from './easytrack.event.collector';
 import { EasytrackProvider } from './easytrack.provider';
-import { EasytrackProviderService } from './easytrack.provider.service';
 
 const MAX_PAST_DAYS_MOTIONS_FETCH = 14;
 
 @Injectable()
 export class EasytrackService {
-  private readonly descriptionCollector: EasytrackDescriptionCollector;
-  private readonly eventCollector: EasytrackEventCollector;
-  private readonly easytrackProvider: EasytrackProvider;
-
   constructor(
     protected readonly configService: ConfigService,
-    private provider: EasytrackProviderService,
-  ) {
-    this.easytrackProvider = new EasytrackProvider(provider);
-    this.descriptionCollector = new EasytrackDescriptionCollector(provider);
-    this.eventCollector = new EasytrackEventCollector(provider);
-  }
+    private readonly descriptionCollector: EasytrackDescriptionCollector,
+    private readonly eventCollector: EasytrackEventCollector,
+    private readonly easytrackProvider: EasytrackProvider,
+  ) {}
 
   async collectByMaxPastDays(): Promise<VoteEntity[]> {
     // TODO motions should be fetched from events and rpc node historic data

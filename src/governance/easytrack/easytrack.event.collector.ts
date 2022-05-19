@@ -1,6 +1,7 @@
-import { JsonRpcProvider } from '@ethersproject/providers/src.ts/json-rpc-provider';
 import { EasytrackProvider } from './easytrack.provider';
 import { MotionCreatedEventArgs } from './easytrack.constants';
+import { Injectable } from '@nestjs/common';
+import { EasytrackProviderService } from './easytrack.provider.service';
 
 export interface EasytrackEventInfo {
   creator: string;
@@ -13,16 +14,20 @@ export interface EasytrackEventInfo {
   cancelled?: boolean;
 }
 
+@Injectable()
 export class EasytrackEventCollector {
-  private easytrackProvider: EasytrackProvider;
-
-  constructor(private provider: JsonRpcProvider) {
-    this.easytrackProvider = new EasytrackProvider(this.provider);
-  }
+  constructor(
+    private providerService: EasytrackProviderService,
+    private easytrackProvider: EasytrackProvider,
+  ) {}
 
   async getEventInfo(motionId): Promise<EasytrackEventInfo> {
     const events = await this.easytrackProvider.getEvents(motionId);
-    let eventInfo: EasytrackEventInfo;
+    let eventInfo: EasytrackEventInfo = {
+      created: false,
+      creator: '',
+      evmScriptCallData: '',
+    };
     for (const event of events) {
       let args;
       switch (event.name) {
@@ -37,19 +42,22 @@ export class EasytrackEventCollector {
         case 'MotionEnacted':
           eventInfo.enacted = true;
           eventInfo.executionEndDate =
-            (await this.provider.getBlock(event.blockNumber)).timestamp * 1000;
+            (await this.providerService.getBlock(event.blockNumber)).timestamp *
+            1000;
           break;
         case 'MotionRejected':
           eventInfo.rejected = true;
           eventInfo.passed = true;
           eventInfo.executionEndDate =
-            (await this.provider.getBlock(event.blockNumber)).timestamp * 1000;
+            (await this.providerService.getBlock(event.blockNumber)).timestamp *
+            1000;
           break;
         case 'MotionCanceled':
           eventInfo.cancelled = true;
           eventInfo.passed = false;
           eventInfo.executionEndDate =
-            (await this.provider.getBlock(event.blockNumber)).timestamp * 1000;
+            (await this.providerService.getBlock(event.blockNumber)).timestamp *
+            1000;
           break;
       }
     }

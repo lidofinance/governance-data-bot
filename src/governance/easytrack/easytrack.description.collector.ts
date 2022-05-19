@@ -1,4 +1,3 @@
-import { JsonRpcProvider } from '@ethersproject/providers/src.ts/json-rpc-provider';
 import {
   abi,
   factoryToMotionType,
@@ -10,13 +9,11 @@ import {
 import { EasytrackProvider } from './easytrack.provider';
 import { getLegoTokenOptions } from './easytrack.helpers';
 import { formatEther, getAddress } from 'ethers/lib/utils';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class EasytrackDescriptionCollector {
-  easytrackProvider: EasytrackProvider;
-
-  constructor(private provider: JsonRpcProvider) {
-    this.easytrackProvider = new EasytrackProvider(this.provider);
-  }
+  constructor(private easytrackProvider: EasytrackProvider) {}
 
   async getMotionDescription(
     evmScriptFactory: string,
