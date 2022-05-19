@@ -50,7 +50,10 @@ export class EasytrackDescriptionCollector {
       this.descReferralPartnerRemove(args),
   };
 
-  async descNodeOperatorIncreaseLimit([_nodeOperatorId, _stakingLimit]) {
+  private async descNodeOperatorIncreaseLimit([
+    _nodeOperatorId,
+    _stakingLimit,
+  ]) {
     const { name } = await this.easytrackProvider.getNodeOperatorInfo(
       _nodeOperatorId,
     );
@@ -60,7 +63,7 @@ export class EasytrackDescriptionCollector {
     );
   }
 
-  async descLEGOTopUp([_rewardTokens, _amounts]) {
+  private async descLEGOTopUp([_rewardTokens, _amounts]) {
     const { symbol } = await this.easytrackProvider.getGovernanceTokenInfo();
     const options = await getLegoTokenOptions(symbol);
     const labels = _rewardTokens.map(
@@ -82,11 +85,11 @@ export class EasytrackDescriptionCollector {
     );
   }
 
-  async descRewardProgramAdd([_rewardProgram, _rewardProgramName]) {
+  private async descRewardProgramAdd([_rewardProgram, _rewardProgramName]) {
     return `Add reward program ${_rewardProgramName} with address ${_rewardProgram}`;
   }
 
-  async descRewardProgramTopUp([_rewardPrograms, _amounts]) {
+  private async descRewardProgramTopUp([_rewardPrograms, _amounts]) {
     const { symbol } = await this.easytrackProvider.getGovernanceTokenInfo();
 
     const results = await Promise.all(
@@ -105,7 +108,7 @@ export class EasytrackDescriptionCollector {
     return `Top up reward programs: ${results.join('; ')}`;
   }
 
-  async descRewardProgramRemove(_rewardProgram) {
+  private async descRewardProgramRemove(_rewardProgram) {
     const name = await this.easytrackProvider.getProgramName(
       abi.RewardProgramRegistry,
       REWARD_PROGRAM_REGISTRY_ADDRESS,
@@ -114,11 +117,14 @@ export class EasytrackDescriptionCollector {
     return `Remove reward program ${name} with address ${_rewardProgram}`;
   }
 
-  async descReferralPartnerAdd([_referralPartner, _referralPartnerName]) {
+  private async descReferralPartnerAdd([
+    _referralPartner,
+    _referralPartnerName,
+  ]) {
     return `Add referral partner ${_referralPartnerName} with address ${_referralPartner}`;
   }
 
-  async descReferralPartnerTopUp([_referralPartners, _amounts]) {
+  private async descReferralPartnerTopUp([_referralPartners, _amounts]) {
     const { symbol } = await this.easytrackProvider.getGovernanceTokenInfo();
 
     const results = await Promise.all(
@@ -137,7 +143,7 @@ export class EasytrackDescriptionCollector {
     return `Top up referral partners: ${results.join('; ')}`;
   }
 
-  async descReferralPartnerRemove(_referralPartner) {
+  private async descReferralPartnerRemove(_referralPartner) {
     const name = await this.easytrackProvider.getProgramName(
       abi.ReferralPartnersRegistry,
       REFERRAL_PARTNERS_REGISTRY_ADDRESS,
