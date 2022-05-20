@@ -29,4 +29,23 @@ export class PrometheusService {
     help: 'Build information',
     labelNames: ['name', 'version', 'env', 'network'],
   });
+
+  public taskDuration = this.getOrCreateMetric('Histogram', {
+    name: 'task_duration_seconds',
+    help: 'Duration of task execution',
+    buckets: [30, 60, 90, 120, 150, 180, 210, 300, 400],
+    labelNames: ['name'],
+  });
+
+  public taskCount = this.getOrCreateMetric('Counter', {
+    name: 'task_result_count',
+    help: 'Count of passed or failed tasks',
+    labelNames: ['name', 'status'],
+  });
+
+  public externalServiceRequestsCount = this.getOrCreateMetric('Counter', {
+    name: 'external_service_requests_count',
+    help: 'Requests count to some external services',
+    labelNames: ['serviceName'],
+  });
 }
