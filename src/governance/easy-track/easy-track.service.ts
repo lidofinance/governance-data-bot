@@ -3,31 +3,31 @@ import { ConfigService } from '../../common/config';
 import {
   EASYTRACK_CONTRACT_ABI,
   EASYTRACK_CONTRACT_ADDRESS,
-} from './easytrack.constants';
+} from './easy-track.constants';
 import { formatDate, VoteEntity, VoteSources } from '../vote.entity';
 import {
   eventAndDurationInfoToStatus,
-  getEasytrackType,
+  getEasyTrackType,
   templateMotionLink,
-} from './easytrack.helpers';
-import { EasytrackDescriptionCollector } from './easytrack.description.collector';
-import { EasytrackEventCollector } from './easytrack.event.collector';
-import { EasytrackProvider } from './easytrack.provider';
+} from './easy-track.helpers';
+import { EasyTrackDescriptionCollector } from './easy-track-description-collector.service';
+import { EasyTrackEventCollector } from './easy-track-event-collector.service';
+import { EasyTrackProvider } from './easy-track.provider';
 
 const MAX_PAST_DAYS_MOTIONS_FETCH = 14;
 
 @Injectable()
-export class EasytrackService {
+export class EasyTrackService {
   constructor(
     protected readonly configService: ConfigService,
-    private readonly descriptionCollector: EasytrackDescriptionCollector,
-    private readonly eventCollector: EasytrackEventCollector,
-    private readonly easytrackProvider: EasytrackProvider,
+    private readonly descriptionCollector: EasyTrackDescriptionCollector,
+    private readonly eventCollector: EasyTrackEventCollector,
+    private readonly easyTrackProvider: EasyTrackProvider,
   ) {}
 
   async collectByMaxPastDays(): Promise<VoteEntity[]> {
     // TODO motions should be fetched from events and rpc node historic data
-    const contract = await this.easytrackProvider.getContract(
+    const contract = await this.easyTrackProvider.getContract(
       EASYTRACK_CONTRACT_ADDRESS,
       EASYTRACK_CONTRACT_ABI,
     );
@@ -36,26 +36,26 @@ export class EasytrackService {
       (new Date().setDate(new Date().getDate() - MAX_PAST_DAYS_MOTIONS_FETCH) /
         1000) |
       0;
-    const pastMotions = await this.easytrackProvider.fetchPastMotionsByDate(
+    const pastMotions = await this.easyTrackProvider.fetchPastMotionsByDate(
       date,
     );
     return this.buildVotesFromMotions([...activeMotions, ...pastMotions]);
   }
 
   async collectByIds(ids: number[]) {
-    const contract = await this.easytrackProvider.getContract(
+    const contract = await this.easyTrackProvider.getContract(
       EASYTRACK_CONTRACT_ADDRESS,
       EASYTRACK_CONTRACT_ABI,
     );
     const activeMotions = await contract.getMotions();
-    const pastMotions = await this.easytrackProvider.fetchPastMotionsByIds(ids);
+    const pastMotions = await this.easyTrackProvider.fetchPastMotionsByIds(ids);
     return this.buildVotesFromMotions([...activeMotions, ...pastMotions]);
   }
 
   async buildVotesFromMotions(motions) {
     const votes: VoteEntity[] = [];
     for (const motion of [...motions].sort((v1, v2) => v1.id - v2.id)) {
-      const motionProgress = await this.easytrackProvider.getMotionProgress(
+      const motionProgress = await this.easyTrackProvider.getMotionProgress(
         motion.objectionsThreshold,
         motion.objectionsAmount,
       );
@@ -66,7 +66,7 @@ export class EasytrackService {
           (Number(motion.startDate) + Number(motion.duration)) * 1000,
         ),
         executionEndDate: formatDate(eventInfo.executionEndDate),
-        type: await getEasytrackType(motion.evmScriptFactory),
+        type: await getEasyTrackType(motion.evmScriptFactory),
         description: await this.descriptionCollector.getMotionDescription(
           motion.evmScriptFactory,
           eventInfo.evmScriptCallData,

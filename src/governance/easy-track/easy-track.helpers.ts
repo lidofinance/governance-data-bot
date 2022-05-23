@@ -3,11 +3,11 @@ import {
   factoryToMotionType,
   GOVERNANCE_TOKEN_ADDRESS,
   stETH_ADDRESS,
-} from './easytrack.constants';
-import { EasytrackEventInfo } from './easytrack.event.collector';
+} from './easy-track.constants';
+import { EasyTrackEventInfo } from './easy-track-event-collector.service';
 import { VoteStatus } from '../vote.entity';
 
-export async function getEasytrackType(evmScriptFactory: string) {
+export async function getEasyTrackType(evmScriptFactory: string) {
   const name = factoryToMotionType[evmScriptFactory.toLowerCase()];
   return name ? name : 'Motion type placeholder';
 }
@@ -41,7 +41,7 @@ export function filterArgs(args: unknown, exclude = []) {
 }
 
 export function eventAndDurationInfoToStatus(
-  eventInfo: EasytrackEventInfo,
+  eventInfo: EasyTrackEventInfo,
   startDate,
   duration,
 ) {

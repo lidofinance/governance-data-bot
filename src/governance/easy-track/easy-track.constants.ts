@@ -1,4 +1,4 @@
-import * as Easytrack from './abi/easytrack.abi.json';
+import * as EasyTrack from './abi/EasyTrack.abi.json';
 import * as EvmAddReferralPartner from './abi/EvmAddReferralPartner.abi.json';
 import * as EvmAddRewardProgram from './abi/EvmAddRewardProgram.abi.json';
 import * as EvmIncreaseNodeOperatorStakingLimit from './abi/EvmIncreaseNodeOperatorStakingLimit.abi.json';
@@ -13,7 +13,7 @@ import * as RewardProgramRegistry from './abi/RewardProgramRegistry.abi.json';
 import * as ReferralPartnersRegistry from './abi/ReferralPartnersRegistry.abi.json';
 import { BigNumber } from 'ethers';
 
-export const EASYTRACK_CONTRACT_ABI = Easytrack;
+export const EASYTRACK_CONTRACT_ABI = EasyTrack;
 export const EASYTRACK_CONTRACT_ADDRESS =
   '0xF0211b7660680B49De1A7E9f25C65660F0a13Fea';
 export const NODE_OPERATORS_REGISTRY_ADDRESS =
@@ -30,7 +30,7 @@ export const GRAPHQL_MOTIONS_URL =
   'https://api.thegraph.com/subgraphs/name/lidofinance/lido';
 
 export const abi = {
-  Easytrack,
+  EasyTrack,
   EvmAddReferralPartner,
   EvmAddRewardProgram,
   EvmIncreaseNodeOperatorStakingLimit,

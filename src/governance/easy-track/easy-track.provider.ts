@@ -5,16 +5,16 @@ import {
   GOVERNANCE_TOKEN_ADDRESS,
   GRAPHQL_MOTIONS_URL,
   NODE_OPERATORS_REGISTRY_ADDRESS,
-} from './easytrack.constants';
-import { filterArgs } from './easytrack.helpers';
+} from './easy-track.constants';
+import { filterArgs } from './easy-track.helpers';
 import fetch from 'node-fetch';
 import { formatEther } from 'ethers/lib/utils';
 import { Injectable } from '@nestjs/common';
-import { EasytrackProviderService } from './easytrack.provider.service';
+import { EasyTrackProviderService } from './easy-track.provider.service';
 
 @Injectable()
-export class EasytrackProvider {
-  constructor(private provider: EasytrackProviderService) {}
+export class EasyTrackProvider {
+  constructor(private provider: EasyTrackProviderService) {}
 
   async getContract(address: string, abi: any): Promise<Contract> {
     return new Contract(address, abi, this.provider);
@@ -62,7 +62,7 @@ export class EasytrackProvider {
   async getEvents(motionId?: number | string) {
     const contract = await this.getContract(
       EASYTRACK_CONTRACT_ADDRESS,
-      abi.Easytrack,
+      abi.EasyTrack,
     );
     const topics = [
       contract.filters.MotionCreated(),

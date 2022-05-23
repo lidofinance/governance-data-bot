@@ -1,9 +1,9 @@
-import { EasytrackProvider } from './easytrack.provider';
-import { MotionCreatedEventArgs } from './easytrack.constants';
+import { EasyTrackProvider } from './easy-track.provider';
+import { MotionCreatedEventArgs } from './easy-track.constants';
 import { Injectable } from '@nestjs/common';
-import { EasytrackProviderService } from './easytrack.provider.service';
+import { EasyTrackProviderService } from './easy-track.provider.service';
 
-export interface EasytrackEventInfo {
+export interface EasyTrackEventInfo {
   creator: string;
   evmScriptCallData: string;
   executionEndDate?: number;
@@ -15,15 +15,15 @@ export interface EasytrackEventInfo {
 }
 
 @Injectable()
-export class EasytrackEventCollector {
+export class EasyTrackEventCollector {
   constructor(
-    private providerService: EasytrackProviderService,
-    private easytrackProvider: EasytrackProvider,
+    private providerService: EasyTrackProviderService,
+    private easyTrackProvider: EasyTrackProvider,
   ) {}
 
-  async getEventInfo(motionId): Promise<EasytrackEventInfo> {
-    const events = await this.easytrackProvider.getEvents(motionId);
-    let eventInfo: EasytrackEventInfo = {
+  async getEventInfo(motionId): Promise<EasyTrackEventInfo> {
+    const events = await this.easyTrackProvider.getEvents(motionId);
+    let eventInfo: EasyTrackEventInfo = {
       created: false,
       creator: '',
       evmScriptCallData: '',

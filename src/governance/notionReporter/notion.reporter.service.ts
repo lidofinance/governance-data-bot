@@ -9,7 +9,7 @@ import {
 import { NotionClientService } from './notion.client.service';
 
 interface SourceAndNameToPageId {
-  // Key is a tuple of source and name separated by |. Ex - Easytrack|#123
+  // Key is a tuple of source and name separated by |. Ex - EasyTrack|#123
   [key: string]: { pageId: string; vote: VoteEntity };
 }
 
