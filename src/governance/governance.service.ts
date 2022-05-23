@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { EasytrackService } from './easytrack/easytrack.service';
+import { EasyTrackService } from './easy-track/easy-track.service';
 import { NotionReporterService } from './notionReporter/notion.reporter.service';
 import { PrometheusService } from '../common/prometheus';
 
@@ -13,7 +13,7 @@ enum TaskStatus {
 export class GovernanceService {
   private readonly logger: Logger = new Logger(GovernanceService.name);
   constructor(
-    private easytrackService: EasytrackService,
+    private easyTrackService: EasyTrackService,
     private notionReporterService: NotionReporterService,
     private prometheusService: PrometheusService,
   ) {}
@@ -41,7 +41,7 @@ export class GovernanceService {
       const ids = Object.values(records).map((value) =>
         Number(value.vote.name.replace('#', '')),
       );
-      const votes = await this.easytrackService.collectByIds(ids);
+      const votes = await this.easyTrackService.collectByIds(ids);
       await this.notionReporterService.report(votes);
     });
   }
@@ -50,7 +50,7 @@ export class GovernanceService {
   async fullSyncEasyTrackRecords() {
     await this.startTask('daily-EasyTrack-sync', async () => {
       this.logger.log('Started daily EasyTrack records sync');
-      const votes = await this.easytrackService.collectByMaxPastDays();
+      const votes = await this.easyTrackService.collectByMaxPastDays();
       await this.notionReporterService.report(votes);
     });
   }

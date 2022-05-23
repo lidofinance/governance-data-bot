@@ -4,7 +4,7 @@ import { PrometheusService } from '../../common/prometheus';
 import { ethers } from 'ethers';
 
 @Injectable()
-export class EasytrackProviderService extends ethers.providers.JsonRpcProvider {
+export class EasyTrackProviderService extends ethers.providers.JsonRpcProvider {
   constructor(
     private configService: ConfigService,
     private prometheusService: PrometheusService,
@@ -14,7 +14,7 @@ export class EasytrackProviderService extends ethers.providers.JsonRpcProvider {
 
   send(method: string, params: Array<any>): Promise<any> {
     this.prometheusService.externalServiceRequestsCount.inc({
-      serviceName: EasytrackProviderService.name,
+      serviceName: EasyTrackProviderService.name,
     });
     return super.send(method, params);
   }

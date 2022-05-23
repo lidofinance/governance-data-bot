@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '../common/logger';
 import { GovernanceService } from './governance.service';
 import { NotionReporterModule } from './notionReporter/notion.reporter.module';
-import { EasytrackModule } from './easytrack/easytrack.module';
+import { EasyTrackModule } from './easy-track/easy-track.module';
 
 @Module({
-  imports: [LoggerModule, NotionReporterModule, EasytrackModule],
+  imports: [LoggerModule, NotionReporterModule, EasyTrackModule],
   controllers: [],
   providers: [GovernanceService],
 })

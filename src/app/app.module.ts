@@ -7,7 +7,7 @@ import { SentryInterceptor } from 'common/sentry';
 import { HealthModule } from 'common/health';
 import { AppService } from './app.service';
 import { HTTPModule } from '../http';
-import { EasytrackModule } from '../governance/easytrack/easytrack.module';
+import { EasyTrackModule } from '../governance/easy-track/easy-track.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { GovernanceModule } from '../governance/governance.module';
 
@@ -17,7 +17,7 @@ import { GovernanceModule } from '../governance/governance.module';
     HealthModule,
     PrometheusModule,
     ConfigModule,
-    EasytrackModule,
+    EasyTrackModule,
     GovernanceModule,
     ScheduleModule.forRoot(),
   ],
