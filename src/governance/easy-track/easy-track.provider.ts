@@ -3,18 +3,20 @@ import {
   abi,
   EASYTRACK_CONTRACT_ADDRESS,
   GOVERNANCE_TOKEN_ADDRESS,
-  GRAPHQL_MOTIONS_URL,
   NODE_OPERATORS_REGISTRY_ADDRESS,
 } from './easy-track.constants';
 import { filterArgs } from './easy-track.helpers';
-import fetch from 'node-fetch';
 import { formatEther } from 'ethers/lib/utils';
 import { Injectable } from '@nestjs/common';
 import { EasyTrackProviderService } from './easy-track.provider.service';
+import { EasyTrackGraphqlService } from './easy-track.graphql.service';
 
 @Injectable()
 export class EasyTrackProvider {
-  constructor(private provider: EasyTrackProviderService) {}
+  constructor(
+    private provider: EasyTrackProviderService,
+    private easyTrackGraphqlService: EasyTrackGraphqlService,
+  ) {}
 
   async getContract(address: string, abi: any): Promise<Contract> {
     return new Contract(address, abi, this.provider);
@@ -112,48 +114,13 @@ export class EasyTrackProvider {
   async fetchPastMotionsByIds(ids: number[]) {
     return this.fetchPastMotions(`id_in: [${ids.join(' ')}]`);
   }
+
   async fetchPastMotionsByDate(fromDate: number) {
     return this.fetchPastMotions(`startDate_gt: ${fromDate}`);
   }
 
   async fetchPastMotions(whereCondition: string) {
-    const query = `{motions(
-  orderBy: startDate 
-  orderDirection: desc 
-  where: { status_in: ["CANCELED", "REJECTED", "ENACTED"]
-           ${whereCondition} }) 
-  {
-    id
-    evmScriptFactory
-    creator
-    duration
-    startDate
-    snapshotBlock
-    objectionsThreshold
-    objectionsAmount
-    evmScriptHash
-    evmScriptCalldata
-    status
-    enacted_at
-    canceled_at
-    rejected_at
-  }
-}`;
-    const resp = await fetch(GRAPHQL_MOTIONS_URL, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ query }),
-    });
-    if (!resp.ok)
-      throw new Error(
-        `Request ${resp.url} failed with ${
-          resp.status
-        } error: ${await resp.text()}`,
-      );
-    const respData = await resp.json();
-    return respData.data.motions;
+    return await this.easyTrackGraphqlService.getMotions(whereCondition);
   }
 
   async getMotionProgress(objectionsThreshold, objectionsAmount) {
