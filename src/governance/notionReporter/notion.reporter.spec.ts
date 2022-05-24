@@ -5,6 +5,10 @@ import { EasyTrackService } from '../easy-track/easy-track.service';
 import { NotionClientService } from './notion.client.service';
 import { PrometheusService } from '../../common/prometheus';
 import { EasyTrackProviderService } from '../easy-track/easy-track.provider.service';
+import { EasyTrackDescriptionCollector } from '../easy-track/easy-track-description-collector.service';
+import { EasyTrackEventCollector } from '../easy-track/easy-track-event-collector.service';
+import { EasyTrackProvider } from '../easy-track/easy-track.provider';
+import { EasyTrackGraphqlService } from '../easy-track/easy-track.graphql.service';
 
 describe('Test notion reporting', () => {
   let notionReporterService: NotionReporterService;
@@ -17,7 +21,11 @@ describe('Test notion reporting', () => {
         ConfigService,
         EasyTrackService,
         EasyTrackProviderService,
+        EasyTrackProvider,
+        EasyTrackDescriptionCollector,
+        EasyTrackEventCollector,
         NotionClientService,
+        EasyTrackGraphqlService,
         PrometheusService,
       ],
     }).compile();

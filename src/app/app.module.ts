@@ -10,6 +10,7 @@ import { HTTPModule } from '../http';
 import { EasyTrackModule } from '../governance/easy-track/easy-track.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { GovernanceModule } from '../governance/governance.module';
+import { GraphqlModule } from '../common/graphql/graphql.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { GovernanceModule } from '../governance/governance.module';
     HealthModule,
     PrometheusModule,
     ConfigModule,
+    GraphqlModule,
     EasyTrackModule,
     GovernanceModule,
     ScheduleModule.forRoot(),
