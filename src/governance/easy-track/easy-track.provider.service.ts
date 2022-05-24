@@ -4,7 +4,8 @@ import { PrometheusService } from '../../common/prometheus';
 import { ethers } from 'ethers';
 
 @Injectable()
-export class EasyTrackProviderService extends ethers.providers.JsonRpcProvider {
+export class EasyTrackProviderService extends ethers.providers
+  .StaticJsonRpcProvider {
   constructor(
     private configService: ConfigService,
     private prometheusService: PrometheusService,
