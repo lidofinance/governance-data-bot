@@ -38,6 +38,7 @@ export class SnapshotGraphqlService extends GraphqlService {
   }
 
   async getPastProposalsByIds(ids: string[]) {
+    if (ids.length === 0) return [];
     return this.getProposals(`id_in: ${JSON.stringify(ids)}`);
   }
 

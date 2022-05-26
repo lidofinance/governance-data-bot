@@ -6,7 +6,7 @@ import {
 import { formatDate, VoteEntity, VoteSources } from '../vote.entity';
 import { proposalStateToVoteStatus, uniqueProposals } from './snapshot.helpers';
 
-const MAX_PAST_DAYS_PROPOSALS_FETCH = 30;
+const MAX_PAST_DAYS_PROPOSALS_FETCH = 14;
 
 @Injectable()
 export class SnapshotService {
