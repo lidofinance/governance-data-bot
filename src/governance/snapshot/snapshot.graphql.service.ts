@@ -23,7 +23,6 @@ export interface GraphqlProposal {
 @Injectable()
 export class SnapshotGraphqlService extends GraphqlService {
   constructor(
-    private graphqlService: GraphqlService,
     private prometheusService: PrometheusService,
     private configService: ConfigService,
   ) {
@@ -36,6 +35,10 @@ export class SnapshotGraphqlService extends GraphqlService {
 
   async getPastProposalsByDate(date: number) {
     return this.getProposals(`start_gt: ${date}`);
+  }
+
+  async getPastProposalsByIds(ids: string[]) {
+    return this.getProposals(`id_in: ${JSON.stringify(ids)}`);
   }
 
   async getProposals(whereCondition: string): Promise<GraphqlProposal[]> {
@@ -69,7 +72,7 @@ export class SnapshotGraphqlService extends GraphqlService {
       serviceName: SnapshotGraphqlService.name,
     });
     return (
-      await this.graphqlService.query(
+      await this.query(
         this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'),
         query,
       )

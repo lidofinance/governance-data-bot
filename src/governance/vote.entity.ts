@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common';
+
 export interface VoteEntity {
   // All date fields are ISO string
   source: VoteSources;
@@ -38,5 +40,12 @@ export function formatDate(date: Date | number | string): string | null {
 }
 
 export function votesIsEqual(vote1: VoteEntity, vote2: VoteEntity): boolean {
-  return Object.keys(vote1).every((key) => vote1[key] === vote2[key]);
+  return Object.keys(vote1).every((key) => {
+    const result = vote1[key] === vote2[key];
+    if (!result)
+      new Logger().debug(
+        `Field ${key} is different. Values: ${vote1[key]}, ${vote2[key]}`,
+      );
+    return result;
+  });
 }

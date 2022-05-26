@@ -5,7 +5,7 @@ import { SnapshotService } from './snapshot.service';
 @Module({
   imports: [],
   controllers: [],
-  exports: [],
+  exports: [SnapshotService],
   providers: [SnapshotService, SnapshotGraphqlService],
 })
 export class SnapshotModule {}

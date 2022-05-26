@@ -4,7 +4,7 @@ import {
   SnapshotGraphqlService,
 } from './snapshot.graphql.service';
 import { formatDate, VoteEntity, VoteSources } from '../vote.entity';
-import { proposalStateToVoteStatus } from './snapshot.helpers';
+import { proposalStateToVoteStatus, uniqueProposals } from './snapshot.helpers';
 
 const MAX_PAST_DAYS_PROPOSALS_FETCH = 30;
 
@@ -22,10 +22,16 @@ export class SnapshotService {
       await this.snapshotGraphqlService.getActiveProposals();
     const pastProposals =
       await this.snapshotGraphqlService.getPastProposalsByDate(date);
-    const proposals = [...activeProposals, ...pastProposals].filter(
-      (proposal, index, self) =>
-        index === self.findIndex((value) => proposal.id === value.id),
-    );
+    const proposals = uniqueProposals([...activeProposals, ...pastProposals]);
+    return this.buildVotesFromProposals(proposals);
+  }
+
+  async collectByIds(ids: string[]) {
+    const activeProposals =
+      await this.snapshotGraphqlService.getActiveProposals();
+    const pastProposals =
+      await this.snapshotGraphqlService.getPastProposalsByIds(ids);
+    const proposals = uniqueProposals([...activeProposals, ...pastProposals]);
     return this.buildVotesFromProposals(proposals);
   }
 
@@ -41,11 +47,11 @@ export class SnapshotService {
         endDate: formatDate(Number(proposal.end) * 1000),
         link: proposal.link,
         name: proposal.title,
-        result1: proposal.scores[0],
-        result2: proposal.scores[1],
-        result3: proposal.scores[2],
+        result1: proposal.scores[0] === undefined ? null : proposal.scores[0],
+        result2: proposal.scores[1] === undefined ? null : proposal.scores[1],
+        result3: proposal.scores[2] === undefined ? null : proposal.scores[2],
         proposalType: proposal.type,
-        discussion: proposal.discussion,
+        discussion: proposal.discussion || null,
       });
     }
     return votes;
