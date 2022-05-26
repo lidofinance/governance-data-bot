@@ -11,13 +11,16 @@ export interface VoteEntity {
   link: string;
   objectionsAmount?: number;
   objectionsThreshold?: number;
-  result1?: string;
-  result2?: string;
-  result3?: string;
+  result1?: number;
+  result2?: number;
+  result3?: number;
+  proposalType?: string;
+  discussion?: string;
 }
 
 export enum VoteSources {
   easyTrack = 'EasyTrack',
+  snapshot = 'Snapshot',
 }
 
 export enum VoteStatus {
@@ -27,6 +30,7 @@ export enum VoteStatus {
   enacted = 'enacted',
   cancelled = 'cancelled',
   rejected = 'rejected',
+  closed = 'closed',
 }
 
 export function formatDate(date: Date | number | string): string | null {

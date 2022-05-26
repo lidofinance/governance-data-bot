@@ -9,8 +9,11 @@ import { EasyTrackDescriptionCollector } from '../easy-track/easy-track-descript
 import { EasyTrackEventCollector } from '../easy-track/easy-track-event-collector.service';
 import { EasyTrackProvider } from '../easy-track/easy-track.provider';
 import { EasyTrackGraphqlService } from '../easy-track/easy-track.graphql.service';
+import { SnapshotService } from '../snapshot/snapshot.service';
+import { SnapshotGraphqlService } from '../snapshot/snapshot.graphql.service';
+import { GraphqlService } from '../../common/graphql/graphql.service';
 
-describe('Test notion reporting', () => {
+describe('Test EasyTrack notion reporting', () => {
   let notionReporterService: NotionReporterService;
   let easyTrackService: EasyTrackService;
 
@@ -37,6 +40,34 @@ describe('Test notion reporting', () => {
 
   it('Test notion votes reporting', async () => {
     const votes = await easyTrackService.collectByIds([185]);
+    await notionReporterService.report(votes);
+  }, 360000);
+});
+
+describe('Test Snapshot notion reporting', () => {
+  let notionReporterService: NotionReporterService;
+  let snapshotService: SnapshotService;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        NotionReporterService,
+        NotionClientService,
+        PrometheusService,
+        SnapshotService,
+        SnapshotGraphqlService,
+        GraphqlService,
+        ConfigService,
+      ],
+    }).compile();
+    notionReporterService = moduleRef.get<NotionReporterService>(
+      NotionReporterService,
+    );
+    snapshotService = moduleRef.get<SnapshotService>(SnapshotService);
+  });
+
+  it('Test notion votes reporting', async () => {
+    const votes = await snapshotService.collectByMaxPastDays();
     await notionReporterService.report(votes);
   }, 360000);
 });
