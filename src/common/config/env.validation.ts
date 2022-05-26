@@ -7,6 +7,7 @@ import {
   validateSync,
   Min,
   IsUrl,
+  IsBooleanString,
 } from 'class-validator';
 import { Environment, LogLevel, LogFormat } from './interfaces';
 
@@ -18,6 +19,9 @@ const toNumber =
   };
 
 export class EnvironmentVariables {
+  @IsBooleanString()
+  DRY_RUN: string;
+
   @IsString()
   NOTION_INTEGRATION_TOKEN: string;
 
@@ -26,6 +30,12 @@ export class EnvironmentVariables {
 
   @IsUrl()
   ETH_RPC_URL: string;
+
+  @IsUrl()
+  EASYTRACK_MOTIONS_GRAPHQL_URL: string;
+
+  @IsUrl()
+  SNAPSHOT_PROPOSALS_GRAPHQL_URL: string;
 
   @IsEnum(Environment)
   NODE_ENV: Environment = Environment.development;

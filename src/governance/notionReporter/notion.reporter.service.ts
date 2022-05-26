@@ -34,21 +34,24 @@ export class NotionReporterService {
       const voteFromPage = records[`${vote.source}|${vote.name}`];
       if (voteFromPage !== undefined) {
         if (votesIsEqual(vote, voteFromPage.vote)) continue;
-        await this.notion.pages.update({
-          page_id: records[`${vote.source}|${vote.name}`].pageId,
-          properties: properties,
-        });
+        if (!this.configService.isDryRun())
+          await this.notion.pages.update({
+            page_id: records[`${vote.source}|${vote.name}`].pageId,
+            properties: properties,
+          });
         updatedCount++;
       } else {
-        await this.notion.pages.create({
-          parent: { database_id: this.databaseId },
-          properties: properties,
-        });
+        if (!this.configService.isDryRun())
+          await this.notion.pages.create({
+            parent: { database_id: this.databaseId },
+            properties: properties,
+          });
         createdCount++;
       }
     }
     this.logger.log(
-      `Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
+      `${this.configService.isDryRun() ? '[Dry Run] ' : ''}` +
+        `Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
     );
   }
 

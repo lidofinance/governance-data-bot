@@ -16,4 +16,8 @@ export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
   ): EnvironmentVariables[T] {
     return super.get(key, { infer: true }) as EnvironmentVariables[T];
   }
+
+  public isDryRun() {
+    return this.get('DRY_RUN') === 'true';
+  }
 }

@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common';
+
 export interface VoteEntity {
   // All date fields are ISO string
   source: VoteSources;
@@ -11,13 +13,16 @@ export interface VoteEntity {
   link: string;
   objectionsAmount?: number;
   objectionsThreshold?: number;
-  result1?: string;
-  result2?: string;
-  result3?: string;
+  result1?: number;
+  result2?: number;
+  result3?: number;
+  proposalType?: string;
+  discussion?: string;
 }
 
 export enum VoteSources {
   easyTrack = 'EasyTrack',
+  snapshot = 'Snapshot',
 }
 
 export enum VoteStatus {
@@ -27,6 +32,7 @@ export enum VoteStatus {
   enacted = 'enacted',
   cancelled = 'cancelled',
   rejected = 'rejected',
+  closed = 'closed',
 }
 
 export function formatDate(date: Date | number | string): string | null {
@@ -34,5 +40,12 @@ export function formatDate(date: Date | number | string): string | null {
 }
 
 export function votesIsEqual(vote1: VoteEntity, vote2: VoteEntity): boolean {
-  return Object.keys(vote1).every((key) => vote1[key] === vote2[key]);
+  return Object.keys(vote1).every((key) => {
+    const result = vote1[key] === vote2[key];
+    if (!result)
+      new Logger().debug(
+        `Field ${key} is different. Values: ${vote1[key]}, ${vote2[key]}`,
+      );
+    return result;
+  });
 }
