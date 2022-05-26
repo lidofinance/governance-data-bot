@@ -1,7 +1,7 @@
 import { PrometheusService } from '../../common/prometheus';
 import { GraphqlService } from '../../common/graphql/graphql.service';
-import { GRAPHQL_MOTIONS_URL } from './easy-track.constants';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '../../common/config';
 
 export interface GraphqlMotion {
   id: string;
@@ -22,7 +22,10 @@ export interface GraphqlMotion {
 
 @Injectable()
 export class EasyTrackGraphqlService extends GraphqlService {
-  constructor(private prometheusService: PrometheusService) {
+  constructor(
+    private prometheusService: PrometheusService,
+    private configService: ConfigService,
+  ) {
     super();
   }
 
@@ -56,6 +59,9 @@ export class EasyTrackGraphqlService extends GraphqlService {
     this.prometheusService.externalServiceRequestsCount.inc({
       serviceName: EasyTrackGraphqlService.name,
     });
-    return await super.query(GRAPHQL_MOTIONS_URL, query);
+    return await super.query(
+      this.configService.get('EASYTRACK_MOTIONS_GRAPHQL_URL'),
+      query,
+    );
   }
 }

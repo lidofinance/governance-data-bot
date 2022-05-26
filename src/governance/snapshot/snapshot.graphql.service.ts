@@ -1,7 +1,8 @@
 import { PrometheusService } from '../../common/prometheus';
 import { Injectable } from '@nestjs/common';
 import { GraphqlService } from '../../common/graphql/graphql.service';
-import { GRAPHQL_SNAPSHOTS_URL, SNAPSHOT_SPACE_ID } from './snapshot.constants';
+import { SNAPSHOT_SPACE_ID } from './snapshot.constants';
+import { ConfigService } from '../../common/config';
 
 export interface GraphqlProposal {
   id: string;
@@ -24,6 +25,7 @@ export class SnapshotGraphqlService extends GraphqlService {
   constructor(
     private graphqlService: GraphqlService,
     private prometheusService: PrometheusService,
+    private configService: ConfigService,
   ) {
     super();
   }
@@ -66,7 +68,11 @@ export class SnapshotGraphqlService extends GraphqlService {
     this.prometheusService.externalServiceRequestsCount.inc({
       serviceName: SnapshotGraphqlService.name,
     });
-    return (await this.graphqlService.query(GRAPHQL_SNAPSHOTS_URL, query))
-      .proposals;
+    return (
+      await this.graphqlService.query(
+        this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'),
+        query,
+      )
+    ).proposals;
   }
 }

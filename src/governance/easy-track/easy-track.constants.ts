@@ -26,8 +26,6 @@ export const REWARD_PROGRAM_REGISTRY_ADDRESS =
 export const REFERRAL_PARTNERS_REGISTRY_ADDRESS =
   '0xfCaD241D9D2A2766979A2de208E8210eDf7b7D4F';
 export const EASYTRACK_LINK_TEMPLATE = 'https://easytrack.lido.fi/motions/';
-export const GRAPHQL_MOTIONS_URL =
-  'https://api.thegraph.com/subgraphs/name/lidofinance/lido';
 
 export const abi = {
   EasyTrack,

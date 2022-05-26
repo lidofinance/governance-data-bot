@@ -3,6 +3,7 @@ import { SnapshotService } from './snapshot.service';
 import { SnapshotGraphqlService } from './snapshot.graphql.service';
 import { GraphqlService } from '../../common/graphql/graphql.service';
 import { PrometheusService } from '../../common/prometheus';
+import { ConfigService } from '../../common/config';
 
 describe('Test snapshot collection', () => {
   let snapshotService: SnapshotService;
@@ -14,6 +15,7 @@ describe('Test snapshot collection', () => {
         SnapshotGraphqlService,
         GraphqlService,
         PrometheusService,
+        ConfigService,
       ],
     }).compile();
     snapshotService = moduleRef.get<SnapshotService>(SnapshotService);
