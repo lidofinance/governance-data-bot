@@ -7,6 +7,7 @@ import {
   validateSync,
   Min,
   IsUrl,
+  IsBooleanString,
 } from 'class-validator';
 import { Environment, LogLevel, LogFormat } from './interfaces';
 
@@ -18,6 +19,9 @@ const toNumber =
   };
 
 export class EnvironmentVariables {
+  @IsBooleanString()
+  DRY_RUN: string;
+
   @IsString()
   NOTION_INTEGRATION_TOKEN: string;
 

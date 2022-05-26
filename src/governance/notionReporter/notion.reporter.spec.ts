@@ -12,6 +12,7 @@ import { EasyTrackGraphqlService } from '../easy-track/easy-track.graphql.servic
 import { SnapshotService } from '../snapshot/snapshot.service';
 import { SnapshotGraphqlService } from '../snapshot/snapshot.graphql.service';
 import { GraphqlService } from '../../common/graphql/graphql.service';
+import { Logger } from '@nestjs/common';
 
 describe('Test EasyTrack notion reporting', () => {
   let notionReporterService: NotionReporterService;
@@ -32,6 +33,7 @@ describe('Test EasyTrack notion reporting', () => {
         PrometheusService,
       ],
     }).compile();
+    moduleRef.useLogger(new Logger());
     notionReporterService = moduleRef.get<NotionReporterService>(
       NotionReporterService,
     );
@@ -60,6 +62,7 @@ describe('Test Snapshot notion reporting', () => {
         ConfigService,
       ],
     }).compile();
+    moduleRef.useLogger(new Logger());
     notionReporterService = moduleRef.get<NotionReporterService>(
       NotionReporterService,
     );
