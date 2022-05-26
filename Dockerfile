@@ -4,9 +4,10 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 COPY ./tsconfig*.json ./
-COPY ./src ./src
 
 RUN yarn install --frozen-lockfile --non-interactive && yarn cache clean
+
+COPY ./src ./src
 RUN yarn build
 
 FROM node:14-alpine
