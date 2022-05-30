@@ -18,6 +18,7 @@ export interface VoteEntity {
   result3?: number;
   proposalType?: string;
   discussion?: string;
+  votes?: number;
 }
 
 export enum VoteSources {
