@@ -52,6 +52,7 @@ export class SnapshotService {
         result3: proposal.scores[2] === undefined ? null : proposal.scores[2],
         proposalType: proposal.type,
         discussion: proposal.discussion || null,
+        votes: proposal.votes,
       });
     }
     return votes;

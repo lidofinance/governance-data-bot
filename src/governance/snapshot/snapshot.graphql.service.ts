@@ -18,6 +18,7 @@ export interface GraphqlProposal {
   scores: number[];
   type: string;
   discussion: string;
+  votes: number;
 }
 
 @Injectable()
@@ -67,6 +68,7 @@ export class SnapshotGraphqlService extends GraphqlService {
         scores
         type
         discussion
+        votes
       }
     }`;
     this.prometheusService.externalServiceRequestsCount.inc({

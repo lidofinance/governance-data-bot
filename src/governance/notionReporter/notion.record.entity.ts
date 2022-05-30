@@ -52,6 +52,7 @@ export class NotionRecordEntity {
       Res3: NotionTypes.number(this.vote.result3),
       ProposalType: NotionTypes.select(this.vote.proposalType),
       Discussion: NotionTypes.link(this.vote.discussion),
+      Votes: NotionTypes.number(this.vote.votes),
     };
   }
 }
@@ -73,6 +74,7 @@ const propertiesNames = [
   'Res3',
   'ProposalType',
   'Discussion',
+  'Votes',
 ];
 
 export function isValidProperties(properties) {
@@ -101,5 +103,6 @@ export function voteFromNotionProperties(properties): VoteEntity {
     result3: properties.Res3.number,
     proposalType: properties.ProposalType.select?.name,
     discussion: properties.Discussion?.url,
+    votes: properties.Votes.number,
   };
 }
