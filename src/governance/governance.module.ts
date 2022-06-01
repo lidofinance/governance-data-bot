@@ -4,6 +4,7 @@ import { GovernanceService } from './governance.service';
 import { NotionReporterModule } from './notionReporter/notion.reporter.module';
 import { EasyTrackModule } from './easy-track/easy-track.module';
 import { SnapshotModule } from './snapshot/snapshot.module';
+import { AragonModule } from './aragon/aragon.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { SnapshotModule } from './snapshot/snapshot.module';
     NotionReporterModule,
     EasyTrackModule,
     SnapshotModule,
+    AragonModule,
   ],
   controllers: [],
   providers: [GovernanceService],

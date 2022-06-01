@@ -11,6 +11,7 @@ export interface VoteEntity {
   endDate: string;
   executionEndDate?: string;
   link: string;
+  additionalLink?: string;
   objectionsAmount?: number;
   objectionsThreshold?: number;
   result1?: number;
@@ -24,6 +25,7 @@ export interface VoteEntity {
 export enum VoteSources {
   easyTrack = 'EasyTrack',
   snapshot = 'Snapshot',
+  aragon = 'Aragon',
 }
 
 export enum VoteStatus {

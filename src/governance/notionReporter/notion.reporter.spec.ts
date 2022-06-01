@@ -13,6 +13,9 @@ import { SnapshotService } from '../snapshot/snapshot.service';
 import { SnapshotGraphqlService } from '../snapshot/snapshot.graphql.service';
 import { GraphqlService } from '../../common/graphql/graphql.service';
 import { Logger } from '@nestjs/common';
+import { AragonService } from '../aragon/aragon.service';
+import { AragonProviderService } from '../aragon/aragon.provider.service';
+import { AragonProvider } from '../aragon/aragon.provider';
 
 describe('Test EasyTrack notion reporting', () => {
   let notionReporterService: NotionReporterService;
@@ -71,6 +74,36 @@ describe('Test Snapshot notion reporting', () => {
 
   it('Test notion votes reporting', async () => {
     const votes = await snapshotService.collectByMaxPastDays();
+    await notionReporterService.report(votes);
+  }, 360000);
+});
+
+describe('Test Aragon notion reporting', () => {
+  let notionReporterService: NotionReporterService;
+  let aragonService: AragonService;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        NotionReporterService,
+        NotionClientService,
+        PrometheusService,
+        AragonService,
+        AragonProvider,
+        AragonProviderService,
+        ConfigService,
+      ],
+    }).compile();
+    moduleRef.useLogger(new Logger());
+    notionReporterService = moduleRef.get<NotionReporterService>(
+      NotionReporterService,
+    );
+    aragonService = moduleRef.get<AragonService>(AragonService);
+  });
+
+  it('Test notion votes reporting', async () => {
+    const votes = await aragonService.collectByIds([130]);
+    // const votes = await aragonService.collectByMaxPastDays();
     await notionReporterService.report(votes);
   }, 360000);
 });

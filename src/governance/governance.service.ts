@@ -5,6 +5,7 @@ import { NotionReporterService } from './notionReporter/notion.reporter.service'
 import { PrometheusService } from '../common/prometheus';
 import { SnapshotService } from './snapshot/snapshot.service';
 import { VoteSources } from './vote.entity';
+import { AragonService } from './aragon/aragon.service';
 
 enum TaskStatus {
   passed = 'passed',
@@ -12,6 +13,7 @@ enum TaskStatus {
 }
 
 const EVERY_10_MINUTES_OFFSET_3 = '0 3-59/10 * * * *';
+const EVERY_10_MINUTES_OFFSET_6 = '0 6-59/10 * * * *';
 
 @Injectable()
 export class GovernanceService {
@@ -19,6 +21,7 @@ export class GovernanceService {
   constructor(
     private easyTrackService: EasyTrackService,
     private snapshotService: SnapshotService,
+    private aragonService: AragonService,
     private notionReporterService: NotionReporterService,
     private prometheusService: PrometheusService,
   ) {}
@@ -64,6 +67,19 @@ export class GovernanceService {
     });
   }
 
+  @Cron(EVERY_10_MINUTES_OFFSET_6)
+  async updateAragonRecords() {
+    await this.startTask('update-Aragon-records', async () => {
+      this.logger.log('Started updating Aragon records');
+      const records = await this.notionReporterService.getRecords();
+      const ids = Object.values(records)
+        .filter((value) => value.vote.source === VoteSources.aragon)
+        .map((value) => Number(value.vote.name.replace('#', '')));
+      const votes = await this.aragonService.collectByIds(ids);
+      await this.notionReporterService.report(votes);
+    });
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async fullSyncEasyTrackRecords() {
     await this.startTask('daily-EasyTrack-sync', async () => {
@@ -78,6 +94,15 @@ export class GovernanceService {
     await this.startTask('daily-Snapshot-sync', async () => {
       this.logger.log('Started daily Snapshot records sync');
       const votes = await this.snapshotService.collectByMaxPastDays();
+      await this.notionReporterService.report(votes);
+    });
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_2AM)
+  async fullSyncAragonRecords() {
+    await this.startTask('daily-Aragon-sync', async () => {
+      this.logger.log('Started daily Aragon records sync');
+      const votes = await this.aragonService.collectByMaxPastDays();
       await this.notionReporterService.report(votes);
     });
   }
