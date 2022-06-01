@@ -4,9 +4,9 @@
 This bot collect some governance info and report it to notion tables.
 
 - [x] EasyTrack motions
-- [ ] Snapshot voting
+- [x] Snapshot voting
+- [x] Aragon voting
 - [ ] Research forum posts
-- [ ] Aragon voting
 
 ## Installation
 

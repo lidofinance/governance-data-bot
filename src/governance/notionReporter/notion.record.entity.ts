@@ -45,6 +45,7 @@ export class NotionRecordEntity {
       'End Date': NotionTypes.date(this.vote.endDate),
       'Execution End Date': NotionTypes.date(this.vote.executionEndDate),
       Link: NotionTypes.link(this.vote.link),
+      'Additional Link': NotionTypes.link(this.vote.additionalLink),
       'Objections Amount': NotionTypes.number(this.vote.objectionsAmount),
       'Objections Threshold': NotionTypes.number(this.vote.objectionsThreshold),
       Res1: NotionTypes.number(this.vote.result1),
@@ -67,6 +68,7 @@ const propertiesNames = [
   'End Date',
   'Execution End Date',
   'Link',
+  'Additional Link',
   'Objections Amount',
   'Objections Threshold',
   'Res1',
@@ -96,6 +98,7 @@ export function voteFromNotionProperties(properties): VoteEntity {
       properties['Execution End Date'].date &&
       formatDate(properties['Execution End Date'].date.start),
     link: properties.Link.url,
+    additionalLink: properties['Additional Link'].url,
     objectionsAmount: properties['Objections Amount'].number,
     objectionsThreshold: properties['Objections Threshold'].number,
     result1: properties.Res1.number,
