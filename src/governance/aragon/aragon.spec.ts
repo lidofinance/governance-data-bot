@@ -5,6 +5,7 @@ import { Logger } from '@nestjs/common';
 import { AragonProviderService } from './aragon.provider.service';
 import { AragonProvider } from './aragon.provider';
 import { PrometheusService } from '../../common/prometheus';
+import { formatDescription } from './aragon.helpers';
 
 describe('Test aragon collection', () => {
   let aragonService: AragonService;
@@ -24,6 +25,14 @@ describe('Test aragon collection', () => {
   });
 
   it('Test aragon votes collection', async () => {
-    await aragonService.collectByIds([120, 121]);
+    await aragonService.collectNewAndRefresh([120, 121]);
   }, 360000);
+});
+
+it('Test description formatting', () => {
+  let desc = formatDescription('Omnibus vote: 1) first;2) second;3) third');
+  expect(desc).toEqual('Omnibus vote:\n1) first;\n2) second;\n3) third');
+
+  desc = formatDescription("('Omnibus vote: 1) first', '2) second')");
+  expect(desc).toEqual('Omnibus vote:\n1) first\n2) second');
 });

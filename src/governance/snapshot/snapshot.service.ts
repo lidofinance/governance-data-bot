@@ -26,11 +26,11 @@ export class SnapshotService {
     return this.buildVotesFromProposals(proposals);
   }
 
-  async collectByIds(ids: string[]) {
+  async collectNewAndRefresh(refreshIds: string[]) {
     const activeProposals =
       await this.snapshotGraphqlService.getActiveProposals();
     const pastProposals =
-      await this.snapshotGraphqlService.getPastProposalsByIds(ids);
+      await this.snapshotGraphqlService.getPastProposalsByIds(refreshIds);
     const proposals = uniqueProposals([...activeProposals, ...pastProposals]);
     return this.buildVotesFromProposals(proposals);
   }

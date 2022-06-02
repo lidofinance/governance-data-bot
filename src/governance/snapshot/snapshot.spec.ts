@@ -27,7 +27,7 @@ describe('Test snapshot collection', () => {
   }, 360000);
 
   it('Test Snapshot votes collection by ids', async () => {
-    const votes = await snapshotService.collectByIds([
+    const votes = await snapshotService.collectNewAndRefresh([
       '0xa2cd54039590f84c96904b7fc057cc2fb849515496a0240efff164587ad54f13',
       '0xb93235759e74cfc925dfe4c08e6bf027e861bb003369d2254a572b0068920342',
     ]);

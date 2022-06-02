@@ -49,7 +49,7 @@ export class GovernanceService {
       const ids = Object.values(records)
         .filter((value) => value.vote.source === VoteSources.easyTrack)
         .map((value) => Number(value.vote.name.replace('#', '')));
-      const votes = await this.easyTrackService.collectByIds(ids);
+      const votes = await this.easyTrackService.collectNewAndRefresh(ids);
       await this.notionReporterService.report(votes);
     });
   }
@@ -62,7 +62,7 @@ export class GovernanceService {
       const ids = Object.values(records)
         .filter((value) => value.vote.source === VoteSources.snapshot)
         .map((value) => value.vote.link.split('/').slice(-1)[0]);
-      const votes = await this.snapshotService.collectByIds(ids);
+      const votes = await this.snapshotService.collectNewAndRefresh(ids);
       await this.notionReporterService.report(votes);
     });
   }
@@ -75,7 +75,7 @@ export class GovernanceService {
       const ids = Object.values(records)
         .filter((value) => value.vote.source === VoteSources.aragon)
         .map((value) => Number(value.vote.name.replace('#', '')));
-      const votes = await this.aragonService.collectByIds(ids);
+      const votes = await this.aragonService.collectNewAndRefresh(ids);
       await this.notionReporterService.report(votes);
     });
   }

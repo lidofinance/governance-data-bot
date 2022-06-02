@@ -4,6 +4,7 @@ import { AragonProvider, AragonVote } from './aragon.provider';
 import { formatDate, VoteEntity, VoteSources } from '../vote.entity';
 import {
   aragonVoteStatus,
+  formatDescription,
   templateAdditionalVoteLink,
   templateVoteLink,
 } from './aragon.helpers';
@@ -27,8 +28,8 @@ export class AragonService {
     return this.buildVotesFromAragonVotes(votes);
   }
 
-  async collectByIds(ids: number[]) {
-    const votes = await this.aragonProvider.getVotesByIds(ids);
+  async collectNewAndRefresh(refreshIds: number[]) {
+    const votes = await this.aragonProvider.getVotesByIds(refreshIds);
     return this.buildVotesFromAragonVotes(votes);
   }
 
@@ -49,7 +50,7 @@ export class AragonService {
         link: templateVoteLink(aragonVote.id),
         additionalLink: templateAdditionalVoteLink(aragonVote.id),
         name: '#' + aragonVote.id,
-        description: aragonVote.metadata,
+        description: formatDescription(aragonVote.metadata),
         status: aragonVoteStatus(aragonVote),
         result1: Number(utils.formatEther(aragonVote.yea)),
         result2: Number(utils.formatEther(aragonVote.nay)),
