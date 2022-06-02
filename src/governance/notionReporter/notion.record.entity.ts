@@ -40,7 +40,7 @@ export class NotionRecordEntity {
       Source: NotionTypes.select(this.vote.source),
       Status: NotionTypes.select(this.vote.status),
       Type: NotionTypes.select(this.vote.type),
-      Description: NotionTypes.rich_text(this.vote.description, { bold: true }),
+      Description: NotionTypes.rich_text(this.vote.description, {}),
       Date: NotionTypes.date(this.vote.startDate),
       'End Date': NotionTypes.date(this.vote.endDate),
       'Execution End Date': NotionTypes.date(this.vote.executionEndDate),
