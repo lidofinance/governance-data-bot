@@ -24,6 +24,6 @@ describe('Test aragon collection', () => {
   });
 
   it('Test aragon votes collection', async () => {
-    await aragonService.collectByIds([120, 121]);
+    await aragonService.collectNewAndRefresh([120, 121]);
   }, 360000);
 });

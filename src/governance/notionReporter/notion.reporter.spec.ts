@@ -44,7 +44,7 @@ describe('Test EasyTrack notion reporting', () => {
   });
 
   it('Test notion votes reporting', async () => {
-    const votes = await easyTrackService.collectByIds([185]);
+    const votes = await easyTrackService.collectNewAndRefresh([185]);
     await notionReporterService.report(votes);
   }, 360000);
 });
@@ -102,7 +102,7 @@ describe('Test Aragon notion reporting', () => {
   });
 
   it('Test notion votes reporting', async () => {
-    const votes = await aragonService.collectByIds([130]);
+    const votes = await aragonService.collectNewAndRefresh([130]);
     // const votes = await aragonService.collectByMaxPastDays();
     await notionReporterService.report(votes);
   }, 360000);

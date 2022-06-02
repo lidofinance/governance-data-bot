@@ -42,13 +42,15 @@ export class EasyTrackService {
     return this.buildVotesFromMotions([...activeMotions, ...pastMotions]);
   }
 
-  async collectByIds(ids: number[]) {
+  async collectNewAndRefresh(refreshIds: number[]) {
     const contract = await this.easyTrackProvider.getContract(
       EASYTRACK_CONTRACT_ADDRESS,
       EASYTRACK_CONTRACT_ABI,
     );
     const activeMotions = await contract.getMotions();
-    const pastMotions = await this.easyTrackProvider.fetchPastMotionsByIds(ids);
+    const pastMotions = await this.easyTrackProvider.fetchPastMotionsByIds(
+      refreshIds,
+    );
     return this.buildVotesFromMotions([...activeMotions, ...pastMotions]);
   }
 

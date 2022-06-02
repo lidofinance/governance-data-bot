@@ -27,8 +27,8 @@ export class AragonService {
     return this.buildVotesFromAragonVotes(votes);
   }
 
-  async collectByIds(ids: number[]) {
-    const votes = await this.aragonProvider.getVotesByIds(ids);
+  async collectNewAndRefresh(refreshIds: number[]) {
+    const votes = await this.aragonProvider.getVotesByIds(refreshIds);
     return this.buildVotesFromAragonVotes(votes);
   }
 
