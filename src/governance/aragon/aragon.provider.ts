@@ -56,14 +56,8 @@ export class AragonProvider {
   ): Promise<{ [key: number]: { args: T; blockNumber: number } }> {
     const events = {};
     (await contract.queryFilter(filter)).map((e) => {
-      const fragment = contract.interface.getEvent(e.topics[0]);
-      const args = contract.interface.decodeEventLog(
-        fragment,
-        e.data,
-        e.topics,
-      ) as unknown as T;
-      events[args.voteId.toNumber()] = {
-        args: args,
+      events[e.args.voteId.toNumber()] = {
+        args: e.args,
         blockNumber: e.blockNumber,
       };
     });
