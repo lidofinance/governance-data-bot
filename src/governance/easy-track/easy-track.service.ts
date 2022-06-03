@@ -4,7 +4,7 @@ import {
   EASYTRACK_CONTRACT_ABI,
   EASYTRACK_CONTRACT_ADDRESS,
 } from './easy-track.constants';
-import { formatDate, VoteEntity, VoteSources } from '../vote.entity';
+import { VoteEntity, VoteSources } from '../vote.entity';
 import {
   eventAndDurationInfoToStatus,
   getEasyTrackType,
@@ -13,6 +13,7 @@ import {
 import { EasyTrackDescriptionCollector } from './easy-track-description-collector.service';
 import { EasyTrackEventCollector } from './easy-track-event-collector.service';
 import { EasyTrackProvider } from './easy-track.provider';
+import { formatDate } from '../governance.utils';
 
 const MAX_PAST_DAYS_MOTIONS_FETCH = 14;
 

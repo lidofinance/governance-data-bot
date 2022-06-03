@@ -1,12 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '../../common/config';
-import { VoteEntity, votesIsEqual } from '../vote.entity';
+import { VoteEntity } from '../vote.entity';
 import { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
 import {
   NotionRecordEntity,
   voteFromNotionProperties,
 } from './notion.record.entity';
 import { NotionClientService } from './notion.client.service';
+import { objectsIsEqual } from '../governance.utils';
 
 interface SourceAndNameToPageId {
   // Key is a tuple of source and name separated by |. Ex - EasyTrack|#123
@@ -33,7 +34,7 @@ export class NotionReporterService {
       const properties = new NotionRecordEntity(vote).properties();
       const voteFromPage = records[`${vote.source}|${vote.name}`];
       if (voteFromPage !== undefined) {
-        if (votesIsEqual(vote, voteFromPage.vote)) continue;
+        if (objectsIsEqual(vote, voteFromPage.vote)) continue;
         if (!this.configService.isDryRun())
           await this.notion.pages.update({
             page_id: records[`${vote.source}|${vote.name}`].pageId,

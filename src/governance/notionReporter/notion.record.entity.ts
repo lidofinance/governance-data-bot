@@ -1,4 +1,5 @@
-import { formatDate, VoteEntity } from '../vote.entity';
+import { VoteEntity } from '../vote.entity';
+import { formatDate } from '../governance.utils';
 
 export class NotionTypes {
   static title(content: string | undefined) {
