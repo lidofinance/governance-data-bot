@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../common/config';
 import { AragonProvider, AragonVote } from './aragon.provider';
-import { formatDate, VoteEntity, VoteSources } from '../vote.entity';
+import { VoteEntity, VoteSources } from '../vote.entity';
 import {
   aragonVoteStatus,
   formatDescription,
@@ -9,6 +9,7 @@ import {
   templateVoteLink,
 } from './aragon.helpers';
 import { utils } from 'ethers';
+import { formatDate } from '../governance.utils';
 
 const MAX_PAST_DAYS_VOTES_FETCH = 14;
 

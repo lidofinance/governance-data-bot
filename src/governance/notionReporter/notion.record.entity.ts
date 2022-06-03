@@ -1,4 +1,6 @@
-import { formatDate, VoteEntity } from '../vote.entity';
+import { VoteEntity } from '../vote.entity';
+import { formatDate } from '../governance.utils';
+import { TopicEntity } from '../topic.entity';
 
 export class NotionTypes {
   static title(content: string | undefined) {
@@ -31,10 +33,32 @@ export class NotionTypes {
   }
 }
 
-export class NotionRecordEntity {
+export class NotionVoteEntity {
+  public static readonly propertiesNames = <const>[
+    'Name',
+    'Source',
+    'Status',
+    'Type',
+    'Description',
+    'Date',
+    'End Date',
+    'Execution End Date',
+    'Link',
+    'Additional Link',
+    'Objections Amount',
+    'Objections Threshold',
+    'Res1',
+    'Res2',
+    'Res3',
+    'ProposalType',
+    'Discussion',
+    'Voters number',
+  ];
   constructor(private vote: VoteEntity) {}
 
-  properties() {
+  properties(): {
+    [key in typeof NotionVoteEntity.propertiesNames[number]];
+  } {
     return {
       Name: NotionTypes.title(this.vote.name),
       Source: NotionTypes.select(this.vote.source),
@@ -58,33 +82,34 @@ export class NotionRecordEntity {
   }
 }
 
-const propertiesNames = [
-  'Name',
-  'Source',
-  'Status',
-  'Type',
-  'Description',
-  'Date',
-  'End Date',
-  'Execution End Date',
-  'Link',
-  'Additional Link',
-  'Objections Amount',
-  'Objections Threshold',
-  'Res1',
-  'Res2',
-  'Res3',
-  'ProposalType',
-  'Discussion',
-  'Voters number',
-];
+export class NotionTopicEntity {
+  public static readonly propertiesNames = <const>[
+    'Name',
+    'Link',
+    'Creation Date',
+    'Last Reply Date',
+  ];
 
-export function isValidProperties(properties) {
-  return propertiesNames.every((name) => name in properties);
+  constructor(private topic: TopicEntity) {}
+
+  properties(): {
+    [key in typeof NotionTopicEntity.propertiesNames[number]];
+  } {
+    return {
+      Name: NotionTypes.title(this.topic.name),
+      Link: NotionTypes.link(this.topic.link),
+      'Creation Date': NotionTypes.date(this.topic.creationDate),
+      'Last Reply Date': NotionTypes.date(this.topic.lastReplyDate),
+    };
+  }
+}
+
+export function isValidProperties(validProperties, properties) {
+  return validProperties.every((name) => name in properties);
 }
 
 export function voteFromNotionProperties(properties): VoteEntity {
-  if (!isValidProperties(properties))
+  if (!isValidProperties(NotionVoteEntity.propertiesNames, properties))
     throw Error('Notion page has invalid properties');
   return {
     source: properties.Source.select.name,
@@ -107,5 +132,16 @@ export function voteFromNotionProperties(properties): VoteEntity {
     proposalType: properties.ProposalType.select?.name,
     discussion: properties.Discussion?.url,
     votersNumber: properties['Voters number'].number,
+  };
+}
+
+export function topicFromNotionProperties(properties): TopicEntity {
+  if (!isValidProperties(NotionTopicEntity.propertiesNames, properties))
+    throw Error('Notion page has invalid properties');
+  return {
+    name: properties.Name.title[0].plain_text,
+    link: properties.Link.url,
+    creationDate: formatDate(properties['Creation Date'].date.start),
+    lastReplyDate: formatDate(properties['Last Reply Date'].date.start),
   };
 }

@@ -3,8 +3,9 @@ import {
   GraphqlProposal,
   SnapshotGraphqlService,
 } from './snapshot.graphql.service';
-import { formatDate, VoteEntity, VoteSources } from '../vote.entity';
+import { VoteEntity, VoteSources } from '../vote.entity';
 import { proposalStateToVoteStatus, uniqueProposals } from './snapshot.helpers';
+import { formatDate } from '../governance.utils';
 
 const MAX_PAST_DAYS_PROPOSALS_FETCH = 14;
 

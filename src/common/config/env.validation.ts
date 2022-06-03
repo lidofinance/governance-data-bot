@@ -26,7 +26,10 @@ export class EnvironmentVariables {
   NOTION_INTEGRATION_TOKEN: string;
 
   @IsString()
-  NOTION_DATABASE_ID: string;
+  NOTION_VOTES_DATABASE_ID: string;
+
+  @IsString()
+  NOTION_TOPICS_DATABASE_ID: string;
 
   @IsUrl()
   ETH_RPC_URL: string;
@@ -36,6 +39,9 @@ export class EnvironmentVariables {
 
   @IsUrl()
   SNAPSHOT_PROPOSALS_GRAPHQL_URL: string;
+
+  @IsUrl()
+  RESEARCH_FORUM_DISCOURSE_URL: string;
 
   @IsEnum(Environment)
   NODE_ENV: Environment = Environment.development;

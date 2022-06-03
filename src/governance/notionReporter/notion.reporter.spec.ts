@@ -16,6 +16,8 @@ import { Logger } from '@nestjs/common';
 import { AragonService } from '../aragon/aragon.service';
 import { AragonProviderService } from '../aragon/aragon.provider.service';
 import { AragonProvider } from '../aragon/aragon.provider';
+import { ResearchForumService } from '../research-forum/research-forum.service';
+import { ResearchForumProvider } from '../research-forum/research-forum.provider';
 
 describe('Test EasyTrack notion reporting', () => {
   let notionReporterService: NotionReporterService;
@@ -45,7 +47,7 @@ describe('Test EasyTrack notion reporting', () => {
 
   it('Test notion votes reporting', async () => {
     const votes = await easyTrackService.collectNewAndRefresh([185]);
-    await notionReporterService.report(votes);
+    await notionReporterService.reportVotes(votes);
   }, 360000);
 });
 
@@ -74,7 +76,7 @@ describe('Test Snapshot notion reporting', () => {
 
   it('Test notion votes reporting', async () => {
     const votes = await snapshotService.collectByMaxPastDays();
-    await notionReporterService.report(votes);
+    await notionReporterService.reportVotes(votes);
   }, 360000);
 });
 
@@ -104,6 +106,35 @@ describe('Test Aragon notion reporting', () => {
   it('Test notion votes reporting', async () => {
     const votes = await aragonService.collectNewAndRefresh([130]);
     // const votes = await aragonService.collectByMaxPastDays();
-    await notionReporterService.report(votes);
+    await notionReporterService.reportVotes(votes);
+  }, 360000);
+});
+
+describe('Test Research forum notion reporting', () => {
+  let notionReporterService: NotionReporterService;
+  let researchForumService: ResearchForumService;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        NotionReporterService,
+        NotionClientService,
+        PrometheusService,
+        ConfigService,
+        ResearchForumService,
+        ResearchForumProvider,
+      ],
+    }).compile();
+    moduleRef.useLogger(new Logger());
+    notionReporterService = moduleRef.get<NotionReporterService>(
+      NotionReporterService,
+    );
+    researchForumService =
+      moduleRef.get<ResearchForumService>(ResearchForumService);
+  });
+
+  it('Test notion topics reporting', async () => {
+    const topics = await researchForumService.collect();
+    await notionReporterService.reportTopics(topics);
   }, 360000);
 });
