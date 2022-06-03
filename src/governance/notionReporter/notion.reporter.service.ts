@@ -8,7 +8,7 @@ import {
   voteFromNotionProperties,
 } from './notion.record.entity';
 import { NotionClientService } from './notion.client.service';
-import { objectsIsEqual } from '../governance.utils';
+import { objectsAreEqual } from '../governance.utils';
 import { TopicEntity } from '../topic.entity';
 
 interface SourceAndNameToVotePage {
@@ -43,7 +43,7 @@ export class NotionReporterService {
       const properties = new NotionVoteEntity(vote).properties();
       const voteFromPage = records[`${vote.source}|${vote.name}`];
       if (voteFromPage !== undefined) {
-        if (objectsIsEqual(vote, voteFromPage.vote)) continue;
+        if (objectsAreEqual(vote, voteFromPage.vote)) continue;
         if (!this.configService.isDryRun())
           await this.notion.pages.update({
             page_id: records[`${vote.source}|${vote.name}`].pageId,
@@ -73,7 +73,7 @@ export class NotionReporterService {
       const properties = new NotionTopicEntity(topic).properties();
       const topicFromPage = records[topic.link];
       if (topicFromPage !== undefined) {
-        if (objectsIsEqual(topic, topicFromPage.topic)) continue;
+        if (objectsAreEqual(topic, topicFromPage.topic)) continue;
         if (!this.configService.isDryRun())
           await this.notion.pages.update({
             page_id: records[topic.link].pageId,
