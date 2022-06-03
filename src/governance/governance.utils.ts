@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 
 export function formatDate(date: Date | number | string): string | null {
-  return date ? new Date(new Date(date).setSeconds(0)).toISOString() : null;
+  return date ? new Date(new Date(date).setSeconds(0, 0)).toISOString() : null;
 }
 
 export function objectsIsEqual(obj1: object, obj2: object): boolean {
