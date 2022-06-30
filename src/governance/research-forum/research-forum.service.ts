@@ -2,10 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { ResearchForumProvider } from './research-forum.provider';
 import { TopicEntity } from '../topic.entity';
 import { formatDate } from '../governance.utils';
+import { NetworkConfigurable } from '../../common/config';
+import {
+  ResearchForumConfig,
+  ResearchForumNetworkConfig,
+} from './research-forum.config';
 
 @Injectable()
-export class ResearchForumService {
-  constructor(private researchForumProvider: ResearchForumProvider) {}
+export class ResearchForumService implements NetworkConfigurable {
+  public config: ResearchForumNetworkConfig;
+  constructor(
+    private researchForumProvider: ResearchForumProvider,
+    private researchForumConfig: ResearchForumConfig,
+  ) {
+    this.config = researchForumConfig.render();
+  }
 
   async collect(): Promise<TopicEntity[]> {
     const forumTopics = await this.researchForumProvider.getLatestTopics();

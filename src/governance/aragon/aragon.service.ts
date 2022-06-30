@@ -1,24 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '../../common/config';
+import { NetworkConfigurable } from '../../common/config';
 import { AragonProvider, AragonVote } from './aragon.provider';
 import { VoteEntity, VoteSources } from '../vote.entity';
-import {
-  aragonVoteStatus,
-  formatDescription,
-  templateAdditionalVoteLink,
-  templateVoteLink,
-} from './aragon.helpers';
+import { aragonVoteStatus, formatDescription } from './aragon.helpers';
 import { utils } from 'ethers';
 import { formatDate } from '../governance.utils';
+import { AragonConfig, AragonNetworkConfig } from './aragon.config';
 
 const MAX_PAST_DAYS_VOTES_FETCH = 14;
 
 @Injectable()
-export class AragonService {
+export class AragonService implements NetworkConfigurable {
+  public config: AragonNetworkConfig;
+
   constructor(
-    private configService: ConfigService,
     private aragonProvider: AragonProvider,
-  ) {}
+    private aragonConfig: AragonConfig,
+  ) {
+    this.config = aragonConfig.render();
+  }
+
+  private voteLink(id: number) {
+    return this.config.votingBaseUrl + id + '/';
+  }
+
+  private additionalVoteLink(id: number) {
+    return this.config.additionalVotingBaseUrl + id + '/';
+  }
 
   async collectByMaxPastDays() {
     const date =
@@ -48,8 +56,8 @@ export class AragonService {
               await this.aragonProvider.getBlockDate(aragonVote.executionBlock),
             )
           : null,
-        link: templateVoteLink(aragonVote.id),
-        additionalLink: templateAdditionalVoteLink(aragonVote.id),
+        link: this.voteLink(aragonVote.id),
+        additionalLink: this.additionalVoteLink(aragonVote.id),
         name: '#' + aragonVote.id,
         description: formatDescription(aragonVote.metadata),
         status: aragonVoteStatus(aragonVote),

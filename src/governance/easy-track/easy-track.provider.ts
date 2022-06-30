@@ -1,22 +1,22 @@
 import { BigNumber, Contract } from 'ethers';
-import {
-  abi,
-  EASYTRACK_CONTRACT_ADDRESS,
-  GOVERNANCE_TOKEN_ADDRESS,
-  NODE_OPERATORS_REGISTRY_ADDRESS,
-} from './easy-track.constants';
+import { abi } from './easy-track.constants';
 import { filterArgs } from './easy-track.helpers';
 import { formatEther } from 'ethers/lib/utils';
 import { Injectable } from '@nestjs/common';
 import { EasyTrackProviderService } from './easy-track.provider.service';
 import { EasyTrackGraphqlService } from './easy-track.graphql.service';
+import { EasyTrackConfig, EasyTrackNetworkConfig } from './easy-track.config';
 
 @Injectable()
 export class EasyTrackProvider {
+  private config: EasyTrackNetworkConfig;
   constructor(
     private provider: EasyTrackProviderService,
     private easyTrackGraphqlService: EasyTrackGraphqlService,
-  ) {}
+    private easyTrackConfig: EasyTrackConfig,
+  ) {
+    this.config = easyTrackConfig.render();
+  }
 
   async getContract(address: string, abi: any): Promise<Contract> {
     return new Contract(address, abi, this.provider);
@@ -24,7 +24,7 @@ export class EasyTrackProvider {
 
   async getNodeOperatorInfo(noId: number | BigNumber) {
     const contract = await this.getContract(
-      NODE_OPERATORS_REGISTRY_ADDRESS,
+      this.config.nodeOperatorsRegistry,
       abi.NodeOperatorsRegistry,
     );
     const { active, name } = await contract.getNodeOperator(noId, true);
@@ -33,7 +33,7 @@ export class EasyTrackProvider {
 
   async getGovernanceTokenInfo() {
     const contract = await this.getContract(
-      GOVERNANCE_TOKEN_ADDRESS,
+      this.config.governanceToken,
       abi.ERC20,
     );
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -63,7 +63,7 @@ export class EasyTrackProvider {
 
   async getEvents(motionId?: number | string) {
     const contract = await this.getContract(
-      EASYTRACK_CONTRACT_ADDRESS,
+      this.config.easyTrackContract,
       abi.EasyTrack,
     );
     const topics = [

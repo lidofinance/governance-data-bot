@@ -6,12 +6,21 @@ import {
 import { VoteEntity, VoteSources } from '../vote.entity';
 import { proposalStateToVoteStatus, uniqueProposals } from './snapshot.helpers';
 import { formatDate } from '../governance.utils';
+import { NetworkConfigurable } from '../../common/config';
+import { SnapshotConfig, SnapshotNetworkConfig } from './snapshot.config';
 
 const MAX_PAST_DAYS_PROPOSALS_FETCH = 14;
 
 @Injectable()
-export class SnapshotService {
-  constructor(private snapshotGraphqlService: SnapshotGraphqlService) {}
+export class SnapshotService implements NetworkConfigurable {
+  public config: SnapshotNetworkConfig;
+  constructor(
+    private snapshotGraphqlService: SnapshotGraphqlService,
+    private snapshotConfig: SnapshotConfig,
+  ) {
+    this.config = snapshotConfig.render();
+  }
+
   async collectByMaxPastDays() {
     const date =
       (new Date().setDate(

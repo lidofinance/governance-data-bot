@@ -1,35 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '../../common/config';
-import {
-  EASYTRACK_CONTRACT_ABI,
-  EASYTRACK_CONTRACT_ADDRESS,
-} from './easy-track.constants';
+import { NetworkConfigurable } from '../../common/config';
+import { EASYTRACK_CONTRACT_ABI } from './easy-track.constants';
 import { VoteEntity, VoteSources } from '../vote.entity';
 import {
   eventAndDurationInfoToStatus,
   getEasyTrackType,
-  templateMotionLink,
 } from './easy-track.helpers';
 import { EasyTrackDescriptionCollector } from './easy-track-description-collector.service';
 import { EasyTrackEventCollector } from './easy-track-event-collector.service';
 import { EasyTrackProvider } from './easy-track.provider';
 import { formatDate } from '../governance.utils';
+import { EasyTrackConfig, EasyTrackNetworkConfig } from './easy-track.config';
 
 const MAX_PAST_DAYS_MOTIONS_FETCH = 14;
 
 @Injectable()
-export class EasyTrackService {
+export class EasyTrackService implements NetworkConfigurable {
+  public config: EasyTrackNetworkConfig;
+
   constructor(
-    protected readonly configService: ConfigService,
     private readonly descriptionCollector: EasyTrackDescriptionCollector,
     private readonly eventCollector: EasyTrackEventCollector,
     private readonly easyTrackProvider: EasyTrackProvider,
-  ) {}
+    private easyTrackConfig: EasyTrackConfig,
+  ) {
+    this.config = easyTrackConfig.render();
+  }
+
+  private motionLink(motionId) {
+    return this.config.easyTrackBaseUrl + motionId + '/';
+  }
 
   async collectByMaxPastDays(): Promise<VoteEntity[]> {
     // TODO motions should be fetched from events and rpc node historic data
     const contract = await this.easyTrackProvider.getContract(
-      EASYTRACK_CONTRACT_ADDRESS,
+      this.config.easyTrackContract,
       EASYTRACK_CONTRACT_ABI,
     );
     const activeMotions = await contract.getMotions();
@@ -45,7 +50,7 @@ export class EasyTrackService {
 
   async collectNewAndRefresh(refreshIds: number[]) {
     const contract = await this.easyTrackProvider.getContract(
-      EASYTRACK_CONTRACT_ADDRESS,
+      this.config.easyTrackContract,
       EASYTRACK_CONTRACT_ABI,
     );
     const activeMotions = await contract.getMotions();
@@ -74,7 +79,7 @@ export class EasyTrackService {
           motion.evmScriptFactory,
           eventInfo.evmScriptCallData,
         ),
-        link: await templateMotionLink(motion.id),
+        link: this.motionLink(motion.id),
         source: VoteSources.easyTrack,
         status: eventAndDurationInfoToStatus(
           eventInfo,

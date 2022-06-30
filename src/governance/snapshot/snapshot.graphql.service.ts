@@ -1,8 +1,8 @@
 import { PrometheusService } from '../../common/prometheus';
 import { Injectable } from '@nestjs/common';
 import { GraphqlService } from '../../common/graphql/graphql.service';
-import { SNAPSHOT_SPACE_ID } from './snapshot.constants';
 import { ConfigService } from '../../common/config';
+import { SnapshotConfig, SnapshotNetworkConfig } from './snapshot.config';
 import fetch from 'node-fetch';
 
 export interface GraphqlProposal {
@@ -26,11 +26,14 @@ export interface GraphqlProposal {
 
 @Injectable()
 export class SnapshotGraphqlService extends GraphqlService {
+  public config: SnapshotNetworkConfig;
   constructor(
     private prometheusService: PrometheusService,
     private configService: ConfigService,
+    private snapshotConfig: SnapshotConfig,
   ) {
     super();
+    this.config = snapshotConfig.render();
   }
 
   async query(url, query) {
@@ -65,7 +68,7 @@ export class SnapshotGraphqlService extends GraphqlService {
         first: 100,
         skip: 0,
         where: {
-          space: "${SNAPSHOT_SPACE_ID}"
+          space: "${this.config.snapshotSpaceId}"
           ${whereCondition}
         },
         orderBy: "created",
@@ -114,7 +117,7 @@ export class SnapshotGraphqlService extends GraphqlService {
         first: 10000,
         skip: 0,
         where: {
-          space: "${SNAPSHOT_SPACE_ID}"
+          space: "${this.config.snapshotSpaceId}"
           proposal: "${proposalId}"
         },
         orderBy: "created",
@@ -143,7 +146,7 @@ export class SnapshotGraphqlService extends GraphqlService {
       const votes = await this.getActualVotes(proposal.id);
       const voters = votes.map((vote) => vote.voter);
       const scores = await this.getScores(
-        SNAPSHOT_SPACE_ID,
+        this.config.snapshotSpaceId,
         proposal.strategies,
         proposal.network,
         voters,

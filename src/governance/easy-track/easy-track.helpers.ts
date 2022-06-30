@@ -1,36 +1,10 @@
-import {
-  EASYTRACK_LINK_TEMPLATE,
-  factoryToMotionType,
-  GOVERNANCE_TOKEN_ADDRESS,
-  stETH_ADDRESS,
-} from './easy-track.constants';
+import { factoryToMotionType } from './easy-track.constants';
 import { EasyTrackEventInfo } from './easy-track-event-collector.service';
 import { VoteStatus } from '../vote.entity';
 
 export async function getEasyTrackType(evmScriptFactory: string) {
   const name = factoryToMotionType[evmScriptFactory.toLowerCase()];
   return name ? name : 'Motion type placeholder';
-}
-
-export async function templateMotionLink(motionId) {
-  return EASYTRACK_LINK_TEMPLATE + motionId + '/';
-}
-
-export async function getLegoTokenOptions(symbol) {
-  return [
-    {
-      label: 'ETH',
-      value: '0x0000000000000000000000000000000000000000',
-    },
-    {
-      label: symbol,
-      value: GOVERNANCE_TOKEN_ADDRESS,
-    },
-    {
-      label: 'stETH',
-      value: stETH_ADDRESS,
-    },
-  ];
 }
 
 // filter numeric keys from object and optional keys from excluded list

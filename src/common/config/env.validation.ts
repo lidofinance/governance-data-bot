@@ -8,6 +8,7 @@ import {
   Min,
   IsUrl,
   IsBooleanString,
+  IsIn,
 } from 'class-validator';
 import { Environment, LogLevel, LogFormat } from './interfaces';
 
@@ -18,9 +19,19 @@ const toNumber =
     return Number(value);
   };
 
+export enum Network {
+  mainnet = 'mainnet',
+  testnet = 'testnet',
+}
+export type TNetwork = keyof typeof Network;
+
 export class EnvironmentVariables {
   @IsBooleanString()
   DRY_RUN: string;
+
+  @IsString()
+  @IsIn(Object.keys(Network).map((k) => Network[k]))
+  NETWORK: TNetwork = Network.mainnet;
 
   @IsString()
   NOTION_INTEGRATION_TOKEN: string;

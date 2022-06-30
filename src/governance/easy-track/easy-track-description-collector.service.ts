@@ -3,17 +3,38 @@ import {
   factoryToMotionType,
   MotionType,
   MotionTypeEvmContractAbi,
-  REFERRAL_PARTNERS_REGISTRY_ADDRESS,
-  REWARD_PROGRAM_REGISTRY_ADDRESS,
 } from './easy-track.constants';
 import { EasyTrackProvider } from './easy-track.provider';
-import { getLegoTokenOptions } from './easy-track.helpers';
 import { formatEther, getAddress } from 'ethers/lib/utils';
 import { Injectable } from '@nestjs/common';
+import { EasyTrackConfig, EasyTrackNetworkConfig } from './easy-track.config';
 
 @Injectable()
 export class EasyTrackDescriptionCollector {
-  constructor(private easyTrackProvider: EasyTrackProvider) {}
+  private config: EasyTrackNetworkConfig;
+  constructor(
+    private easyTrackProvider: EasyTrackProvider,
+    private easyTrackConfig: EasyTrackConfig,
+  ) {
+    this.config = easyTrackConfig.render();
+  }
+
+  private getLegoTokenOptions(symbol) {
+    return [
+      {
+        label: 'ETH',
+        value: '0x0000000000000000000000000000000000000000',
+      },
+      {
+        label: symbol,
+        value: this.config.governanceToken,
+      },
+      {
+        label: 'stETH',
+        value: this.config.stETH,
+      },
+    ];
+  }
 
   async getMotionDescription(
     evmScriptFactory: string,
@@ -62,7 +83,7 @@ export class EasyTrackDescriptionCollector {
 
   private async descLEGOTopUp([_rewardTokens, _amounts]) {
     const { symbol } = await this.easyTrackProvider.getGovernanceTokenInfo();
-    const options = await getLegoTokenOptions(symbol);
+    const options = this.getLegoTokenOptions(symbol);
     const labels = _rewardTokens.map(
       (address) =>
         options.find((o) => getAddress(o.value) === getAddress(address))?.label,
@@ -82,7 +103,7 @@ export class EasyTrackDescriptionCollector {
     );
   }
 
-  private async descRewardProgramAdd([_rewardProgram, _rewardProgramName]) {
+  private descRewardProgramAdd([_rewardProgram, _rewardProgramName]) {
     return `Add reward program ${_rewardProgramName} with address ${_rewardProgram}`;
   }
 
@@ -93,7 +114,7 @@ export class EasyTrackDescriptionCollector {
       _rewardPrograms.map(async (address, index) => {
         const name = await this.easyTrackProvider.getProgramName(
           abi.RewardProgramRegistry,
-          REWARD_PROGRAM_REGISTRY_ADDRESS,
+          this.config.rewardProgramRegistry,
           address,
         );
         return `${name} with address ${address} with ${formatEther(
@@ -108,16 +129,13 @@ export class EasyTrackDescriptionCollector {
   private async descRewardProgramRemove(_rewardProgram) {
     const name = await this.easyTrackProvider.getProgramName(
       abi.RewardProgramRegistry,
-      REWARD_PROGRAM_REGISTRY_ADDRESS,
+      this.config.rewardProgramRegistry,
       _rewardProgram,
     );
     return `Remove reward program ${name} with address ${_rewardProgram}`;
   }
 
-  private async descReferralPartnerAdd([
-    _referralPartner,
-    _referralPartnerName,
-  ]) {
+  private descReferralPartnerAdd([_referralPartner, _referralPartnerName]) {
     return `Add referral partner ${_referralPartnerName} with address ${_referralPartner}`;
   }
 
@@ -128,7 +146,7 @@ export class EasyTrackDescriptionCollector {
       _referralPartners.map(async (address, index) => {
         const name = await this.easyTrackProvider.getProgramName(
           abi.ReferralPartnersRegistry,
-          REFERRAL_PARTNERS_REGISTRY_ADDRESS,
+          this.config.referralPartnersRegistry,
           address,
         );
         return `${name} with address ${address} with ${formatEther(
@@ -143,7 +161,7 @@ export class EasyTrackDescriptionCollector {
   private async descReferralPartnerRemove(_referralPartner) {
     const name = await this.easyTrackProvider.getProgramName(
       abi.ReferralPartnersRegistry,
-      REFERRAL_PARTNERS_REGISTRY_ADDRESS,
+      this.config.referralPartnersRegistry,
       _referralPartner,
     );
     return `Remove referral partner ${name} with address ${_referralPartner}`;

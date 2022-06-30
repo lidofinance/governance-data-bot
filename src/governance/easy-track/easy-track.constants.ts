@@ -14,18 +14,6 @@ import * as ReferralPartnersRegistry from './abi/ReferralPartnersRegistry.abi.js
 import { BigNumber } from 'ethers';
 
 export const EASYTRACK_CONTRACT_ABI = EasyTrack;
-export const EASYTRACK_CONTRACT_ADDRESS =
-  '0xF0211b7660680B49De1A7E9f25C65660F0a13Fea';
-export const NODE_OPERATORS_REGISTRY_ADDRESS =
-  '0x55032650b14df07b85bF18A3a3eC8E0Af2e028d5';
-export const GOVERNANCE_TOKEN_ADDRESS =
-  '0x5a98fcbea516cf06857215779fd812ca3bef1b32';
-export const stETH_ADDRESS = '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84';
-export const REWARD_PROGRAM_REGISTRY_ADDRESS =
-  '0x3129c041b372ee93a5a8756dc4ec6f154d85bc9a';
-export const REFERRAL_PARTNERS_REGISTRY_ADDRESS =
-  '0xfCaD241D9D2A2766979A2de208E8210eDf7b7D4F';
-export const EASYTRACK_LINK_TEMPLATE = 'https://easytrack.lido.fi/motions/';
 
 export const abi = {
   EasyTrack,

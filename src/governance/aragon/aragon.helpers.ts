@@ -1,18 +1,6 @@
-import {
-  ARAGON_ADDITIONAL_LINK_TEMPLATE,
-  ARAGON_LINK_TEMPLATE,
-} from './aragon.constants';
 import { AragonVote } from './aragon.provider';
 import { VoteStatus } from '../vote.entity';
 import { Logger } from '@nestjs/common';
-
-export function templateVoteLink(aragonVoteId) {
-  return ARAGON_LINK_TEMPLATE + aragonVoteId + '/';
-}
-
-export function templateAdditionalVoteLink(aragonVoteId) {
-  return ARAGON_ADDITIONAL_LINK_TEMPLATE + aragonVoteId + '/';
-}
 
 export function aragonVoteStatus(vote: AragonVote) {
   if (!vote) return null;

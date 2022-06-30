@@ -7,6 +7,7 @@ import { SnapshotService } from './snapshot/snapshot.service';
 import { VoteSources } from './vote.entity';
 import { AragonService } from './aragon/aragon.service';
 import { ResearchForumService } from './research-forum/research-forum.service';
+import { ConfigService, NetworkConfigurable } from '../common/config';
 
 enum TaskStatus {
   passed = 'passed',
@@ -21,6 +22,7 @@ const EVERY_10_MINUTES_OFFSET_8 = '0 8-59/10 * * * *';
 export class GovernanceService {
   private readonly logger: Logger = new Logger(GovernanceService.name);
   constructor(
+    private configService: ConfigService,
     private easyTrackService: EasyTrackService,
     private snapshotService: SnapshotService,
     private aragonService: AragonService,
@@ -29,7 +31,12 @@ export class GovernanceService {
     private prometheusService: PrometheusService,
   ) {}
 
-  async startTask(name: string, func: () => void) {
+  async startTask(
+    service: NetworkConfigurable,
+    name: string,
+    func: () => void,
+  ) {
+    if (!this.configService.hasNetworkConfig(service)) return;
     const stop = this.prometheusService.taskDuration.startTimer({ name });
     try {
       await func();
@@ -46,73 +53,97 @@ export class GovernanceService {
 
   @Cron(CronExpression.EVERY_10_MINUTES)
   async updateEasyTrackRecords() {
-    await this.startTask('update-EasyTrack-records', async () => {
-      this.logger.log('Started updating EasyTrack records');
-      const records = await this.notionReporterService.getVoteRecords();
-      const ids = Object.values(records)
-        .filter((value) => value.vote.source === VoteSources.easyTrack)
-        .map((value) => Number(value.vote.name.replace('#', '')));
-      const votes = await this.easyTrackService.collectNewAndRefresh(ids);
-      await this.notionReporterService.reportVotes(votes);
-    });
+    await this.startTask(
+      this.easyTrackService,
+      'update-EasyTrack-records',
+      async () => {
+        this.logger.log('Started updating EasyTrack records');
+        const records = await this.notionReporterService.getVoteRecords();
+        const ids = Object.values(records)
+          .filter((value) => value.vote.source === VoteSources.easyTrack)
+          .map((value) => Number(value.vote.name.replace('#', '')));
+        const votes = await this.easyTrackService.collectNewAndRefresh(ids);
+        await this.notionReporterService.reportVotes(votes);
+      },
+    );
   }
 
   @Cron(EVERY_10_MINUTES_OFFSET_3)
   async updateSnapshotRecords() {
-    await this.startTask('update-Snapshot-records', async () => {
-      this.logger.log('Started updating Snapshot records');
-      const records = await this.notionReporterService.getVoteRecords();
-      const ids = Object.values(records)
-        .filter((value) => value.vote.source === VoteSources.snapshot)
-        .map((value) => value.vote.link.split('/').slice(-1)[0]);
-      const votes = await this.snapshotService.collectNewAndRefresh(ids);
-      await this.notionReporterService.reportVotes(votes);
-    });
+    await this.startTask(
+      this.snapshotService,
+      'update-Snapshot-records',
+      async () => {
+        this.logger.log('Started updating Snapshot records');
+        const records = await this.notionReporterService.getVoteRecords();
+        const ids = Object.values(records)
+          .filter((value) => value.vote.source === VoteSources.snapshot)
+          .map((value) => value.vote.link.split('/').slice(-1)[0]);
+        const votes = await this.snapshotService.collectNewAndRefresh(ids);
+        await this.notionReporterService.reportVotes(votes);
+      },
+    );
   }
 
   @Cron(EVERY_10_MINUTES_OFFSET_6)
   async updateAragonRecords() {
-    await this.startTask('update-Aragon-records', async () => {
-      this.logger.log('Started updating Aragon records');
-      const records = await this.notionReporterService.getVoteRecords();
-      const ids = Object.values(records)
-        .filter((value) => value.vote.source === VoteSources.aragon)
-        .map((value) => Number(value.vote.name.replace('#', '')));
-      const votes = await this.aragonService.collectNewAndRefresh(ids);
-      await this.notionReporterService.reportVotes(votes);
-    });
+    await this.startTask(
+      this.aragonService,
+      'update-Aragon-records',
+      async () => {
+        this.logger.log('Started updating Aragon records');
+        const records = await this.notionReporterService.getVoteRecords();
+        const ids = Object.values(records)
+          .filter((value) => value.vote.source === VoteSources.aragon)
+          .map((value) => Number(value.vote.name.replace('#', '')));
+        const votes = await this.aragonService.collectNewAndRefresh(ids);
+        await this.notionReporterService.reportVotes(votes);
+      },
+    );
   }
 
   @Cron(EVERY_10_MINUTES_OFFSET_8)
   async updateResearchForumRecords() {
-    await this.startTask('update-ResearchForum-records', async () => {
-      this.logger.log('Started updating Research Forum records');
-      const topics = await this.researchForumService.collect();
-      await this.notionReporterService.reportTopics(topics);
-    });
+    await this.startTask(
+      this.researchForumService,
+      'update-ResearchForum-records',
+      async () => {
+        this.logger.log('Started updating Research Forum records');
+        const topics = await this.researchForumService.collect();
+        await this.notionReporterService.reportTopics(topics);
+      },
+    );
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async fullSyncEasyTrackRecords() {
-    await this.startTask('daily-EasyTrack-sync', async () => {
-      this.logger.log('Started daily EasyTrack records sync');
-      const votes = await this.easyTrackService.collectByMaxPastDays();
-      await this.notionReporterService.reportVotes(votes);
-    });
+    await this.startTask(
+      this.easyTrackService,
+      'daily-EasyTrack-sync',
+      async () => {
+        this.logger.log('Started daily EasyTrack records sync');
+        const votes = await this.easyTrackService.collectByMaxPastDays();
+        await this.notionReporterService.reportVotes(votes);
+      },
+    );
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async fullSyncSnapshotRecords() {
-    await this.startTask('daily-Snapshot-sync', async () => {
-      this.logger.log('Started daily Snapshot records sync');
-      const votes = await this.snapshotService.collectByMaxPastDays();
-      await this.notionReporterService.reportVotes(votes);
-    });
+    await this.startTask(
+      this.snapshotService,
+      'daily-Snapshot-sync',
+      async () => {
+        this.logger.log('Started daily Snapshot records sync');
+        const votes = await this.snapshotService.collectByMaxPastDays();
+        await this.notionReporterService.reportVotes(votes);
+      },
+    );
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_2AM)
   async fullSyncAragonRecords() {
-    await this.startTask('daily-Aragon-sync', async () => {
+    await this.startTask(this.aragonService, 'daily-Aragon-sync', async () => {
       this.logger.log('Started daily Aragon records sync');
       const votes = await this.aragonService.collectByMaxPastDays();
       await this.notionReporterService.reportVotes(votes);

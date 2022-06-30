@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { AragonProviderService } from './aragon.provider.service';
 import { BigNumber, Contract } from 'ethers';
-import { abi, ARAGON_VOTING_CONTRACT_ADDRESS } from './aragon.constants';
+import { abi } from './aragon.constants';
 import { EventFilter } from '@ethersproject/contracts/src.ts';
 import { aragonVoteStatus } from './aragon.helpers';
 import { VoteStatus } from '../vote.entity';
+import { AragonConfig, AragonNetworkConfig } from './aragon.config';
 
 export interface AragonVote {
   id: number;
@@ -33,21 +34,24 @@ interface StartVoteEvent {
 
 @Injectable()
 export class AragonProvider {
-  constructor(private provider: AragonProviderService) {}
+  private config: AragonNetworkConfig;
+  constructor(
+    private providerService: AragonProviderService,
+    private aragonConfig: AragonConfig,
+  ) {
+    this.config = aragonConfig.render();
+  }
 
   async getContract(address: string, abi: any): Promise<Contract> {
-    return new Contract(address, abi, this.provider);
+    return new Contract(address, abi, this.providerService);
   }
 
   async getVotingContract() {
-    return await this.getContract(
-      ARAGON_VOTING_CONTRACT_ADDRESS,
-      abi.AragonVoting,
-    );
+    return await this.getContract(this.config.votingContract, abi.AragonVoting);
   }
 
   async getBlockDate(blockNumber: number) {
-    return (await this.provider.getBlock(blockNumber)).timestamp * 1000;
+    return (await this.providerService.getBlock(blockNumber)).timestamp * 1000;
   }
 
   async getEventArgs<T extends { voteId: BigNumber }>(
