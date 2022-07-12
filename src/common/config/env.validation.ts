@@ -41,6 +41,9 @@ export class EnvironmentVariables {
   SNAPSHOT_PROPOSALS_GRAPHQL_URL: string;
 
   @IsUrl()
+  SNAPSHOT_SCORES_API: string;
+
+  @IsUrl()
   RESEARCH_FORUM_DISCOURSE_URL: string;
 
   @IsEnum(Environment)

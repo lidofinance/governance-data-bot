@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { GraphqlService } from '../../common/graphql/graphql.service';
 import { SNAPSHOT_SPACE_ID } from './snapshot.constants';
 import { ConfigService } from '../../common/config';
+import fetch from 'node-fetch';
 
 export interface GraphqlProposal {
   id: string;
@@ -12,7 +13,9 @@ export interface GraphqlProposal {
   start: number;
   end: number;
   snapshot: string;
+  strategies: { name; network; params }[];
   state: string;
+  network: string;
   author: string;
   link: string;
   scores: number[];
@@ -30,23 +33,36 @@ export class SnapshotGraphqlService extends GraphqlService {
     super();
   }
 
+  async query(url, query) {
+    this.prometheusService.externalServiceRequestsCount.inc({
+      serviceName: SnapshotGraphqlService.name,
+    });
+    return await super.query(url, query);
+  }
+
   async getActiveProposals() {
-    return this.getProposals('state: "active"');
+    const proposals = await this.getProposals('state: "active"');
+    await this.fillActualVotesAndScores(proposals);
+    return proposals;
   }
 
   async getPastProposalsByDate(date: number) {
-    return this.getProposals(`start_gt: ${date}`);
+    const proposals = await this.getProposals(`start_gt: ${date}`);
+    await this.fillActualVotesAndScores(proposals);
+    return proposals;
   }
 
   async getPastProposalsByIds(ids: string[]) {
     if (ids.length === 0) return [];
-    return this.getProposals(`id_in: ${JSON.stringify(ids)}`);
+    const proposals = await this.getProposals(`id_in: ${JSON.stringify(ids)}`);
+    await this.fillActualVotesAndScores(proposals);
+    return proposals;
   }
 
   async getProposals(whereCondition: string): Promise<GraphqlProposal[]> {
     const query = `query Proposals {
       proposals(
-        first: 20,
+        first: 100,
         skip: 0,
         where: {
           space: "${SNAPSHOT_SPACE_ID}"
@@ -62,6 +78,12 @@ export class SnapshotGraphqlService extends GraphqlService {
         start
         end
         snapshot
+        strategies {
+          name
+          network
+          params
+        }
+        network
         state
         author
         link
@@ -69,6 +91,40 @@ export class SnapshotGraphqlService extends GraphqlService {
         type
         discussion
         votes
+      }
+    }`;
+    return (
+      await this.query(
+        this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'),
+        query,
+      )
+    ).proposals;
+  }
+
+  async getActualVotes(proposalId): Promise<
+    {
+      scores: any;
+      vp;
+      choice;
+      voter;
+    }[]
+  > {
+    const query = `query Votes {
+      votes(
+        first: 10000,
+        skip: 0,
+        where: {
+          space: "${SNAPSHOT_SPACE_ID}"
+          proposal: "${proposalId}"
+        },
+        orderBy: "created",
+        orderDirection: desc
+      ) {
+          vp
+          choice
+          created
+          voter
+          vp_by_strategy
       }
     }`;
     this.prometheusService.externalServiceRequestsCount.inc({
@@ -79,6 +135,61 @@ export class SnapshotGraphqlService extends GraphqlService {
         this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'),
         query,
       )
-    ).proposals;
+    ).votes;
+  }
+
+  private async fillActualVotesAndScores(proposals: GraphqlProposal[]) {
+    for (const proposal of proposals) {
+      const votes = await this.getActualVotes(proposal.id);
+      const voters = votes.map((vote) => vote.voter);
+      const scores = await this.getScores(
+        SNAPSHOT_SPACE_ID,
+        proposal.strategies,
+        proposal.network,
+        voters,
+        parseInt(proposal.snapshot),
+      );
+      votes.map((vote: any) => {
+        vote.scores = proposal.strategies.map(
+          (strategy, i) => scores[i][vote.voter] || 0,
+        );
+      });
+      proposal.votes = votes.length;
+      proposal.scores = [];
+      votes.map((vote) => {
+        if (!proposal.scores[vote.choice - 1])
+          proposal.scores[vote.choice - 1] = 0;
+        proposal.scores[vote.choice - 1] += vote.scores.reduce(
+          (sum, current) => sum + current,
+        );
+      });
+    }
+  }
+
+  private async getScores(
+    space: string,
+    strategies: any[],
+    network: string,
+    addresses: string[],
+    snapshot: number | string = 'latest',
+  ) {
+    try {
+      const params = {
+        space,
+        network,
+        snapshot,
+        strategies,
+        addresses,
+      };
+      const res = await fetch(this.configService.get('SNAPSHOT_SCORES_API'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ params }),
+      });
+      const obj = await res.json();
+      return obj.result.scores;
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
 }
