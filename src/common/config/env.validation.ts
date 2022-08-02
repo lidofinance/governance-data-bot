@@ -8,7 +8,6 @@ import {
   Min,
   IsUrl,
   IsBooleanString,
-  IsIn,
 } from 'class-validator';
 import { Environment, LogLevel, LogFormat } from './interfaces';
 
@@ -21,7 +20,7 @@ const toNumber =
 
 export enum Network {
   mainnet = 'mainnet',
-  testnet = 'testnet',
+  goerli = 'goerli',
 }
 export type TNetwork = keyof typeof Network;
 
@@ -30,7 +29,7 @@ export class EnvironmentVariables {
   DRY_RUN: string;
 
   @IsString()
-  @IsIn(Object.keys(Network).map((k) => Network[k]))
+  @IsEnum(Network)
   NETWORK: TNetwork = Network.mainnet;
 
   @IsString()

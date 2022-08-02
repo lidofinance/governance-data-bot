@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService, Network, NetworkConfig } from '../../common/config';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type ResearchForumNetworkConfig = {};
-
 @Injectable()
 export class ResearchForumConfig {
-  constructor(protected readonly configService: ConfigService) {}
-
-  render(): ResearchForumNetworkConfig {
+  private readonly config;
+  constructor(protected readonly configService: ConfigService) {
     const networks: NetworkConfig = {
       [Network.mainnet]: {},
-      [Network.testnet]: undefined,
+      [Network.goerli]: undefined,
     };
-    return networks[this.configService.network()];
+    this.config = networks[this.configService.get('NETWORK')];
+  }
+
+  get(key: string): string {
+    return this.config[key];
   }
 }

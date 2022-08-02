@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { NetworkConfigurable } from '../../common/config';
 import { EASYTRACK_CONTRACT_ABI } from './easy-track.constants';
 import { VoteEntity, VoteSources } from '../vote.entity';
 import {
@@ -10,31 +9,27 @@ import { EasyTrackDescriptionCollector } from './easy-track-description-collecto
 import { EasyTrackEventCollector } from './easy-track-event-collector.service';
 import { EasyTrackProvider } from './easy-track.provider';
 import { formatDate } from '../governance.utils';
-import { EasyTrackConfig, EasyTrackNetworkConfig } from './easy-track.config';
+import { EasyTrackConfig } from './easy-track.config';
 
 const MAX_PAST_DAYS_MOTIONS_FETCH = 14;
 
 @Injectable()
-export class EasyTrackService implements NetworkConfigurable {
-  public config: EasyTrackNetworkConfig;
-
+export class EasyTrackService {
   constructor(
     private readonly descriptionCollector: EasyTrackDescriptionCollector,
     private readonly eventCollector: EasyTrackEventCollector,
     private readonly easyTrackProvider: EasyTrackProvider,
-    private easyTrackConfig: EasyTrackConfig,
-  ) {
-    this.config = easyTrackConfig.render();
-  }
+    private config: EasyTrackConfig,
+  ) {}
 
   private motionLink(motionId) {
-    return this.config.easyTrackBaseUrl + motionId + '/';
+    return this.config.get('easyTrackBaseUrl') + motionId + '/';
   }
 
   async collectByMaxPastDays(): Promise<VoteEntity[]> {
     // TODO motions should be fetched from events and rpc node historic data
     const contract = await this.easyTrackProvider.getContract(
-      this.config.easyTrackContract,
+      this.config.get('easyTrackContract'),
       EASYTRACK_CONTRACT_ABI,
     );
     const activeMotions = await contract.getMotions();
@@ -50,7 +45,7 @@ export class EasyTrackService implements NetworkConfigurable {
 
   async collectNewAndRefresh(refreshIds: number[]) {
     const contract = await this.easyTrackProvider.getContract(
-      this.config.easyTrackContract,
+      this.config.get('easyTrackContract'),
       EASYTRACK_CONTRACT_ABI,
     );
     const activeMotions = await contract.getMotions();

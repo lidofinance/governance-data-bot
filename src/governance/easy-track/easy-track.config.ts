@@ -1,21 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService, Network, NetworkConfig } from '../../common/config';
 
-export type EasyTrackNetworkConfig = {
-  easyTrackContract: string;
-  nodeOperatorsRegistry: string;
-  governanceToken: string;
-  stETH: string;
-  rewardProgramRegistry: string;
-  referralPartnersRegistry: string;
-  easyTrackBaseUrl: string;
-};
-
 @Injectable()
 export class EasyTrackConfig {
-  constructor(protected readonly configService: ConfigService) {}
+  private readonly config;
 
-  render(): EasyTrackNetworkConfig {
+  constructor(protected readonly configService: ConfigService) {
     const networks: NetworkConfig = {
       [Network.mainnet]: {
         easyTrackContract: '0xF0211b7660680B49De1A7E9f25C65660F0a13Fea',
@@ -26,7 +16,7 @@ export class EasyTrackConfig {
         referralPartnersRegistry: '0xfCaD241D9D2A2766979A2de208E8210eDf7b7D4F',
         easyTrackBaseUrl: 'https://easytrack.lido.fi/motions/',
       },
-      [Network.testnet]: {
+      [Network.goerli]: {
         easyTrackContract: '0xAf072C8D368E4DD4A9d4fF6A76693887d6ae92Af',
         nodeOperatorsRegistry: '0x9D4AF1Ee19Dad8857db3a45B0374c81c8A1C6320',
         governanceToken: '0x56340274fB5a72af1A3C6609061c451De7961Bd4',
@@ -36,6 +26,10 @@ export class EasyTrackConfig {
         easyTrackBaseUrl: 'https://easytrack.testnet.fi/motions/',
       },
     };
-    return networks[this.configService.network()];
+    this.config = networks[this.configService.get('NETWORK')];
+  }
+
+  get(key: string): string {
+    return this.config[key];
   }
 }

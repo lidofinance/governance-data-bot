@@ -1,31 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { NetworkConfigurable } from '../../common/config';
 import { AragonProvider, AragonVote } from './aragon.provider';
 import { VoteEntity, VoteSources } from '../vote.entity';
 import { aragonVoteStatus, formatDescription } from './aragon.helpers';
 import { utils } from 'ethers';
 import { formatDate } from '../governance.utils';
-import { AragonConfig, AragonNetworkConfig } from './aragon.config';
+import { AragonConfig } from './aragon.config';
 
 const MAX_PAST_DAYS_VOTES_FETCH = 14;
 
 @Injectable()
-export class AragonService implements NetworkConfigurable {
-  public config: AragonNetworkConfig;
-
+export class AragonService {
   constructor(
     private aragonProvider: AragonProvider,
-    private aragonConfig: AragonConfig,
-  ) {
-    this.config = aragonConfig.render();
-  }
+    private config: AragonConfig,
+  ) {}
 
   private voteLink(id: number) {
-    return this.config.votingBaseUrl + id + '/';
+    return this.config.get('votingBaseUrl') + id + '/';
   }
 
   private additionalVoteLink(id: number) {
-    return this.config.additionalVotingBaseUrl + id + '/';
+    return this.config.get('additionalVotingBaseUrl') + id + '/';
   }
 
   async collectByMaxPastDays() {

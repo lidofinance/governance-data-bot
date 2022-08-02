@@ -7,17 +7,14 @@ import {
 import { EasyTrackProvider } from './easy-track.provider';
 import { formatEther, getAddress } from 'ethers/lib/utils';
 import { Injectable } from '@nestjs/common';
-import { EasyTrackConfig, EasyTrackNetworkConfig } from './easy-track.config';
+import { EasyTrackConfig } from './easy-track.config';
 
 @Injectable()
 export class EasyTrackDescriptionCollector {
-  private config: EasyTrackNetworkConfig;
   constructor(
     private easyTrackProvider: EasyTrackProvider,
-    private easyTrackConfig: EasyTrackConfig,
-  ) {
-    this.config = easyTrackConfig.render();
-  }
+    private config: EasyTrackConfig,
+  ) {}
 
   private getLegoTokenOptions(symbol) {
     return [
@@ -27,11 +24,11 @@ export class EasyTrackDescriptionCollector {
       },
       {
         label: symbol,
-        value: this.config.governanceToken,
+        value: this.config.get('governanceToken'),
       },
       {
         label: 'stETH',
-        value: this.config.stETH,
+        value: this.config.get('stETH'),
       },
     ];
   }
@@ -114,7 +111,7 @@ export class EasyTrackDescriptionCollector {
       _rewardPrograms.map(async (address, index) => {
         const name = await this.easyTrackProvider.getProgramName(
           abi.RewardProgramRegistry,
-          this.config.rewardProgramRegistry,
+          this.config.get('rewardProgramRegistry'),
           address,
         );
         return `${name} with address ${address} with ${formatEther(
@@ -129,7 +126,7 @@ export class EasyTrackDescriptionCollector {
   private async descRewardProgramRemove(_rewardProgram) {
     const name = await this.easyTrackProvider.getProgramName(
       abi.RewardProgramRegistry,
-      this.config.rewardProgramRegistry,
+      this.config.get('rewardProgramRegistry'),
       _rewardProgram,
     );
     return `Remove reward program ${name} with address ${_rewardProgram}`;
@@ -146,7 +143,7 @@ export class EasyTrackDescriptionCollector {
       _referralPartners.map(async (address, index) => {
         const name = await this.easyTrackProvider.getProgramName(
           abi.ReferralPartnersRegistry,
-          this.config.referralPartnersRegistry,
+          this.config.get('referralPartnersRegistry'),
           address,
         );
         return `${name} with address ${address} with ${formatEther(
@@ -161,7 +158,7 @@ export class EasyTrackDescriptionCollector {
   private async descReferralPartnerRemove(_referralPartner) {
     const name = await this.easyTrackProvider.getProgramName(
       abi.ReferralPartnersRegistry,
-      this.config.referralPartnersRegistry,
+      this.config.get('referralPartnersRegistry'),
       _referralPartner,
     );
     return `Remove referral partner ${name} with address ${_referralPartner}`;

@@ -5,7 +5,7 @@ import { abi } from './aragon.constants';
 import { EventFilter } from '@ethersproject/contracts/src.ts';
 import { aragonVoteStatus } from './aragon.helpers';
 import { VoteStatus } from '../vote.entity';
-import { AragonConfig, AragonNetworkConfig } from './aragon.config';
+import { AragonConfig } from './aragon.config';
 
 export interface AragonVote {
   id: number;
@@ -34,20 +34,20 @@ interface StartVoteEvent {
 
 @Injectable()
 export class AragonProvider {
-  private config: AragonNetworkConfig;
   constructor(
     private providerService: AragonProviderService,
-    private aragonConfig: AragonConfig,
-  ) {
-    this.config = aragonConfig.render();
-  }
+    private config: AragonConfig,
+  ) {}
 
   async getContract(address: string, abi: any): Promise<Contract> {
     return new Contract(address, abi, this.providerService);
   }
 
   async getVotingContract() {
-    return await this.getContract(this.config.votingContract, abi.AragonVoting);
+    return await this.getContract(
+      this.config.get('votingContract'),
+      abi.AragonVoting,
+    );
   }
 
   async getBlockDate(blockNumber: number) {
