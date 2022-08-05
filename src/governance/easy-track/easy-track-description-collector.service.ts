@@ -1,6 +1,5 @@
 import {
   abi,
-  factoryToMotionType,
   MotionType,
   MotionTypeEvmContractAbi,
 } from './easy-track.constants';
@@ -37,7 +36,9 @@ export class EasyTrackDescriptionCollector {
     evmScriptFactory: string,
     evmScriptCallData?: string,
   ) {
-    const type = factoryToMotionType[evmScriptFactory.toLowerCase()];
+    const type = this.config.get('factoryToMotionType')[
+      evmScriptFactory.toLowerCase()
+    ];
     if (!type) return null;
     const contract = await this.easyTrackProvider.getContract(
       evmScriptFactory,

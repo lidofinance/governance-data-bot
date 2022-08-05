@@ -6,6 +6,7 @@ import { AragonProviderService } from './aragon.provider.service';
 import { AragonProvider } from './aragon.provider';
 import { PrometheusService } from '../../common/prometheus';
 import { formatDescription } from './aragon.helpers';
+import { AragonConfig } from './aragon.config';
 
 describe('Test aragon collection', () => {
   let aragonService: AragonService;
@@ -15,6 +16,7 @@ describe('Test aragon collection', () => {
       providers: [
         AragonService,
         ConfigService,
+        AragonConfig,
         AragonProviderService,
         AragonProvider,
         PrometheusService,
@@ -25,7 +27,7 @@ describe('Test aragon collection', () => {
   });
 
   it('Test aragon votes collection', async () => {
-    await aragonService.collectNewAndRefresh([120, 121]);
+    await aragonService.collectByMaxPastDays();
   }, 360000);
 });
 

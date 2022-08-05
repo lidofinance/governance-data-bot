@@ -42,19 +42,6 @@ export enum MotionType {
   ReferralPartnerTopUp = 'Top up referral partner',
 }
 
-export const factoryToMotionType = {
-  '0xfebd8fac16de88206d4b18764e826af38546afe0':
-    MotionType.NodeOperatorIncreaseLimit,
-  '0x648c8be548f43eca4e482c0801ebccccfb944931': MotionType.LEGOTopUp,
-  '0x9d15032b91d01d5c1d940eb919461426ab0dd4e3': MotionType.RewardProgramAdd,
-  '0xc21e5e72ffc223f02fc410aaede3084a63963932': MotionType.RewardProgramRemove,
-  '0x77781a93c4824d2299a38ac8bbb11eb3cd6bc3b7': MotionType.RewardProgramTopUp,
-  '0x929547490ceb6aeedd7d72f1ab8957c0210b6e51': MotionType.ReferralPartnerAdd,
-  '0xe9eb838fb3a288bf59e9275ccd7e124fdff88a9c':
-    MotionType.ReferralPartnerRemove,
-  '0x54058ee0e0c87ad813c002262cd75b98a7f59218': MotionType.ReferralPartnerTopUp,
-};
-
 export const MotionTypeEvmContractAbi = {
   [MotionType.NodeOperatorIncreaseLimit]:
     abi.EvmIncreaseNodeOperatorStakingLimit,

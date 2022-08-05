@@ -1,8 +1,10 @@
-import { factoryToMotionType } from './easy-track.constants';
 import { EasyTrackEventInfo } from './easy-track-event-collector.service';
 import { VoteStatus } from '../vote.entity';
 
-export async function getEasyTrackType(evmScriptFactory: string) {
+export async function getEasyTrackType(
+  evmScriptFactory: string,
+  factoryToMotionType,
+) {
   const name = factoryToMotionType[evmScriptFactory.toLowerCase()];
   return name ? name : 'Motion type placeholder';
 }

@@ -69,7 +69,10 @@ export class EasyTrackService {
           (Number(motion.startDate) + Number(motion.duration)) * 1000,
         ),
         executionEndDate: formatDate(eventInfo.executionEndDate),
-        type: await getEasyTrackType(motion.evmScriptFactory),
+        type: await getEasyTrackType(
+          motion.evmScriptFactory,
+          this.config.get('factoryToMotionType'),
+        ),
         description: await this.descriptionCollector.getMotionDescription(
           motion.evmScriptFactory,
           eventInfo.evmScriptCallData,
