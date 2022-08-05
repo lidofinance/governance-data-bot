@@ -18,9 +18,19 @@ const toNumber =
     return Number(value);
   };
 
+export enum Network {
+  mainnet = 'mainnet',
+  goerli = 'goerli',
+}
+export type TNetwork = keyof typeof Network;
+
 export class EnvironmentVariables {
   @IsBooleanString()
   DRY_RUN: string;
+
+  @IsString()
+  @IsEnum(Network)
+  NETWORK: TNetwork = Network.mainnet;
 
   @IsString()
   NOTION_INTEGRATION_TOKEN: string;

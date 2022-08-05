@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '../../common/logger';
-import { ConfigService } from '../../common/config';
 import { ResearchForumService } from './research-forum.service';
 import { ResearchForumProvider } from './research-forum.provider';
+import { ResearchForumConfig } from './research-forum.config';
 
 @Module({
-  imports: [LoggerModule],
+  imports: [],
   controllers: [],
   exports: [ResearchForumService],
-  providers: [ConfigService, ResearchForumService, ResearchForumProvider],
+  providers: [ResearchForumConfig, ResearchForumService, ResearchForumProvider],
 })
 export class ResearchForumModule {}

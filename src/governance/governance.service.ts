@@ -7,6 +7,7 @@ import { SnapshotService } from './snapshot/snapshot.service';
 import { VoteSources } from './vote.entity';
 import { AragonService } from './aragon/aragon.service';
 import { ResearchForumService } from './research-forum/research-forum.service';
+import { ConfigService, Network } from '../common/config';
 
 enum TaskStatus {
   passed = 'passed',
@@ -21,6 +22,7 @@ const EVERY_10_MINUTES_OFFSET_8 = '0 8-59/10 * * * *';
 export class GovernanceService {
   private readonly logger: Logger = new Logger(GovernanceService.name);
   constructor(
+    private configService: ConfigService,
     private easyTrackService: EasyTrackService,
     private snapshotService: SnapshotService,
     private aragonService: AragonService,
@@ -59,6 +61,12 @@ export class GovernanceService {
 
   @Cron(EVERY_10_MINUTES_OFFSET_3)
   async updateSnapshotRecords() {
+    if (this.configService.get('NETWORK') == Network.goerli) {
+      this.logger.warn(
+        `There is no ${Network.goerli} config for Snapshot service`,
+      );
+      return;
+    }
     await this.startTask('update-Snapshot-records', async () => {
       this.logger.log('Started updating Snapshot records');
       const records = await this.notionReporterService.getVoteRecords();
@@ -85,6 +93,12 @@ export class GovernanceService {
 
   @Cron(EVERY_10_MINUTES_OFFSET_8)
   async updateResearchForumRecords() {
+    if (this.configService.get('NETWORK') == Network.goerli) {
+      this.logger.warn(
+        `There is no ${Network.goerli} config for Research forum service`,
+      );
+      return;
+    }
     await this.startTask('update-ResearchForum-records', async () => {
       this.logger.log('Started updating Research Forum records');
       const topics = await this.researchForumService.collect();
@@ -103,6 +117,12 @@ export class GovernanceService {
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async fullSyncSnapshotRecords() {
+    if (this.configService.get('NETWORK') == Network.goerli) {
+      this.logger.warn(
+        `There is no ${Network.goerli} config for Snapshot service`,
+      );
+      return;
+    }
     await this.startTask('daily-Snapshot-sync', async () => {
       this.logger.log('Started daily Snapshot records sync');
       const votes = await this.snapshotService.collectByMaxPastDays();

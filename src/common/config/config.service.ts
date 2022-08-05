@@ -1,5 +1,9 @@
 import { ConfigService as ConfigServiceSource } from '@nestjs/config';
-import { EnvironmentVariables } from './env.validation';
+import { EnvironmentVariables, Network } from './env.validation';
+
+export type NetworkConfig = {
+  [key in Network]: any;
+};
 
 export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
   /**

@@ -18,6 +18,9 @@ import { AragonProviderService } from '../aragon/aragon.provider.service';
 import { AragonProvider } from '../aragon/aragon.provider';
 import { ResearchForumService } from '../research-forum/research-forum.service';
 import { ResearchForumProvider } from '../research-forum/research-forum.provider';
+import { AragonConfig } from '../aragon/aragon.config';
+import { SnapshotConfig } from '../snapshot/snapshot.config';
+import { EasyTrackConfig } from '../easy-track/easy-track.config';
 
 describe('Test EasyTrack notion reporting', () => {
   let notionReporterService: NotionReporterService;
@@ -33,6 +36,7 @@ describe('Test EasyTrack notion reporting', () => {
         EasyTrackProvider,
         EasyTrackDescriptionCollector,
         EasyTrackEventCollector,
+        EasyTrackConfig,
         NotionClientService,
         EasyTrackGraphqlService,
         PrometheusService,
@@ -63,6 +67,7 @@ describe('Test Snapshot notion reporting', () => {
         PrometheusService,
         SnapshotService,
         SnapshotGraphqlService,
+        SnapshotConfig,
         GraphqlService,
         ConfigService,
       ],
@@ -93,6 +98,7 @@ describe('Test Aragon notion reporting', () => {
         AragonService,
         AragonProvider,
         AragonProviderService,
+        AragonConfig,
         ConfigService,
       ],
     }).compile();

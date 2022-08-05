@@ -12,6 +12,7 @@ const MAX_PAST_DAYS_PROPOSALS_FETCH = 14;
 @Injectable()
 export class SnapshotService {
   constructor(private snapshotGraphqlService: SnapshotGraphqlService) {}
+
   async collectByMaxPastDays() {
     const date =
       (new Date().setDate(

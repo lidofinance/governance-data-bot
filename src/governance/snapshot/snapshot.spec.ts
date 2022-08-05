@@ -4,6 +4,7 @@ import { SnapshotGraphqlService } from './snapshot.graphql.service';
 import { GraphqlService } from '../../common/graphql/graphql.service';
 import { PrometheusService } from '../../common/prometheus';
 import { ConfigService } from '../../common/config';
+import { SnapshotConfig } from './snapshot.config';
 
 describe('Test snapshot collection', () => {
   let snapshotService: SnapshotService;
@@ -13,6 +14,7 @@ describe('Test snapshot collection', () => {
       providers: [
         SnapshotService,
         SnapshotGraphqlService,
+        SnapshotConfig,
         GraphqlService,
         PrometheusService,
         ConfigService,

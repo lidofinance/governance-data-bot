@@ -5,6 +5,7 @@ import { EasyTrackDescriptionCollector } from './easy-track-description-collecto
 import { EasyTrackProvider } from './easy-track.provider';
 import { EasyTrackEventCollector } from './easy-track-event-collector.service';
 import { EasyTrackGraphqlService } from './easy-track.graphql.service';
+import { EasyTrackConfig } from './easy-track.config';
 
 @Module({
   imports: [],
@@ -12,6 +13,7 @@ import { EasyTrackGraphqlService } from './easy-track.graphql.service';
   exports: [EasyTrackService],
   providers: [
     EasyTrackService,
+    EasyTrackConfig,
     EasyTrackProviderService,
     EasyTrackDescriptionCollector,
     EasyTrackEventCollector,

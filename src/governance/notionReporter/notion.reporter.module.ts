@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '../../common/logger';
 import { NotionReporterService } from './notion.reporter.service';
-import { ConfigService } from '../../common/config';
 import { NotionClientService } from './notion.client.service';
 
 @Module({
-  imports: [LoggerModule],
+  imports: [],
   controllers: [],
   exports: [NotionReporterService],
-  providers: [NotionReporterService, ConfigService, NotionClientService],
+  providers: [NotionReporterService, NotionClientService],
 })
 export class NotionReporterModule {}
