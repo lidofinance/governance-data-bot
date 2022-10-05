@@ -9,7 +9,8 @@ import {
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { SWAGGER_URL } from 'http/common/swagger';
 import { ConfigService } from 'common/config';
-import { AppModule, APP_DESCRIPTION, APP_NAME, APP_VERSION } from 'app';
+import { AppModule, APP_DESCRIPTION, APP_NAME } from 'app';
+import * as buildInfo from 'build-info';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -32,7 +33,7 @@ async function bootstrap() {
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   // sentry
-  const release = `${APP_NAME}@${APP_VERSION}`;
+  const release = `${APP_NAME}@${buildInfo.version}`;
   Sentry.init({ dsn: sentryDsn, release, environment });
 
   // cors
@@ -53,7 +54,7 @@ async function bootstrap() {
   // swagger
   const swaggerConfig = new DocumentBuilder()
     .setTitle(APP_DESCRIPTION)
-    .setVersion(APP_VERSION)
+    .setVersion(buildInfo.version)
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup(SWAGGER_URL, app, swaggerDocument);

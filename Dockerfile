@@ -3,7 +3,7 @@ FROM node:16-alpine as building
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-COPY ./tsconfig*.json ./
+COPY nest*.json ts*.json build*.json ./
 
 RUN yarn install --frozen-lockfile --non-interactive && yarn cache clean
 
@@ -16,7 +16,7 @@ WORKDIR /app
 
 COPY --from=building /app/dist ./dist
 COPY --from=building /app/node_modules ./node_modules
-COPY ./package.json ./
+COPY package.json nest*.json ts*.json ./
 
 USER node
 

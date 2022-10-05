@@ -17,7 +17,11 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      // https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping
+      "build-info": ["../build-info.json"],
+    }
   },
   "include": ["src/**/*"]
 }
