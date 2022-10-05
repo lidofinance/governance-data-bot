@@ -27,7 +27,7 @@ export class PrometheusService {
   public buildInfo = this.getOrCreateMetric('Gauge', {
     name: 'build_info',
     help: 'Build information',
-    labelNames: ['name', 'version', 'env', 'network'],
+    labelNames: ['name', 'version', 'env', 'network', 'commit', 'branch'],
   });
 
   public taskDuration = this.getOrCreateMetric('Histogram', {
