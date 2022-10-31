@@ -71,12 +71,12 @@ export class NotionReporterService {
     let updatedCount = 0;
     for (const topic of topics) {
       const properties = new NotionTopicEntity(topic).properties();
-      const topicFromPage = records[topic.link];
+      const topicFromPage = records[topic.id];
       if (topicFromPage !== undefined) {
         if (objectsAreEqual(topic, topicFromPage.topic)) continue;
         if (!this.configService.isDryRun())
           await this.notion.pages.update({
-            page_id: records[topic.link].pageId,
+            page_id: records[topic.id].pageId,
             properties: properties,
           });
         updatedCount++;
@@ -118,9 +118,9 @@ export class NotionReporterService {
     const records: LinkToTopicPage = {};
     for await (const item of this.notion.queryDatabase(this.topicsDatabaseId)) {
       if ('properties' in item) {
-        const link =
-          item.properties.Link.type === 'url' && item.properties.Link.url;
-        records[link] = {
+        const id =
+          item.properties.ID.type === 'number' && item.properties.ID.number;
+        records[id] = {
           pageId: item.id,
           topic: topicFromNotionProperties(item.properties),
         };

@@ -12,6 +12,7 @@ export class ResearchForumService {
     const topicEntities: TopicEntity[] = [];
     for (const topic of forumTopics) {
       topicEntities.push({
+        id: topic.id,
         name: topic.title,
         link: new URL(
           `/t/${topic.slug}/${topic.id}/`,
