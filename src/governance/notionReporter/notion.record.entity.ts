@@ -84,6 +84,7 @@ export class NotionVoteEntity {
 
 export class NotionTopicEntity {
   public static readonly propertiesNames = <const>[
+    'ID',
     'Name',
     'Link',
     'Creation Date',
@@ -96,6 +97,7 @@ export class NotionTopicEntity {
     [key in typeof NotionTopicEntity.propertiesNames[number]];
   } {
     return {
+      ID: NotionTypes.number(this.topic.id),
       Name: NotionTypes.title(this.topic.name),
       Link: NotionTypes.link(this.topic.link),
       'Creation Date': NotionTypes.date(this.topic.creationDate),
@@ -139,6 +141,7 @@ export function topicFromNotionProperties(properties): TopicEntity {
   if (!isValidProperties(NotionTopicEntity.propertiesNames, properties))
     throw Error('Notion page has invalid properties');
   return {
+    id: properties.ID.number,
     name: properties.Name.title[0].plain_text,
     link: properties.Link.url,
     creationDate: formatDate(properties['Creation Date'].date.start),
