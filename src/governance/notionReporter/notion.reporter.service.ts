@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '../../common/config';
 import { VoteEntity } from '../vote.entity';
 import {
+  isValidProperties,
   NotionTopicEntity,
   NotionVoteEntity,
   topicFromNotionProperties,
@@ -99,6 +100,16 @@ export class NotionReporterService {
     const records: SourceAndNameToVotePage = {};
     for await (const item of this.notion.queryDatabase(this.votesDatabaseId)) {
       if ('properties' in item) {
+        if (
+          !isValidProperties(NotionVoteEntity.propertiesNames, item.properties)
+        ) {
+          if (this.configService.isDryRun()) return records;
+          await this.updateProperties(
+            this.votesDatabaseId,
+            NotionVoteEntity.schema(),
+          );
+          this.logger.debug('Vote properties updating');
+        }
         const source =
           item.properties.Source.type === 'select' &&
           item.properties.Source.select.name;
@@ -118,6 +129,16 @@ export class NotionReporterService {
     const records: LinkToTopicPage = {};
     for await (const item of this.notion.queryDatabase(this.topicsDatabaseId)) {
       if ('properties' in item) {
+        if (
+          !isValidProperties(NotionTopicEntity.propertiesNames, item.properties)
+        ) {
+          this.logger.debug('Topic properties updating');
+          if (this.configService.isDryRun()) return records;
+          await this.updateProperties(
+            this.topicsDatabaseId,
+            NotionTopicEntity.schema(),
+          );
+        }
         const id =
           item.properties.ID.type === 'number' && item.properties.ID.number;
         records[id] = {
@@ -127,5 +148,12 @@ export class NotionReporterService {
       }
     }
     return records;
+  }
+
+  async updateProperties(databaseId, schema): Promise<void> {
+    await this.notion.databases.update({
+      database_id: databaseId,
+      properties: schema,
+    });
   }
 }
