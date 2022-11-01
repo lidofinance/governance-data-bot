@@ -49,8 +49,9 @@ export class NotionTypes {
   };
 }
 
-class NotionEntity {
+export class NotionEntity {
   public static readonly propertiesNames;
+  constructor(private _: any) {}
   public static schema() {
     return Object.fromEntries(
       Object.keys(this.propertiesNames).map((key) => [
@@ -58,6 +59,9 @@ class NotionEntity {
         this.propertiesNames[key].schema,
       ]),
     );
+  }
+  properties() {
+    return {};
   }
 }
 
@@ -83,7 +87,7 @@ export class NotionVoteEntity extends NotionEntity {
     'Voters number': NotionTypes.number,
   };
   constructor(private vote: VoteEntity) {
-    super();
+    super(vote);
   }
 
   properties() {
@@ -139,7 +143,7 @@ export class NotionTopicEntity extends NotionEntity {
   };
 
   constructor(private topic: TopicEntity) {
-    super();
+    super(topic);
   }
 
   properties() {
