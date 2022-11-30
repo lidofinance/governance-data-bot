@@ -39,7 +39,7 @@ export class EasyTrackDescriptionCollector {
     const type = this.config.get('factoryToMotionType')[
       evmScriptFactory.toLowerCase()
     ];
-    if (!type) return null;
+    if (!type) return '';
     const contract = await this.easyTrackProvider.getContract(
       evmScriptFactory,
       MotionTypeEvmContractAbi[type],
