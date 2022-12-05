@@ -1,7 +1,7 @@
 import { EasyTrackProvider } from './easy-track.provider';
 import { MotionCreatedEventArgs } from './easy-track.constants';
 import { Injectable } from '@nestjs/common';
-import { EasyTrackProviderService } from './easy-track.provider.service';
+import { SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
 
 export interface EasyTrackEventInfo {
   creator: string;
@@ -17,7 +17,7 @@ export interface EasyTrackEventInfo {
 @Injectable()
 export class EasyTrackEventCollector {
   constructor(
-    private providerService: EasyTrackProviderService,
+    private providerService: SimpleFallbackJsonRpcBatchProvider,
     private easyTrackProvider: EasyTrackProvider,
   ) {}
 

@@ -1,26 +1,26 @@
 import { Test } from '@nestjs/testing';
-import { ConfigService } from '../../common/config';
+import { ConfigModule } from '../../common/config';
 import { AragonService } from './aragon.service';
 import { Logger } from '@nestjs/common';
-import { AragonProviderService } from './aragon.provider.service';
-import { AragonProvider } from './aragon.provider';
-import { PrometheusService } from '../../common/prometheus';
+import { PrometheusModule } from '../../common/prometheus';
 import { formatDescription } from './aragon.helpers';
-import { AragonConfig } from './aragon.config';
+import { ExecutionProviderModule } from '../../common/execution-provider';
+import { LoggerModule } from '../../common/logger';
+import { AragonModule } from './aragon.module';
 
 describe('Test aragon collection', () => {
   let aragonService: AragonService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        AragonService,
-        ConfigService,
-        AragonConfig,
-        AragonProviderService,
-        AragonProvider,
-        PrometheusService,
+      imports: [
+        ExecutionProviderModule,
+        ConfigModule,
+        PrometheusModule,
+        LoggerModule,
+        AragonModule,
       ],
+      providers: [],
     }).compile();
     moduleRef.useLogger(new Logger());
     aragonService = moduleRef.get<AragonService>(AragonService);

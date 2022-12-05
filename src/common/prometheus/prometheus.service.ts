@@ -48,4 +48,11 @@ export class PrometheusService {
     help: 'Requests count to some external services',
     labelNames: ['serviceName'],
   });
+
+  public elRpcRequestDuration = this.getOrCreateMetric('Histogram', {
+    name: 'el_rpc_requests_duration_seconds',
+    help: 'EL RPC request duration',
+    buckets: [0.1, 0.2, 0.3, 0.6, 1, 1.5, 2, 5],
+    labelNames: ['result'],
+  });
 }

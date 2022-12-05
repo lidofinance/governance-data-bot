@@ -1,5 +1,6 @@
 import { ConfigService as ConfigServiceSource } from '@nestjs/config';
 import { EnvironmentVariables, Network } from './env.validation';
+import { CHAINS } from '@lido-nestjs/constants';
 
 export type NetworkConfig = {
   [key in Network]: any;
@@ -23,5 +24,14 @@ export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
 
   public isDryRun() {
     return this.get('DRY_RUN') === 'true';
+  }
+
+  public chainId() {
+    switch (this.get('NETWORK')) {
+      case 'mainnet':
+        return CHAINS.Mainnet;
+      case 'goerli':
+        return CHAINS.Goerli;
+    }
   }
 }
