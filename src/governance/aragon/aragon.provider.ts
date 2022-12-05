@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { AragonProviderService } from './aragon.provider.service';
 import { BigNumber, Contract } from 'ethers';
 import { abi } from './aragon.constants';
 import { EventFilter } from '@ethersproject/contracts/src.ts';
 import { aragonVoteStatus } from './aragon.helpers';
 import { VoteStatus } from '../vote.entity';
 import { AragonConfig } from './aragon.config';
+import { SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
 
 export interface AragonVote {
   id: number;
@@ -35,7 +35,7 @@ interface StartVoteEvent {
 @Injectable()
 export class AragonProvider {
   constructor(
-    private providerService: AragonProviderService,
+    private providerService: SimpleFallbackJsonRpcBatchProvider,
     private config: AragonConfig,
   ) {}
 

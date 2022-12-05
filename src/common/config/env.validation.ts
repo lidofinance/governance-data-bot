@@ -8,6 +8,8 @@ import {
   Min,
   IsUrl,
   IsBooleanString,
+  IsArray,
+  ArrayMinSize,
 } from 'class-validator';
 import { Environment, LogLevel, LogFormat } from './interfaces';
 
@@ -41,8 +43,10 @@ export class EnvironmentVariables {
   @IsString()
   NOTION_TOPICS_DATABASE_ID: string;
 
-  @IsUrl()
-  ETH_RPC_URL: string;
+  @IsArray()
+  @ArrayMinSize(1)
+  @Transform(({ value }) => value.split(','))
+  EL_RPC_URLS!: string[];
 
   @IsUrl()
   EASYTRACK_MOTIONS_GRAPHQL_URL: string;
