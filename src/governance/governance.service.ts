@@ -116,7 +116,7 @@ export class GovernanceService {
       this.logger.log('Started daily EasyTrack records sync');
       const votes = await this.easyTrackService.collectByMaxPastDays();
       await this.notionReporterService.reportVotes(votes);
-      this.logger.log('EasyTrack records are synced');
+      this.logger.log('Daily EasyTrack records sync is done');
     });
   }
 
@@ -132,7 +132,7 @@ export class GovernanceService {
       this.logger.log('Started daily Snapshot records sync');
       const votes = await this.snapshotService.collectByMaxPastDays();
       await this.notionReporterService.reportVotes(votes);
-      this.logger.log('Snapshot records are synced');
+      this.logger.log('Daily Snapshot records sync is done');
     });
   }
 
@@ -142,7 +142,7 @@ export class GovernanceService {
       this.logger.log('Started daily Aragon records sync');
       const votes = await this.aragonService.collectByMaxPastDays();
       await this.notionReporterService.reportVotes(votes);
-      this.logger.log('Aragon records are synced');
+      this.logger.log('Daily Aragon records sync is done');
     });
   }
 }
