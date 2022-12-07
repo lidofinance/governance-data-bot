@@ -27,7 +27,7 @@ interface LinkToTopicPage {
 export class NotionReporterService {
   private readonly votesDatabaseId: string;
   private readonly topicsDatabaseId: string;
-  private readonly logger = new Logger(NotionReporterService.name);
+  private readonly logger;
 
   constructor(
     protected readonly configService: ConfigService,
@@ -35,6 +35,10 @@ export class NotionReporterService {
   ) {
     this.votesDatabaseId = configService.get('NOTION_VOTES_DATABASE_ID');
     this.topicsDatabaseId = configService.get('NOTION_TOPICS_DATABASE_ID');
+    this.logger = new Logger(
+      (this.configService.isDryRun() ? 'DryRun' : '') +
+        NotionReporterService.name,
+    );
   }
 
   async reportVotes(votes: VoteEntity[]) {
@@ -62,8 +66,7 @@ export class NotionReporterService {
       }
     }
     this.logger.log(
-      `${this.configService.isDryRun() ? '[Dry Run] ' : ''}` +
-        `Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
+      `Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
     );
   }
 
@@ -92,8 +95,7 @@ export class NotionReporterService {
       }
     }
     this.logger.log(
-      `${this.configService.isDryRun() ? '[Dry Run] ' : ''}` +
-        `Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
+      `Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
     );
   }
 
@@ -156,10 +158,7 @@ export class NotionReporterService {
           database_id: databaseId,
           properties: entity.schema(),
         });
-      this.logger.log(
-        `${this.configService.isDryRun() ? '[Dry Run] ' : ''}` +
-          `Updated ${entity.name} database schema`,
-      );
+      this.logger.log(`Updated ${entity.name} database schema`);
       return true;
     }
     return false;

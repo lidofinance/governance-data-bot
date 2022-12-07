@@ -56,6 +56,7 @@ export class GovernanceService {
         .map((value) => Number(value.vote.name.replace('#', '')));
       const votes = await this.easyTrackService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
+      this.logger.log('EasyTrack records are up to date');
     });
   }
 
@@ -75,6 +76,7 @@ export class GovernanceService {
         .map((value) => value.vote.link.split('/').slice(-1)[0]);
       const votes = await this.snapshotService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
+      this.logger.log('Snapshot records are up to date');
     });
   }
 
@@ -88,6 +90,7 @@ export class GovernanceService {
         .map((value) => Number(value.vote.name.replace('#', '')));
       const votes = await this.aragonService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
+      this.logger.log('Aragon records are up to date');
     });
   }
 
@@ -103,6 +106,7 @@ export class GovernanceService {
       this.logger.log('Started updating Research Forum records');
       const topics = await this.researchForumService.collect();
       await this.notionReporterService.reportTopics(topics);
+      this.logger.log('Research Forum records are up to date');
     });
   }
 
@@ -112,6 +116,7 @@ export class GovernanceService {
       this.logger.log('Started daily EasyTrack records sync');
       const votes = await this.easyTrackService.collectByMaxPastDays();
       await this.notionReporterService.reportVotes(votes);
+      this.logger.log('EasyTrack records are synced');
     });
   }
 
@@ -127,6 +132,7 @@ export class GovernanceService {
       this.logger.log('Started daily Snapshot records sync');
       const votes = await this.snapshotService.collectByMaxPastDays();
       await this.notionReporterService.reportVotes(votes);
+      this.logger.log('Snapshot records are synced');
     });
   }
 
@@ -136,6 +142,7 @@ export class GovernanceService {
       this.logger.log('Started daily Aragon records sync');
       const votes = await this.aragonService.collectByMaxPastDays();
       await this.notionReporterService.reportVotes(votes);
+      this.logger.log('Aragon records are synced');
     });
   }
 }
