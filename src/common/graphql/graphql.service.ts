@@ -13,9 +13,7 @@ export class GraphqlService {
     });
     if (!resp.ok)
       throw new Error(
-        `Request ${resp.url} failed with ${
-          resp.status
-        } error: ${await resp.text()}`,
+        `Request failed with ${resp.status} error: ${await resp.text()}`,
       );
     const respData = await resp.json();
     return respData.data;
