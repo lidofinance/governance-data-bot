@@ -3,14 +3,14 @@ import { abi } from './easy-track.constants';
 import { filterArgs } from './easy-track.helpers';
 import { formatEther } from 'ethers/lib/utils';
 import { Injectable } from '@nestjs/common';
-import { EasyTrackProviderService } from './easy-track.provider.service';
 import { EasyTrackGraphqlService } from './easy-track.graphql.service';
 import { EasyTrackConfig } from './easy-track.config';
+import { SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
 
 @Injectable()
 export class EasyTrackProvider {
   constructor(
-    private provider: EasyTrackProviderService,
+    private provider: SimpleFallbackJsonRpcBatchProvider,
     private easyTrackGraphqlService: EasyTrackGraphqlService,
     private config: EasyTrackConfig,
   ) {}

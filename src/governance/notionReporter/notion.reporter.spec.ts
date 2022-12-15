@@ -1,26 +1,19 @@
 import { Test } from '@nestjs/testing';
-import { ConfigService } from '../../common/config';
+import { ConfigModule } from '../../common/config';
 import { NotionReporterService } from './notion.reporter.service';
 import { EasyTrackService } from '../easy-track/easy-track.service';
-import { NotionClientService } from './notion.client.service';
-import { PrometheusService } from '../../common/prometheus';
-import { EasyTrackProviderService } from '../easy-track/easy-track.provider.service';
-import { EasyTrackDescriptionCollector } from '../easy-track/easy-track-description-collector.service';
-import { EasyTrackEventCollector } from '../easy-track/easy-track-event-collector.service';
-import { EasyTrackProvider } from '../easy-track/easy-track.provider';
-import { EasyTrackGraphqlService } from '../easy-track/easy-track.graphql.service';
+import { PrometheusModule } from '../../common/prometheus';
 import { SnapshotService } from '../snapshot/snapshot.service';
-import { SnapshotGraphqlService } from '../snapshot/snapshot.graphql.service';
-import { GraphqlService } from '../../common/graphql/graphql.service';
 import { Logger } from '@nestjs/common';
 import { AragonService } from '../aragon/aragon.service';
-import { AragonProviderService } from '../aragon/aragon.provider.service';
-import { AragonProvider } from '../aragon/aragon.provider';
 import { ResearchForumService } from '../research-forum/research-forum.service';
-import { ResearchForumProvider } from '../research-forum/research-forum.provider';
-import { AragonConfig } from '../aragon/aragon.config';
-import { SnapshotConfig } from '../snapshot/snapshot.config';
-import { EasyTrackConfig } from '../easy-track/easy-track.config';
+import { ExecutionProviderModule } from '../../common/execution-provider';
+import { LoggerModule } from '../../common/logger';
+import { EasyTrackModule } from '../easy-track/easy-track.module';
+import { NotionReporterModule } from './notion.reporter.module';
+import { SnapshotModule } from '../snapshot/snapshot.module';
+import { AragonModule } from '../aragon/aragon.module';
+import { ResearchForumModule } from '../research-forum/research-forum.module';
 
 describe('Test EasyTrack notion reporting', () => {
   let notionReporterService: NotionReporterService;
@@ -28,19 +21,15 @@ describe('Test EasyTrack notion reporting', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        NotionReporterService,
-        ConfigService,
-        EasyTrackService,
-        EasyTrackProviderService,
-        EasyTrackProvider,
-        EasyTrackDescriptionCollector,
-        EasyTrackEventCollector,
-        EasyTrackConfig,
-        NotionClientService,
-        EasyTrackGraphqlService,
-        PrometheusService,
+      imports: [
+        ExecutionProviderModule,
+        ConfigModule,
+        PrometheusModule,
+        LoggerModule,
+        EasyTrackModule,
+        NotionReporterModule,
       ],
+      providers: [],
     }).compile();
     moduleRef.useLogger(new Logger());
     notionReporterService = moduleRef.get<NotionReporterService>(
@@ -61,16 +50,15 @@ describe('Test Snapshot notion reporting', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        NotionReporterService,
-        NotionClientService,
-        PrometheusService,
-        SnapshotService,
-        SnapshotGraphqlService,
-        SnapshotConfig,
-        GraphqlService,
-        ConfigService,
+      imports: [
+        ExecutionProviderModule,
+        ConfigModule,
+        PrometheusModule,
+        LoggerModule,
+        SnapshotModule,
+        NotionReporterModule,
       ],
+      providers: [],
     }).compile();
     moduleRef.useLogger(new Logger());
     notionReporterService = moduleRef.get<NotionReporterService>(
@@ -91,16 +79,15 @@ describe('Test Aragon notion reporting', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        NotionReporterService,
-        NotionClientService,
-        PrometheusService,
-        AragonService,
-        AragonProvider,
-        AragonProviderService,
-        AragonConfig,
-        ConfigService,
+      imports: [
+        ExecutionProviderModule,
+        ConfigModule,
+        PrometheusModule,
+        LoggerModule,
+        AragonModule,
+        NotionReporterModule,
       ],
+      providers: [],
     }).compile();
     moduleRef.useLogger(new Logger());
     notionReporterService = moduleRef.get<NotionReporterService>(
@@ -122,14 +109,15 @@ describe('Test Research forum notion reporting', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        NotionReporterService,
-        NotionClientService,
-        PrometheusService,
-        ConfigService,
-        ResearchForumService,
-        ResearchForumProvider,
+      imports: [
+        ExecutionProviderModule,
+        ConfigModule,
+        PrometheusModule,
+        LoggerModule,
+        ResearchForumModule,
+        NotionReporterModule,
       ],
+      providers: [],
     }).compile();
     moduleRef.useLogger(new Logger());
     notionReporterService = moduleRef.get<NotionReporterService>(

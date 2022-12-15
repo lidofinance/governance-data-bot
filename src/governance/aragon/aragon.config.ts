@@ -17,7 +17,7 @@ export class AragonConfig {
         votingContract: '0xbc0b67b4553f4cf52a913de9a6ed0057e2e758db',
         votingBaseUrl:
           'https://testnet.lido.fi/#/lido-testnet-prater/0xbc0b67b4553f4cf52a913de9a6ed0057e2e758db/vote/',
-        additionalVotingBaseUrl: 'https://vote.testnet.fi/vote',
+        additionalVotingBaseUrl: 'https://vote.testnet.fi/vote/',
       },
     };
     this.config = networks[this.configService.get('NETWORK')];

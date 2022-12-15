@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '../../common/config';
 import { VoteEntity } from '../vote.entity';
 import {
+  isValidProperties,
+  NotionEntity,
   NotionTopicEntity,
   NotionVoteEntity,
   topicFromNotionProperties,
@@ -25,7 +27,7 @@ interface LinkToTopicPage {
 export class NotionReporterService {
   private readonly votesDatabaseId: string;
   private readonly topicsDatabaseId: string;
-  private readonly logger = new Logger(NotionReporterService.name);
+  private readonly logger;
 
   constructor(
     protected readonly configService: ConfigService,
@@ -33,6 +35,10 @@ export class NotionReporterService {
   ) {
     this.votesDatabaseId = configService.get('NOTION_VOTES_DATABASE_ID');
     this.topicsDatabaseId = configService.get('NOTION_TOPICS_DATABASE_ID');
+    this.logger = new Logger(
+      (this.configService.isDryRun() ? 'DryRun' : '') +
+        NotionReporterService.name,
+    );
   }
 
   async reportVotes(votes: VoteEntity[]) {
@@ -60,8 +66,7 @@ export class NotionReporterService {
       }
     }
     this.logger.log(
-      `${this.configService.isDryRun() ? '[Dry Run] ' : ''}` +
-        `Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
+      `Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
     );
   }
 
@@ -90,21 +95,26 @@ export class NotionReporterService {
       }
     }
     this.logger.log(
-      `${this.configService.isDryRun() ? '[Dry Run] ' : ''}` +
-        `Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
+      `Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
     );
   }
 
   async getVoteRecords(): Promise<SourceAndNameToVotePage> {
     const records: SourceAndNameToVotePage = {};
+    const synced = await this.syncDatabaseSchema(
+      this.votesDatabaseId,
+      NotionVoteEntity,
+    );
+    if (synced && this.configService.isDryRun()) return records;
     for await (const item of this.notion.queryDatabase(this.votesDatabaseId)) {
       if ('properties' in item) {
         const source =
           item.properties.Source.type === 'select' &&
-          item.properties.Source.select.name;
+          item.properties.Source.select?.name;
         const name =
           item.properties.Name.type === 'title' &&
-          item.properties.Name.title[0].plain_text;
+          item.properties.Name.title[0]?.plain_text;
+        if (!source || !name) continue;
         records[`${source}|${name}`] = {
           pageId: item.id,
           vote: voteFromNotionProperties(item.properties),
@@ -116,10 +126,16 @@ export class NotionReporterService {
 
   async getTopicRecords(): Promise<LinkToTopicPage> {
     const records: LinkToTopicPage = {};
+    const synced = await this.syncDatabaseSchema(
+      this.topicsDatabaseId,
+      NotionTopicEntity,
+    );
+    if (synced && this.configService.isDryRun()) return records;
     for await (const item of this.notion.queryDatabase(this.topicsDatabaseId)) {
       if ('properties' in item) {
         const id =
-          item.properties.ID.type === 'number' && item.properties.ID.number;
+          item.properties.ID?.type === 'number' && item.properties.ID.number;
+        if (!id) continue;
         records[id] = {
           pageId: item.id,
           topic: topicFromNotionProperties(item.properties),
@@ -127,5 +143,24 @@ export class NotionReporterService {
       }
     }
     return records;
+  }
+
+  async syncDatabaseSchema(
+    databaseId,
+    entity: typeof NotionEntity,
+  ): Promise<boolean> {
+    const database = await this.notion.databases.retrieve({
+      database_id: databaseId,
+    });
+    if (!isValidProperties(entity.propertiesNames, database.properties)) {
+      if (!this.configService.isDryRun())
+        await this.notion.databases.update({
+          database_id: databaseId,
+          properties: entity.schema(),
+        });
+      this.logger.log(`Updated ${entity.name} database schema`);
+      return true;
+    }
+    return false;
   }
 }

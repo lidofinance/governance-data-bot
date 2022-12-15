@@ -33,7 +33,7 @@ export class PrometheusService {
   public taskDuration = this.getOrCreateMetric('Histogram', {
     name: 'task_duration_seconds',
     help: 'Duration of task execution',
-    buckets: [30, 60, 90, 120, 150, 180, 210, 300, 400],
+    buckets: [2, 5, 10, 30, 60, 120, 240, 400],
     labelNames: ['name'],
   });
 
@@ -47,5 +47,12 @@ export class PrometheusService {
     name: 'external_service_requests_count',
     help: 'Requests count to some external services',
     labelNames: ['serviceName'],
+  });
+
+  public elRpcRequestDuration = this.getOrCreateMetric('Histogram', {
+    name: 'el_rpc_requests_duration_seconds',
+    help: 'EL RPC request duration',
+    buckets: [0.1, 0.2, 0.3, 0.6, 1, 1.5, 2, 5],
+    labelNames: ['result'],
   });
 }

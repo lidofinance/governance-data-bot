@@ -66,9 +66,7 @@ export class ResearchForumProvider {
     });
     if (!resp.ok)
       throw new Error(
-        `Request ${resp.url} failed with ${
-          resp.status
-        } error: ${await resp.text()}`,
+        `Request failed with ${resp.status} error: ${await resp.text()}`,
       );
     return (await resp.json()) as T;
   }
