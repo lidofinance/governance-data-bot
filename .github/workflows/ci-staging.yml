@@ -25,5 +25,5 @@ jobs:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           TARGET_REPO: "lidofinance/infra-mainnet"
-          TARGET_WORKFLOW: "//target_workflow//"
+          TARGET_WORKFLOW: "deploy_staging_mainnet_governance_data_bot.yaml"
           TARGET: "main"

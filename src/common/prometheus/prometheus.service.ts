@@ -33,7 +33,7 @@ export class PrometheusService {
   public taskDuration = this.getOrCreateMetric('Histogram', {
     name: 'task_duration_seconds',
     help: 'Duration of task execution',
-    buckets: [30, 60, 90, 120, 150, 180, 210, 300, 400],
+    buckets: [2, 5, 10, 30, 60, 120, 240, 400],
     labelNames: ['name'],
   });
 
