@@ -110,10 +110,34 @@ export class SnapshotGraphqlService extends GraphqlService {
       voter;
     }[]
   > {
+    const finalVotes = [];
+    let votes = [];
+    const first = 1000;
+    let skip = 0;
+    do {
+      votes = await this.votesQuery(proposalId, first, skip);
+      finalVotes.push(...votes);
+      skip += first;
+    } while (votes.length >= first);
+    return finalVotes;
+  }
+
+  async votesQuery(
+    proposalId,
+    first = 1000,
+    skip = 0,
+  ): Promise<
+    {
+      scores: any;
+      vp;
+      choice;
+      voter;
+    }[]
+  > {
     const query = `query Votes {
       votes(
-        first: 10000,
-        skip: 0,
+        first: ${first},
+        skip: ${skip},
         where: {
           space: "${this.config.get('snapshotSpaceId')}"
           proposal: "${proposalId}"
