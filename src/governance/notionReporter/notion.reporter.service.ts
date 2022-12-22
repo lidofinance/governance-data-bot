@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '../../common/config';
-import { VoteEntity } from '../vote.entity';
+import { VoteEntity, VoteEntityIgnoredFields } from '../vote.entity';
 import {
   isValidProperties,
   NotionEntity,
@@ -49,7 +49,8 @@ export class NotionReporterService {
       const properties = new NotionVoteEntity(vote).properties();
       const voteFromPage = records[`${vote.source}|${vote.name}`];
       if (voteFromPage !== undefined) {
-        if (objectsAreEqual(vote, voteFromPage.vote)) continue;
+        if (objectsAreEqual(vote, voteFromPage.vote, VoteEntityIgnoredFields))
+          continue;
         if (!this.configService.isDryRun())
           await this.notion.pages.update({
             page_id: records[`${vote.source}|${vote.name}`].pageId,
