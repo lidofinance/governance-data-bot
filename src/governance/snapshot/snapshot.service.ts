@@ -18,6 +18,8 @@ import { ConfigService } from '../../common/config';
 const MAX_PAST_DAYS_PROPOSALS_FETCH = 14;
 const VOTE_STARTED_TITLE = '## Snapshot vote started\n';
 const VOTE_ENDED_TITLE = '## Snapshot vote ended\n';
+const LDO_TOTAL_SUPPLY = 100e7;
+const LDO_5_PERCENT_QUORUM = 0.05 * LDO_TOTAL_SUPPLY;
 
 @Injectable()
 export class SnapshotService {
@@ -85,9 +87,14 @@ export class SnapshotService {
     );
   }
 
-  hasQuorumReached(vote: VoteEntity): boolean {
+  hasQuorum(vote: VoteEntity): boolean {
     const percent =
-      Math.round(5e7 - vote.result1 - vote.result2 - (vote.result3 ?? 0)) /
+      Math.round(
+        LDO_5_PERCENT_QUORUM -
+          vote.result1 -
+          vote.result2 -
+          (vote.result3 ?? 0),
+      ) /
       1e5 /
       10000;
     return percent < 0;
@@ -108,7 +115,7 @@ export class SnapshotService {
       return (
         previousVote.status == VoteStatus.active &&
         currentVote.status == VoteStatus.closed &&
-        !this.hasQuorumReached(currentVote)
+        !this.hasQuorum(currentVote)
       );
     };
     const activeToSuccess = () => {
@@ -194,7 +201,7 @@ export class SnapshotService {
     const options = [
       `The [${vote.name}](${vote.link}) Snapshot has passed! 🥳`,
       `The [${vote.name}](${vote.link}) Snapshot has reached a quorum and completed successfully!`,
-      `Thank you all who participated in [${vote.name}](${vote.link}) Snapshot, the proposal passed! 🙏`,
+      `Thank you all who participated in the [${vote.name}](${vote.link}) Snapshot, the proposal passed! 🙏`,
     ];
     return (
       VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote)

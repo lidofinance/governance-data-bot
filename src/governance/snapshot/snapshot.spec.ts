@@ -225,6 +225,6 @@ describe('Test snapshot messages', () => {
         '0x8bbd48f0e77b8035ed5c249a2716ea950d5196c121d972eb73fc44adfa664718',
       ]),
     );
-    expect(snapshotService.hasQuorumReached(votes[0])).toBeFalsy();
+    expect(snapshotService.hasQuorum(votes[0])).toBeFalsy();
   });
 });

@@ -81,17 +81,19 @@ export class GovernanceService {
       );
       const votes = await this.snapshotService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
-      for (const vote of votes) {
-        const message = await this.snapshotService.getChangesMessage(
-          previousVotes,
-          vote,
-        );
-        if (message)
-          await this.researchForumService.notifySnapshotVoteChange(
-            message,
+      await Promise.all(
+        votes.map(async (vote) => {
+          const message = await this.snapshotService.getChangesMessage(
+            previousVotes,
             vote,
           );
-      }
+          if (message)
+            await this.researchForumService.notifySnapshotVoteChange(
+              message,
+              vote,
+            );
+        }),
+      );
       this.logger.log('Snapshot records are up to date');
     });
   }

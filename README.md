@@ -1,7 +1,7 @@
 ## Governance data bot
 
 ## Description
-This bot collect some governance info and report it to the notion tables.
+This bot collects some governance info and reports it to the notion tables.
 
 - [x] EasyTrack motions
 - [x] Snapshot voting
