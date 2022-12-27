@@ -1,12 +1,22 @@
 ## Governance data bot
 
 ## Description
-This bot collect some governance info and report it to notion tables.
+This bot collects some governance info and reports it to the notion tables.
 
 - [x] EasyTrack motions
 - [x] Snapshot voting
 - [x] Aragon voting
 - [x] Research forum posts
+
+
+## Snapshot votings status posted to the research forum
+- post a message about starting/ending voting to the corresponding research forum topic
+- message vibe depends on what exactly has changed in voting
+- choices like `yay` or `for` counted as a positive vote result and vice versa.
+  Configured via `SNAPSHOT_SUCCESS_CHOICES` and `SNAPSHOT_AGAINST_CHOICES`
+- in the other choices message will be neutral
+- the bot will NOT send posts for the stale voting
+- to avoid possible bot crazy posting, we check for duplicates by the first message line (title like "Voting started")
 
 ## Installation
 

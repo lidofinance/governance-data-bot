@@ -57,8 +57,18 @@ export class EnvironmentVariables {
   @IsUrl()
   SNAPSHOT_SCORES_API: string;
 
+  @IsString()
+  SNAPSHOT_SUCCESS_CHOICES: string;
+
+  @IsString()
+  SNAPSHOT_AGAINST_CHOICES: string;
+
   @IsUrl()
   RESEARCH_FORUM_DISCOURSE_URL: string;
+
+  @IsOptional()
+  @IsString()
+  RESEARCH_FORUM_API_TOKEN: string | undefined;
 
   @IsEnum(Environment)
   NODE_ENV: Environment = Environment.development;

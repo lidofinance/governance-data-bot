@@ -1,4 +1,5 @@
-import { APP_NAME } from 'app/app.constants';
-
 export const METRICS_URL = 'metrics';
-export const METRICS_PREFIX = `${APP_NAME.replace(/-|\ /g, '_')}_`;
+export const METRICS_PREFIX = `${process.env.npm_package_name?.replace(
+  /-|\ /g,
+  '_',
+)}_`;
