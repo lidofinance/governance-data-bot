@@ -8,6 +8,7 @@ import { VoteSources } from './vote.entity';
 import { AragonService } from './aragon/aragon.service';
 import { ResearchForumService } from './research-forum/research-forum.service';
 import { ConfigService, Network } from '../common/config';
+import { voteFromNotionProperties } from './notionReporter/notion.record.entity';
 
 enum TaskStatus {
   passed = 'passed',
@@ -52,8 +53,9 @@ export class GovernanceService {
       this.logger.log('Started updating EasyTrack records');
       const records = await this.notionReporterService.getVoteRecords();
       const ids = Object.values(records)
-        .filter((value) => value.vote.source === VoteSources.easyTrack)
-        .map((value) => Number(value.vote.name.replace('#', '')));
+        .map(voteFromNotionProperties)
+        .filter((value) => value.source === VoteSources.easyTrack)
+        .map((value) => Number(value.name.replace('#', '')));
       const votes = await this.easyTrackService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
       this.logger.log('EasyTrack records are up to date');
@@ -71,11 +73,27 @@ export class GovernanceService {
     await this.startTask('update-Snapshot-records', async () => {
       this.logger.log('Started updating Snapshot records');
       const records = await this.notionReporterService.getVoteRecords();
-      const ids = Object.values(records)
-        .filter((value) => value.vote.source === VoteSources.snapshot)
-        .map((value) => value.vote.link.split('/').slice(-1)[0]);
+      const previousVotes = Object.values(records)
+        .map(voteFromNotionProperties)
+        .filter((value) => value.source === VoteSources.snapshot);
+      const ids = previousVotes.map(
+        (value) => value.link.split('/').slice(-1)[0],
+      );
       const votes = await this.snapshotService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
+      await Promise.all(
+        votes.map(async (vote) => {
+          const message = await this.snapshotService.getChangesMessage(
+            previousVotes,
+            vote,
+          );
+          if (message)
+            await this.researchForumService.notifySnapshotVoteChange(
+              message,
+              vote,
+            );
+        }),
+      );
       this.logger.log('Snapshot records are up to date');
     });
   }
@@ -86,8 +104,9 @@ export class GovernanceService {
       this.logger.log('Started updating Aragon records');
       const records = await this.notionReporterService.getVoteRecords();
       const ids = Object.values(records)
-        .filter((value) => value.vote.source === VoteSources.aragon)
-        .map((value) => Number(value.vote.name.replace('#', '')));
+        .map(voteFromNotionProperties)
+        .filter((value) => value.source === VoteSources.aragon)
+        .map((value) => Number(value.name.replace('#', '')));
       const votes = await this.aragonService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
       this.logger.log('Aragon records are up to date');

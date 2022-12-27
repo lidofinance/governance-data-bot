@@ -18,7 +18,9 @@ export interface VoteEntity {
   proposalType?: string;
   discussion?: string;
   votersNumber?: number;
+  choices?: string[];
 }
+export const VoteEntityIgnoredFields = ['choices'];
 
 export enum VoteSources {
   easyTrack = 'EasyTrack',
