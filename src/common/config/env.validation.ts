@@ -57,11 +57,13 @@ export class EnvironmentVariables {
   @IsUrl()
   SNAPSHOT_SCORES_API: string;
 
+  @IsOptional()
   @IsString()
-  SNAPSHOT_SUCCESS_CHOICES: string;
+  SNAPSHOT_SUCCESS_CHOICES = 'yay,for,yes';
 
+  @IsOptional()
   @IsString()
-  SNAPSHOT_AGAINST_CHOICES: string;
+  SNAPSHOT_AGAINST_CHOICES = 'nay,against,no';
 
   @IsUrl()
   RESEARCH_FORUM_DISCOURSE_URL: string;
