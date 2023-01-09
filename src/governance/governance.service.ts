@@ -8,7 +8,6 @@ import { VoteSources } from './vote.entity';
 import { AragonService } from './aragon/aragon.service';
 import { ResearchForumService } from './research-forum/research-forum.service';
 import { ConfigService, Network } from '../common/config';
-import { voteFromNotionProperties } from './notionReporter/notion.record.entity';
 
 enum TaskStatus {
   passed = 'passed',
@@ -53,9 +52,8 @@ export class GovernanceService {
       this.logger.log('Started updating EasyTrack records');
       const records = await this.notionReporterService.getVoteRecords();
       const ids = Object.values(records)
-        .map(voteFromNotionProperties)
-        .filter((value) => value.source === VoteSources.easyTrack)
-        .map((value) => Number(value.name.replace('#', '')));
+        .filter((value) => value.vote.source === VoteSources.easyTrack)
+        .map((value) => Number(value.vote.name.replace('#', '')));
       const votes = await this.easyTrackService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
       this.logger.log('EasyTrack records are up to date');
@@ -74,7 +72,7 @@ export class GovernanceService {
       this.logger.log('Started updating Snapshot records');
       const records = await this.notionReporterService.getVoteRecords();
       const previousVotes = Object.values(records)
-        .map(voteFromNotionProperties)
+        .map((record) => record.vote)
         .filter((value) => value.source === VoteSources.snapshot);
       const ids = previousVotes.map(
         (value) => value.link.split('/').slice(-1)[0],
@@ -104,9 +102,8 @@ export class GovernanceService {
       this.logger.log('Started updating Aragon records');
       const records = await this.notionReporterService.getVoteRecords();
       const ids = Object.values(records)
-        .map(voteFromNotionProperties)
-        .filter((value) => value.source === VoteSources.aragon)
-        .map((value) => Number(value.name.replace('#', '')));
+        .filter((value) => value.vote.source === VoteSources.aragon)
+        .map((value) => Number(value.vote.name.replace('#', '')));
       const votes = await this.aragonService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
       this.logger.log('Aragon records are up to date');
