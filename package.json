@@ -1,6 +1,6 @@
 {
   "name": "governance-data-bot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Collect governance info and put it to notion tables",
   "author": "Lido Automation team",
   "private": true,
