@@ -8,6 +8,7 @@ import { VoteSources } from './vote.entity';
 import { AragonService } from './aragon/aragon.service';
 import { ResearchForumService } from './research-forum/research-forum.service';
 import { ConfigService, Network } from '../common/config';
+import { sleep } from '@lido-nestjs/execution/dist/common/sleep';
 
 enum TaskStatus {
   passed = 'passed',
@@ -79,19 +80,20 @@ export class GovernanceService {
       );
       const votes = await this.snapshotService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
-      await Promise.all(
-        votes.map(async (vote) => {
-          const message = await this.snapshotService.getChangesMessage(
-            previousVotes,
+      for (const vote of votes) {
+        const message = await this.snapshotService.getChangesMessage(
+          previousVotes,
+          vote,
+        );
+        if (message)
+          await this.researchForumService.notifySnapshotVoteChange(
+            message,
             vote,
           );
-          if (message)
-            await this.researchForumService.notifySnapshotVoteChange(
-              message,
-              vote,
-            );
-        }),
-      );
+        // avoid research forum rate limit:
+        // You’re replying a bit too quickly. Please wait 5 seconds before trying again.
+        await sleep(6000);
+      }
       this.logger.log('Snapshot records are up to date');
     });
   }
