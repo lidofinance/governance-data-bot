@@ -170,8 +170,8 @@ export function isValidProperties(
 
 export function voteFromNotionProperties(properties): VoteEntity {
   return {
-    source: properties.Source.select.name,
-    status: properties.Status.select.name,
+    source: properties.Source.select?.name,
+    status: properties.Status.select?.name,
     name: properties.Name.title[0].text.content,
     type: properties.Type.select?.name,
     description: properties.Description.rich_text[0].text.content,

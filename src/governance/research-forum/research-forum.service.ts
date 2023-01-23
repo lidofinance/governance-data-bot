@@ -27,7 +27,7 @@ export class ResearchForumService {
         name: topic.title,
         link: new URL(
           `/t/${topic.slug}/${topic.id}/`,
-          this.researchForumProvider.baseUrl,
+          this.configService.get('RESEARCH_FORUM_DISCOURSE_URL'),
         ).href,
         creationDate: formatDate(topic.created_at),
         lastReplyDate: formatDate(topic.last_posted_at),
