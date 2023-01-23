@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import fetch, { HeadersInit } from 'node-fetch';
+import { HeadersInit } from 'node-fetch';
 import { ConfigService } from '../../common/config';
 import { PrometheusService } from '../../common/prometheus';
+import { FetchService } from '@lido-nestjs/fetch';
 
 export interface ResearchForumTopic {
   id: number;
@@ -50,14 +51,13 @@ export interface ResearchForumUser {
 }
 @Injectable()
 export class ResearchForumProvider {
-  public readonly baseUrl: string;
   public readonly token: string;
   private readonly headers: HeadersInit;
   constructor(
     private configService: ConfigService,
     private prometheusService: PrometheusService,
+    private fetchService: FetchService,
   ) {
-    this.baseUrl = configService.get('RESEARCH_FORUM_DISCOURSE_URL');
     this.token = configService.get('RESEARCH_FORUM_API_TOKEN');
     this.headers = {
       'Content-type': 'application/json',
@@ -68,7 +68,7 @@ export class ResearchForumProvider {
   }
   async getLatestTopics(): Promise<ResearchForumTopic[]> {
     const r = await this.get<{ topic_list: { topics: ResearchForumTopic[] } }>(
-      new URL('latest.json', this.baseUrl).href,
+      'latest.json',
     );
     return r.topic_list.topics;
   }
@@ -86,13 +86,13 @@ export class ResearchForumProvider {
 
   async getCurrentUser() {
     const r = await this.get<{ current_user: ResearchForumUser }>(
-      new URL('session/current.json', this.baseUrl).href,
+      'session/current.json',
     );
     return r.current_user;
   }
 
   async createPost(topicId: number, content: string): Promise<void> {
-    await this.post(new URL('posts.json', this.baseUrl).href, {
+    await this.post('posts.json', {
       topic_id: topicId,
       raw: content,
     });
@@ -102,15 +102,11 @@ export class ResearchForumProvider {
     this.prometheusService.externalServiceRequestsCount.inc({
       serviceName: ResearchForumProvider.name,
     });
-    const resp = await fetch(url, {
+    const resp = await this.fetchService.fetchJson(url, {
       method: 'GET',
       headers: this.headers,
     });
-    if (!resp.ok)
-      throw new Error(
-        `Request failed with ${resp.status} error: ${await resp.text()}`,
-      );
-    return (await resp.json()) as T;
+    return resp as T;
   }
 
   private async post<T>(url, body): Promise<T> {
@@ -121,15 +117,15 @@ export class ResearchForumProvider {
     this.prometheusService.externalServiceRequestsCount.inc({
       serviceName: ResearchForumProvider.name,
     });
-    const resp = await fetch(url, {
+    const resp = await this.fetchService.fetchJson(url, {
       method: 'POST',
       headers: this.headers,
       body: JSON.stringify(body),
+      retryPolicy: {
+        attempts: 2,
+        delay: 6000,
+      },
     });
-    if (!resp.ok)
-      throw new Error(
-        `Request failed with ${resp.status} error: ${await resp.text()}`,
-      );
-    return (await resp.json()) as T;
+    return resp as T;
   }
 }

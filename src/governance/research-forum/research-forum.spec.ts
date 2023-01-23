@@ -1,20 +1,21 @@
 import { Test } from '@nestjs/testing';
-import { ConfigService } from '../../common/config';
+import { ConfigModule } from '../../common/config';
 import { Logger } from '@nestjs/common';
 import { ResearchForumService } from './research-forum.service';
-import { ResearchForumProvider } from './research-forum.provider';
-import { PrometheusService } from '../../common/prometheus';
+import { PrometheusModule } from '../../common/prometheus';
+import { FetchModule } from '@lido-nestjs/fetch';
+import { ResearchForumModule } from './research-forum.module';
 
 describe('Test Research forum collecting', () => {
   let researchForumService: ResearchForumService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        ConfigService,
-        ResearchForumService,
-        ResearchForumProvider,
-        PrometheusService,
+      imports: [
+        ConfigModule,
+        ResearchForumModule,
+        PrometheusModule,
+        FetchModule,
       ],
     }).compile();
     moduleRef.useLogger(new Logger());
