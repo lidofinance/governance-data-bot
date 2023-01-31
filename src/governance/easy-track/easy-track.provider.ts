@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { EasyTrackGraphqlService } from './easy-track.graphql.service';
 import { EasyTrackConfig } from './easy-track.config';
 import { SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
+import { EtherscanProviderService } from '../../common/etherscan-provider';
 
 @Injectable()
 export class EasyTrackProvider {
@@ -13,6 +14,7 @@ export class EasyTrackProvider {
     private provider: SimpleFallbackJsonRpcBatchProvider,
     private easyTrackGraphqlService: EasyTrackGraphqlService,
     private config: EasyTrackConfig,
+    private etherscanProviderService: EtherscanProviderService,
   ) {}
 
   async getContract(address: string, abi: any): Promise<Contract> {
@@ -49,7 +51,9 @@ export class EasyTrackProvider {
     const filter = contract.filters.RewardProgramAdded(
       address.toLocaleLowerCase(),
     );
-    const filtered = (await contract.queryFilter(filter)).filter(
+    const fromBlock =
+      await this.etherscanProviderService.getContractCreationBlock(contract);
+    const filtered = (await contract.queryFilter(filter, fromBlock)).filter(
       ({ removed }) => !removed,
     );
 
@@ -77,9 +81,10 @@ export class EasyTrackProvider {
       motionId && BigNumber.from(motionId),
     );
     filter.topics[0] = topics;
-
+    const fromBlock =
+      await this.etherscanProviderService.getContractCreationBlock(contract);
     return (
-      (await contract.queryFilter(filter))
+      (await contract.queryFilter(filter, fromBlock))
         // ensure right order
         .sort((a, b) => {
           const deltaBlock = a.blockNumber - b.blockNumber;

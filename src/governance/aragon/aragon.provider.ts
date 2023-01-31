@@ -6,6 +6,7 @@ import { aragonVoteStatus } from './aragon.helpers';
 import { VoteStatus } from '../vote.entity';
 import { AragonConfig } from './aragon.config';
 import { SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
+import { EtherscanProviderService } from '../../common/etherscan-provider';
 
 export interface AragonVote {
   id: number;
@@ -37,6 +38,7 @@ export class AragonProvider {
   constructor(
     private providerService: SimpleFallbackJsonRpcBatchProvider,
     private config: AragonConfig,
+    private etherscanProviderService: EtherscanProviderService,
   ) {}
 
   async getContract(address: string, abi: any): Promise<Contract> {
@@ -59,7 +61,9 @@ export class AragonProvider {
     filter: EventFilter,
   ): Promise<{ [key: number]: { args: T; blockNumber: number } }> {
     const events = {};
-    (await contract.queryFilter(filter)).map((e) => {
+    const fromBlock =
+      await this.etherscanProviderService.getContractCreationBlock(contract);
+    (await contract.queryFilter(filter, fromBlock)).map((e) => {
       events[e.args.voteId.toNumber()] = {
         args: e.args,
         blockNumber: e.blockNumber,
