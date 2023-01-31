@@ -13,12 +13,14 @@ import { GovernanceModule } from '../governance/governance.module';
 import { GraphqlModule } from '../common/graphql/graphql.module';
 import { LoggerModule } from '../common/logger';
 import { ExecutionProviderModule } from '../common/execution-provider';
+import { EtherscanProviderModule } from '../common/etherscan-provider';
 
 @Module({
   imports: [
     HTTPModule,
     HealthModule,
     ExecutionProviderModule,
+    EtherscanProviderModule,
     PrometheusModule,
     ConfigModule,
     LoggerModule,
