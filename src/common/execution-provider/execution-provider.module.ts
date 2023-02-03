@@ -19,16 +19,17 @@ import { ConfigService } from '../config';
           urls,
           network,
           fetchMiddlewares: [
-            async (next) => {
+            async (next, ctx) => {
+              const url = new URL(ctx?.provider?.connection?.url);
               const endTimer =
                 prometheusService.elRpcRequestDuration.startTimer();
 
               try {
                 const result = await next();
-                endTimer({ result: 'success' });
+                endTimer({ result: 'success', provider: url.hostname });
                 return result;
               } catch (error) {
-                endTimer({ result: 'error' });
+                endTimer({ result: 'error', provider: url.hostname });
                 throw error;
               }
             },
