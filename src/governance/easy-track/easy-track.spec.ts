@@ -5,6 +5,7 @@ import { PrometheusModule } from '../../common/prometheus';
 import { ExecutionProviderModule } from '../../common/execution-provider';
 import { EasyTrackModule } from './easy-track.module';
 import { LoggerModule } from '../../common/logger';
+import { EtherscanProviderModule } from '../../common/etherscan-provider';
 
 describe('Test easyTrack collection', () => {
   let easyTrackService: EasyTrackService;
@@ -17,6 +18,7 @@ describe('Test easyTrack collection', () => {
         PrometheusModule,
         LoggerModule,
         EasyTrackModule,
+        EtherscanProviderModule,
       ],
       providers: [],
     }).compile();

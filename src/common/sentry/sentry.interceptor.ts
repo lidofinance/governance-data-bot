@@ -5,7 +5,7 @@ import {
   CallHandler,
 } from '@nestjs/common';
 import { Observable, catchError, throwError } from 'rxjs';
-import * as Sentry from '@sentry/minimal';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class SentryInterceptor implements NestInterceptor {

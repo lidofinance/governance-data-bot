@@ -7,6 +7,7 @@ import { formatDescription } from './aragon.helpers';
 import { ExecutionProviderModule } from '../../common/execution-provider';
 import { LoggerModule } from '../../common/logger';
 import { AragonModule } from './aragon.module';
+import { EtherscanProviderModule } from '../../common/etherscan-provider';
 
 describe('Test aragon collection', () => {
   let aragonService: AragonService;
@@ -19,6 +20,7 @@ describe('Test aragon collection', () => {
         PrometheusModule,
         LoggerModule,
         AragonModule,
+        EtherscanProviderModule,
       ],
       providers: [],
     }).compile();
@@ -27,7 +29,7 @@ describe('Test aragon collection', () => {
   });
 
   it('Test aragon votes collection', async () => {
-    await aragonService.collectByMaxPastDays();
+    await aragonService.collectNewAndRefresh([150]);
   }, 360000);
 });
 
