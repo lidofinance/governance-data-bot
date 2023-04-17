@@ -1,3 +1,7 @@
+## [0.1.4](https://github.com/lidofinance/governance-data-bot/compare/0.1.3...0.1.4) (2023-04-17)
+
+
+
 ## [0.1.3](https://github.com/lidofinance/governance-data-bot/compare/0.1.2...0.1.3) (2023-01-24)
 
 
