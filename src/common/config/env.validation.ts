@@ -65,6 +65,10 @@ export class EnvironmentVariables {
   @IsString()
   SNAPSHOT_AGAINST_CHOICES = 'nay,against,no';
 
+  @IsOptional()
+  @IsString()
+  SNAPSHOT_SPAM_ADDRESSES = '';
+
   @IsUrl()
   RESEARCH_FORUM_DISCOURSE_URL: string;
 

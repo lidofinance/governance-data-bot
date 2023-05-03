@@ -99,7 +99,14 @@ export class SnapshotGraphqlService extends GraphqlService {
         this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'),
         query,
       )
-    ).proposals;
+    ).proposals.filter(
+      (proposal) =>
+        !this.configService
+          .get('SNAPSHOT_SPAM_ADDRESSES')
+          .toLowerCase()
+          .split(',')
+          .includes(proposal.author.toLowerCase()),
+    );
   }
 
   async getActualVotes(proposalId): Promise<
