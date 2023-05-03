@@ -1,3 +1,6 @@
+# This file is no longer used by semantic-release
+For the latest release notes, please see the [GitHub releases page](https://github.com/lidofinance/governance-data-bot/releases).
+
 ## [0.1.4](https://github.com/lidofinance/governance-data-bot/compare/0.1.3...0.1.4) (2023-04-17)
 
 
