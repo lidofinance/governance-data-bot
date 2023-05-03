@@ -41,6 +41,7 @@ describe('Test snapshot collection', () => {
 describe('Test snapshot messages', () => {
   let snapshotService: SnapshotService;
   let snapshotGraphqlService: SnapshotGraphqlService;
+  let configService: ConfigService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -57,6 +58,7 @@ describe('Test snapshot messages', () => {
     snapshotGraphqlService = moduleRef.get<SnapshotGraphqlService>(
       SnapshotGraphqlService,
     );
+    configService = moduleRef.get<ConfigService>(ConfigService);
   });
 
   it('test none to active', async () => {
@@ -191,6 +193,7 @@ describe('Test snapshot messages', () => {
     );
     expect(message).toMatch(/quorum/);
   });
+
   it('test active to closed with non-known choices', async () => {
     const previousVote: VoteEntity = {
       endDate: '',
@@ -226,5 +229,21 @@ describe('Test snapshot messages', () => {
       ]),
     );
     expect(snapshotService.hasQuorum(votes[0])).toBeFalsy();
+  });
+
+  it('test spam filtering', async () => {
+    let proposals = await snapshotGraphqlService.getPastProposalsByIds([
+      '0x5941ac8cc3bc1f6c81b07cc829aa5be77917d1c69ad20290d5cfbc29f04db0f6',
+      '0x8bbd48f0e77b8035ed5c249a2716ea950d5196c121d972eb73fc44adfa664718',
+    ]);
+    expect(proposals).toHaveLength(2);
+    jest
+      .spyOn(configService, 'get')
+      .mockReturnValueOnce(configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'))
+      .mockReturnValueOnce('0x2c8829427Ce20d57614c461f5b2E9ADa53A3dD96');
+    proposals = await snapshotGraphqlService.getPastProposalsByIds([
+      '0x5941ac8cc3bc1f6c81b07cc829aa5be77917d1c69ad20290d5cfbc29f04db0f6',
+    ]);
+    expect(proposals).toHaveLength(1);
   });
 });
