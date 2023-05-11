@@ -27,7 +27,7 @@ interface LinkToTopicPage {
 export class NotionReporterService {
   private readonly votesDatabaseId: string;
   private readonly topicsDatabaseId: string;
-  private readonly logger;
+  private readonly logger: Logger;
 
   constructor(
     protected readonly configService: ConfigService,
@@ -46,6 +46,12 @@ export class NotionReporterService {
     let createdCount = 0;
     let updatedCount = 0;
     for (const vote of votes) {
+      if (!vote.source || !vote.name) {
+        this.logger.warn(
+          `Vote ${JSON.stringify(vote)} is missing source or name`,
+        );
+        continue;
+      }
       const properties = new NotionVoteEntity(vote).properties();
       const voteFromPage = records[`${vote.source}|${vote.name}`];
       if (voteFromPage !== undefined) {
@@ -114,7 +120,12 @@ export class NotionReporterService {
         const name =
           item.properties.Name.type === 'title' &&
           item.properties.Name.title[0]?.plain_text;
-        if (!source || !name) continue;
+        if (!source || !name) {
+          this.logger.warn(
+            `Skipping vote with missing 'Source' or 'Name': ${item.properties}`,
+          );
+          continue;
+        }
         records[`${source}|${name}`] = {
           pageId: item.id,
           vote: voteFromNotionProperties(item.properties),
