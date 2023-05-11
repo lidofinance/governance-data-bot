@@ -70,7 +70,9 @@ export class SnapshotService {
         proposalType: proposal.type,
         discussion: proposal.discussion || null,
         votersNumber: proposal.votes,
-        choices: proposal.choices,
+        choice1: proposal.choices[0] === undefined ? '' : proposal.choices[0],
+        choice2: proposal.choices[1] === undefined ? '' : proposal.choices[1],
+        choice3: proposal.choices[2] === undefined ? '' : proposal.choices[2],
       });
     }
     return votes;
@@ -78,9 +80,9 @@ export class SnapshotService {
 
   private getMaxChoice(vote: VoteEntity): string {
     const choiceResults = {
-      [vote.choices[0]]: vote.result1,
-      [vote.choices[1]]: vote.result2,
-      [vote.choices[2]]: vote.result3 ?? 0,
+      [vote.choice1]: vote.result1,
+      [vote.choice2]: vote.result2,
+      [vote.choice3]: vote.result3 ?? 0,
     };
     return Object.keys(choiceResults).reduce((a, b) =>
       choiceResults[a] > choiceResults[b] ? a : b,
@@ -177,9 +179,9 @@ export class SnapshotService {
       result ? `**${choice}**: ${abbreviateNumber(result)} LDO\n` : '';
     return (
       'The results are:\n' +
-      resultMessage(vote.choices[0], vote.result1) +
-      resultMessage(vote.choices[1], vote.result2) +
-      resultMessage(vote.choices[2], vote.result3)
+      resultMessage(vote.choice1, vote.result1) +
+      resultMessage(vote.choice2, vote.result2) +
+      resultMessage(vote.choice3, vote.result3)
     );
   }
 

@@ -82,6 +82,9 @@ export class NotionVoteEntity extends NotionEntity {
     Res1: NotionTypes.number,
     Res2: NotionTypes.number,
     Res3: NotionTypes.number,
+    Choice1: NotionTypes.rich_text,
+    Choice2: NotionTypes.rich_text,
+    Choice3: NotionTypes.rich_text,
     ProposalType: NotionTypes.select,
     Discussion: NotionTypes.link,
     'Voters number': NotionTypes.number,
@@ -120,6 +123,18 @@ export class NotionVoteEntity extends NotionEntity {
       Res1: NotionVoteEntity.propertiesNames.Res1.value(this.vote.result1),
       Res2: NotionVoteEntity.propertiesNames.Res2.value(this.vote.result2),
       Res3: NotionVoteEntity.propertiesNames.Res3.value(this.vote.result3),
+      Choice1: NotionVoteEntity.propertiesNames.Choice1.value(
+        this.vote.choice1,
+        {},
+      ),
+      Choice2: NotionVoteEntity.propertiesNames.Choice2.value(
+        this.vote.choice2,
+        {},
+      ),
+      Choice3: NotionVoteEntity.propertiesNames.Choice3.value(
+        this.vote.choice3,
+        {},
+      ),
       ProposalType: NotionVoteEntity.propertiesNames.ProposalType.value(
         this.vote.proposalType,
       ),
@@ -187,6 +202,9 @@ export function voteFromNotionProperties(properties): VoteEntity {
     result1: properties.Res1.number,
     result2: properties.Res2.number,
     result3: properties.Res3.number,
+    choice1: properties.Choice1.rich_text[0]?.text.content,
+    choice2: properties.Choice2.rich_text[0]?.text.content,
+    choice3: properties.Choice3.rich_text[0]?.text.content,
     proposalType: properties.ProposalType.select?.name,
     discussion: properties.Discussion?.url,
     votersNumber: properties['Voters number'].number,
