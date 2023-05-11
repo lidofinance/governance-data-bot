@@ -14,6 +14,7 @@ import { NotionReporterModule } from './notion.reporter.module';
 import { SnapshotModule } from '../snapshot/snapshot.module';
 import { AragonModule } from '../aragon/aragon.module';
 import { ResearchForumModule } from '../research-forum/research-forum.module';
+import { EtherscanProviderModule } from '../../common/etherscan-provider';
 
 describe('Test EasyTrack notion reporting', () => {
   let notionReporterService: NotionReporterService;
@@ -81,6 +82,7 @@ describe('Test Aragon notion reporting', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         ExecutionProviderModule,
+        EtherscanProviderModule,
         ConfigModule,
         PrometheusModule,
         LoggerModule,
