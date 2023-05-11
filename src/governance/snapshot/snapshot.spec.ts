@@ -130,7 +130,8 @@ describe('Test snapshot messages', () => {
       startDate: '',
       result1: 100e6,
       result2: 10e6,
-      choices: ['yay', 'nay'],
+      choice1: 'yay',
+      choice2: 'nay',
       status: VoteStatus.closed,
     };
     const message = await snapshotService.getChangesMessage(
@@ -157,7 +158,8 @@ describe('Test snapshot messages', () => {
       startDate: '',
       result1: 10e6,
       result2: 100e6,
-      choices: ['yay', 'nay'],
+      choice1: 'yay',
+      choice2: 'nay',
       status: VoteStatus.closed,
     };
     const message = await snapshotService.getChangesMessage(
@@ -184,7 +186,8 @@ describe('Test snapshot messages', () => {
       startDate: '',
       result1: 10,
       result2: 100,
-      choices: ['yay', 'nay'],
+      choice1: 'yay',
+      choice2: 'nay',
       status: VoteStatus.closed,
     };
     const message = await snapshotService.getChangesMessage(
@@ -212,7 +215,9 @@ describe('Test snapshot messages', () => {
       result1: 10e6,
       result2: 20e6,
       result3: 30e6,
-      choices: ['red', 'green', 'blue'],
+      choice1: 'red',
+      choice2: 'green',
+      choice3: 'blue',
       status: VoteStatus.closed,
     };
     const message = await snapshotService.getChangesMessage(
