@@ -58,6 +58,8 @@ export class AragonService {
         status: aragonVoteStatus(aragonVote),
         result1: Number(utils.formatEther(aragonVote.yea)),
         result2: Number(utils.formatEther(aragonVote.nay)),
+        choice1: 'Yes',
+        choice2: 'No',
       });
     }
     return votes;
