@@ -31,28 +31,18 @@ export class EasyTrackProvider {
   }
 
   async getGovernanceTokenInfo() {
-    const contract = await this.getContract(
-      this.config.get('governanceToken'),
-      abi.ERC20,
-    );
+    const contract = await this.getContract(this.config.get('governanceToken'), abi.ERC20);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const totalSupply = await contract.totalSupply();
     const symbol = await contract.symbol();
     return { totalSupply, symbol };
   }
 
-  async getProgramName(
-    abiProgram: any,
-    contractAddress: string,
-    address: string,
-  ) {
+  async getProgramName(abiProgram: any, contractAddress: string, address: string) {
     const contract = await this.getContract(contractAddress, abiProgram);
 
-    const filter = contract.filters.RewardProgramAdded(
-      address.toLocaleLowerCase(),
-    );
-    const fromBlock =
-      await this.etherscanProviderService.getContractCreationBlock(contract);
+    const filter = contract.filters.RewardProgramAdded(address.toLocaleLowerCase());
+    const fromBlock = await this.etherscanProviderService.getContractCreationBlock(contract);
     const filtered = (await contract.queryFilter(filter, fromBlock)).filter(
       ({ removed }) => !removed,
     );
@@ -62,11 +52,21 @@ export class EasyTrackProvider {
     return item.args[1];
   }
 
+  async getRecipientName({ AbiRegistry, contractAddress, address }): Promise<string> {
+    const contract = await this.getContract(contractAddress, AbiRegistry);
+
+    const filter = contract.filters.RecipientAdded(address.toLocaleLowerCase());
+    const filtered = (
+      await contract.queryFilter(filter, this.config.get('easyTrackStartBlock'))
+    ).filter(({ removed }) => !removed);
+
+    const [item] = filtered.sort((a, b) => b.blockNumber - a.blockNumber);
+
+    return String(item.args[1]);
+  }
+
   async getEvents(motionId?: number | string) {
-    const contract = await this.getContract(
-      this.config.get('easyTrackContract'),
-      abi.EasyTrack,
-    );
+    const contract = await this.getContract(this.config.get('easyTrackContract'), abi.EasyTrack);
     const topics = [
       contract.filters.MotionCreated(),
       contract.filters.MotionEnacted(),
@@ -77,12 +77,9 @@ export class EasyTrackProvider {
       a.push(t.topics[0]);
       return a;
     }, []);
-    const filter = contract.filters.MotionCreated(
-      motionId && BigNumber.from(motionId),
-    );
+    const filter = contract.filters.MotionCreated(motionId && BigNumber.from(motionId));
     filter.topics[0] = topics;
-    const fromBlock =
-      await this.etherscanProviderService.getContractCreationBlock(contract);
+    const fromBlock = await this.etherscanProviderService.getContractCreationBlock(contract);
     return (
       (await contract.queryFilter(filter, fromBlock))
         // ensure right order
@@ -98,11 +95,7 @@ export class EasyTrackProvider {
         // parse args
         .map((e) => {
           const fragment = contract.interface.getEvent(e.topics[0]);
-          const args = contract.interface.decodeEventLog(
-            fragment,
-            e.data,
-            e.topics,
-          );
+          const args = contract.interface.decodeEventLog(fragment, e.data, e.topics);
           return {
             name: fragment.name,
             blockNumber: e.blockNumber,
