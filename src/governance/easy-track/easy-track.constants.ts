@@ -1,5 +1,5 @@
 import * as ERC20 from './abi/ERC20.min.abi.json';
-import * as EasyTrack from './abi/Easytrack.abi.json';
+import * as EasyTrack from './abi/EasyTrack.abi.json';
 import * as EvmAddReferralPartner from './abi/EvmAddReferralPartner.abi.json';
 import * as EvmAddRewardProgram from './abi/EvmAddRewardProgram.abi.json';
 import * as EvmIncreaseNodeOperatorStakingLimit from './abi/EvmIncreaseNodeOperatorStakingLimit.abi.json';
