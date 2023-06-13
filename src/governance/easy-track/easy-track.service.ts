@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EASYTRACK_CONTRACT_ABI } from './easy-track.constants';
 import { VoteEntity, VoteSources } from '../vote.entity';
-import {
-  eventAndDurationInfoToStatus,
-  getEasyTrackType,
-} from './easy-track.helpers';
+import { eventAndDurationInfoToStatus, getEasyTrackType } from './easy-track.helpers';
 import { EasyTrackDescriptionCollector } from './easy-track-description-collector.service';
 import { EasyTrackEventCollector } from './easy-track-event-collector.service';
 import { EasyTrackProvider } from './easy-track.provider';
@@ -34,12 +31,8 @@ export class EasyTrackService {
     );
     const activeMotions = await contract.getMotions();
     const date =
-      (new Date().setDate(new Date().getDate() - MAX_PAST_DAYS_MOTIONS_FETCH) /
-        1000) |
-      0;
-    const pastMotions = await this.easyTrackProvider.fetchPastMotionsByDate(
-      date,
-    );
+      (new Date().setDate(new Date().getDate() - MAX_PAST_DAYS_MOTIONS_FETCH) / 1000) | 0;
+    const pastMotions = await this.easyTrackProvider.fetchPastMotionsByDate(date);
     return this.buildVotesFromMotions([...activeMotions, ...pastMotions]);
   }
 
@@ -49,9 +42,7 @@ export class EasyTrackService {
       EASYTRACK_CONTRACT_ABI,
     );
     const activeMotions = await contract.getMotions();
-    const pastMotions = await this.easyTrackProvider.fetchPastMotionsByIds(
-      refreshIds,
-    );
+    const pastMotions = await this.easyTrackProvider.fetchPastMotionsByIds(refreshIds);
     return this.buildVotesFromMotions([...activeMotions, ...pastMotions]);
   }
 
@@ -65,9 +56,7 @@ export class EasyTrackService {
       const eventInfo = await this.eventCollector.getEventInfo(motion.id);
       const voteEntity: VoteEntity = {
         startDate: formatDate(Number(motion.startDate) * 1000),
-        endDate: formatDate(
-          (Number(motion.startDate) + Number(motion.duration)) * 1000,
-        ),
+        endDate: formatDate((Number(motion.startDate) + Number(motion.duration)) * 1000),
         executionEndDate: formatDate(eventInfo.executionEndDate),
         type: await getEasyTrackType(
           motion.evmScriptFactory,
