@@ -5,7 +5,6 @@ import {
   NotionEntity,
   NotionTopicEntity,
   NotionVoteEntity,
-  propertyHasChanged,
   topicFromNotionProperties,
   voteFromNotionProperties,
 } from './notion.record.entity';
@@ -145,7 +144,7 @@ export class NotionReporterService {
     const schema = entity.schema();
     const updatedProperties = Object.fromEntries(
       Object.keys(schema)
-        .filter((key) => propertyHasChanged(schema, key, database.properties))
+        .filter((key) => this.propertyHasChanged(schema, key, database.properties))
         .map((key) => [key, schema[key]]),
     );
 
@@ -156,6 +155,22 @@ export class NotionReporterService {
           properties: updatedProperties,
         });
       this.logger.log(`${entity.name} database schema updated`);
+      return true;
+    }
+    return false;
+  }
+
+  private propertyHasChanged(
+    schema: Record<string, any>,
+    propertyName: string,
+    properties: Record<string, any>,
+  ) {
+    if (!(propertyName in properties)) {
+      this.logger.debug(`Found a new property ${propertyName} in Schema`);
+      return true;
+    }
+    if (schema[propertyName][properties[propertyName].type] === undefined) {
+      this.logger.debug(`Property ${propertyName} has changed type in Schema`);
       return true;
     }
     return false;

@@ -1,9 +1,6 @@
 import { VoteEntity } from '../vote.entity';
 import { formatDate } from '../governance.utils';
 import { TopicEntity } from '../topic.entity';
-import { Logger } from '@nestjs/common';
-
-const logger = new Logger('NotionRecordEntity');
 
 export class NotionTypes {
   static title = {
@@ -156,22 +153,6 @@ export class NotionTopicEntity extends NotionEntity {
       ),
     };
   }
-}
-
-export function propertyHasChanged(
-  schema: Record<string, any>,
-  propertyName: string,
-  properties: Record<string, any>,
-) {
-  if (!(propertyName in properties)) {
-    logger.debug(`Found a new property ${propertyName} in Schema`);
-    return true;
-  }
-  if (schema[propertyName][properties[propertyName].type] === undefined) {
-    logger.debug(`Property ${propertyName} has changed type in Schema`);
-    return true;
-  }
-  return false;
 }
 
 export function voteFromNotionProperties(properties): VoteEntity {
