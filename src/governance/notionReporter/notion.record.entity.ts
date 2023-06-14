@@ -1,6 +1,7 @@
 import { VoteEntity } from '../vote.entity';
 import { formatDate } from '../governance.utils';
 import { TopicEntity } from '../topic.entity';
+import { Logger } from '@nestjs/common';
 
 export class NotionTypes {
   static title = {
@@ -54,10 +55,7 @@ export class NotionEntity {
   constructor(private _: any) {}
   public static schema() {
     return Object.fromEntries(
-      Object.keys(this.propertiesNames).map((key) => [
-        key,
-        this.propertiesNames[key].schema,
-      ]),
+      Object.keys(this.propertiesNames).map((key) => [key, this.propertiesNames[key].schema]),
     );
   }
   properties() {
@@ -99,48 +97,30 @@ export class NotionVoteEntity extends NotionEntity {
       Source: NotionVoteEntity.propertiesNames.Source.value(this.vote.source),
       Status: NotionVoteEntity.propertiesNames.Status.value(this.vote.status),
       Type: NotionVoteEntity.propertiesNames.Type.value(this.vote.type),
-      Description: NotionVoteEntity.propertiesNames.Description.value(
-        this.vote.description,
-        {},
-      ),
+      Description: NotionVoteEntity.propertiesNames.Description.value(this.vote.description, {}),
       Date: NotionVoteEntity.propertiesNames.Date.value(this.vote.startDate),
-      'End Date': NotionVoteEntity.propertiesNames['End Date'].value(
-        this.vote.endDate,
+      'End Date': NotionVoteEntity.propertiesNames['End Date'].value(this.vote.endDate),
+      'Execution End Date': NotionVoteEntity.propertiesNames['Execution End Date'].value(
+        this.vote.executionEndDate,
       ),
-      'Execution End Date': NotionVoteEntity.propertiesNames[
-        'Execution End Date'
-      ].value(this.vote.executionEndDate),
       Link: NotionVoteEntity.propertiesNames.Link.value(this.vote.link),
-      'Additional Link': NotionVoteEntity.propertiesNames[
-        'Additional Link'
-      ].value(this.vote.additionalLink),
-      'Objections Amount': NotionVoteEntity.propertiesNames[
-        'Objections Amount'
-      ].value(this.vote.objectionsAmount),
-      'Objections Threshold': NotionVoteEntity.propertiesNames[
-        'Objections Threshold'
-      ].value(this.vote.objectionsThreshold),
+      'Additional Link': NotionVoteEntity.propertiesNames['Additional Link'].value(
+        this.vote.additionalLink,
+      ),
+      'Objections Amount': NotionVoteEntity.propertiesNames['Objections Amount'].value(
+        this.vote.objectionsAmount,
+      ),
+      'Objections Threshold': NotionVoteEntity.propertiesNames['Objections Threshold'].value(
+        this.vote.objectionsThreshold,
+      ),
       Res1: NotionVoteEntity.propertiesNames.Res1.value(this.vote.result1),
       Res2: NotionVoteEntity.propertiesNames.Res2.value(this.vote.result2),
       Res3: NotionVoteEntity.propertiesNames.Res3.value(this.vote.result3),
-      Choice1: NotionVoteEntity.propertiesNames.Choice1.value(
-        this.vote.choice1,
-        {},
-      ),
-      Choice2: NotionVoteEntity.propertiesNames.Choice2.value(
-        this.vote.choice2,
-        {},
-      ),
-      Choice3: NotionVoteEntity.propertiesNames.Choice3.value(
-        this.vote.choice3,
-        {},
-      ),
-      ProposalType: NotionVoteEntity.propertiesNames.ProposalType.value(
-        this.vote.proposalType,
-      ),
-      Discussion: NotionVoteEntity.propertiesNames.Discussion.value(
-        this.vote.discussion,
-      ),
+      Choice1: NotionVoteEntity.propertiesNames.Choice1.value(this.vote.choice1, {}),
+      Choice2: NotionVoteEntity.propertiesNames.Choice2.value(this.vote.choice2, {}),
+      Choice3: NotionVoteEntity.propertiesNames.Choice3.value(this.vote.choice3, {}),
+      ProposalType: NotionVoteEntity.propertiesNames.ProposalType.value(this.vote.proposalType),
+      Discussion: NotionVoteEntity.propertiesNames.Discussion.value(this.vote.discussion),
       'Voters number': NotionVoteEntity.propertiesNames['Voters number'].value(
         this.vote.votersNumber,
       ),
@@ -169,18 +149,23 @@ export class NotionTopicEntity extends NotionEntity {
       'Creation Date': NotionTopicEntity.propertiesNames['Creation Date'].value(
         this.topic.creationDate,
       ),
-      'Last Reply Date': NotionTopicEntity.propertiesNames[
-        'Last Reply Date'
-      ].value(this.topic.lastReplyDate),
+      'Last Reply Date': NotionTopicEntity.propertiesNames['Last Reply Date'].value(
+        this.topic.lastReplyDate,
+      ),
     };
   }
 }
 
-export function isValidProperties(
-  validProperties: Record<string, unknown>,
-  properties,
-) {
-  return Object.keys(validProperties).every((name) => name in properties);
+export function propertyHasChanged(schema, propertyName: string, properties) {
+  if (!(propertyName in properties)) {
+    new Logger().debug(`Found a new property ${propertyName} in Schema`);
+    return true;
+  }
+  if (schema[propertyName][properties[propertyName].type] === undefined) {
+    new Logger().debug(`Property ${propertyName} has changed type in Schema`);
+    return true;
+  }
+  return false;
 }
 
 export function voteFromNotionProperties(properties): VoteEntity {
