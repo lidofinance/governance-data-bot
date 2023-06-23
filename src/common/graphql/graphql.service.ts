@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import fetch from 'node-fetch-retry';
 
+const RETRIES_COUNT = 5;
+const RETRY_PAUSE = 1000;
+
 @Injectable()
 export class GraphqlService {
   async query(url: string, query: string) {
@@ -11,8 +14,8 @@ export class GraphqlService {
           'Content-type': 'application/json',
         },
         body: JSON.stringify({ query }),
-        retry: 3,
-        pause: 1000,
+        retry: RETRIES_COUNT,
+        pause: RETRY_PAUSE,
       });
       if (!resp.ok)
         throw new Error(`Request failed with ${resp.status} error: ${await resp.text()}`);

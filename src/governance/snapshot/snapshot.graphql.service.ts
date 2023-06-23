@@ -5,6 +5,9 @@ import { ConfigService } from '../../common/config';
 import { SnapshotConfig } from './snapshot.config';
 import fetch from 'node-fetch-retry';
 
+const RETRIES_COUNT = 5;
+const RETRY_PAUSE = 3000;
+
 export interface GraphqlProposal {
   id: string;
   title: string;
@@ -205,8 +208,8 @@ export class SnapshotGraphqlService extends GraphqlService {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ params }),
-        retry: 3,
-        pause: 3000,
+        retry: RETRIES_COUNT,
+        pause: RETRY_PAUSE,
       });
       if (!res.ok) {
         throw new Error(`HTTP Error Response: ${res.status} ${res.statusText}`);
