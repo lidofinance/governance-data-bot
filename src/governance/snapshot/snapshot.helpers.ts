@@ -16,8 +16,7 @@ export function proposalStateToVoteStatus(proposal: GraphqlProposal) {
 
 export function uniqueProposals(proposals: GraphqlProposal[]) {
   return proposals.filter(
-    (proposal, index, self) =>
-      index === self.findIndex((value) => proposal.id === value.id),
+    (proposal, index, self) => index === self.findIndex((value) => proposal.id === value.id),
   );
 }
 
@@ -45,5 +44,5 @@ export function abbreviateNumber(number: number): string {
   return scaled.toFixed(1) + suffix;
 }
 
-export const hourAgo = new Date();
-hourAgo.setHours(new Date().getHours() - 1);
+export const threeHoursAgo = new Date();
+threeHoursAgo.setHours(new Date().getHours() - 3);
