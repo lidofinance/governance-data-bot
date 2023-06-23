@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { GraphqlService } from '../../common/graphql/graphql.service';
 import { ConfigService } from '../../common/config';
 import { SnapshotConfig } from './snapshot.config';
-import fetch from 'node-fetch';
+import fetch from 'node-fetch-retry';
 
 export interface GraphqlProposal {
   id: string;
@@ -95,10 +95,7 @@ export class SnapshotGraphqlService extends GraphqlService {
       }
     }`;
     return (
-      await this.query(
-        this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'),
-        query,
-      )
+      await this.query(this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'), query)
     ).proposals.filter(
       (proposal) =>
         !this.configService
@@ -162,12 +159,8 @@ export class SnapshotGraphqlService extends GraphqlService {
     this.prometheusService.externalServiceRequestsCount.inc({
       serviceName: SnapshotGraphqlService.name,
     });
-    return (
-      await this.query(
-        this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'),
-        query,
-      )
-    ).votes;
+    return (await this.query(this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'), query))
+      .votes;
   }
 
   private async fillActualVotesAndScores(proposals: GraphqlProposal[]) {
@@ -182,18 +175,13 @@ export class SnapshotGraphqlService extends GraphqlService {
         parseInt(proposal.snapshot),
       );
       votes.map((vote: any) => {
-        vote.scores = proposal.strategies.map(
-          (strategy, i) => scores[i][vote.voter] || 0,
-        );
+        vote.scores = proposal.strategies.map((strategy, i) => scores[i][vote.voter] || 0);
       });
       proposal.votes = votes.length;
       proposal.scores = [];
       votes.map((vote) => {
-        if (!proposal.scores[vote.choice - 1])
-          proposal.scores[vote.choice - 1] = 0;
-        proposal.scores[vote.choice - 1] += vote.scores.reduce(
-          (sum, current) => sum + current,
-        );
+        if (!proposal.scores[vote.choice - 1]) proposal.scores[vote.choice - 1] = 0;
+        proposal.scores[vote.choice - 1] += vote.scores.reduce((sum, current) => sum + current);
       });
     }
   }
@@ -217,7 +205,12 @@ export class SnapshotGraphqlService extends GraphqlService {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ params }),
+        retry: 3,
+        pause: 3000,
       });
+      if (!res.ok) {
+        throw new Error(`HTTP Error Response: ${res.status} ${res.statusText}`);
+      }
       const obj = await res.json();
       return obj.result.scores;
     } catch (e) {
