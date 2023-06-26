@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {
-  GraphqlProposal,
-  SnapshotGraphqlService,
-} from './snapshot.graphql.service';
+import { GraphqlProposal, SnapshotGraphqlService } from './snapshot.graphql.service';
 import { VoteEntity, VoteSources, VoteStatus } from '../vote.entity';
 import {
   abbreviateNumber,
   dateToUtc,
-  hourAgo,
+  threeHoursAgo,
   proposalStateToVoteStatus,
   uniqueProposals,
 } from './snapshot.helpers';
@@ -30,31 +27,21 @@ export class SnapshotService {
 
   async collectByMaxPastDays() {
     const date =
-      (new Date().setDate(
-        new Date().getDate() - MAX_PAST_DAYS_PROPOSALS_FETCH,
-      ) /
-        1000) |
-      0;
-    const activeProposals =
-      await this.snapshotGraphqlService.getActiveProposals();
-    const pastProposals =
-      await this.snapshotGraphqlService.getPastProposalsByDate(date);
+      (new Date().setDate(new Date().getDate() - MAX_PAST_DAYS_PROPOSALS_FETCH) / 1000) | 0;
+    const activeProposals = await this.snapshotGraphqlService.getActiveProposals();
+    const pastProposals = await this.snapshotGraphqlService.getPastProposalsByDate(date);
     const proposals = uniqueProposals([...activeProposals, ...pastProposals]);
     return this.buildVotesFromProposals(proposals);
   }
 
   async collectNewAndRefresh(refreshIds: string[]) {
-    const activeProposals =
-      await this.snapshotGraphqlService.getActiveProposals();
-    const pastProposals =
-      await this.snapshotGraphqlService.getPastProposalsByIds(refreshIds);
+    const activeProposals = await this.snapshotGraphqlService.getActiveProposals();
+    const pastProposals = await this.snapshotGraphqlService.getPastProposalsByIds(refreshIds);
     const proposals = uniqueProposals([...activeProposals, ...pastProposals]);
     return this.buildVotesFromProposals(proposals);
   }
 
-  async buildVotesFromProposals(
-    proposals: GraphqlProposal[],
-  ): Promise<VoteEntity[]> {
+  async buildVotesFromProposals(proposals: GraphqlProposal[]): Promise<VoteEntity[]> {
     const votes: VoteEntity[] = [];
     for (const proposal of proposals) {
       votes.push({
@@ -91,12 +78,7 @@ export class SnapshotService {
 
   hasQuorum(vote: VoteEntity): boolean {
     const percent =
-      Math.round(
-        LDO_5_PERCENT_QUORUM -
-          vote.result1 -
-          vote.result2 -
-          (vote.result3 ?? 0),
-      ) /
+      Math.round(LDO_5_PERCENT_QUORUM - vote.result1 - vote.result2 - (vote.result3 ?? 0)) /
       1e5 /
       10000;
     return percent < 0;
@@ -109,10 +91,9 @@ export class SnapshotService {
     const noneToActive = () =>
       !previousVote &&
       currentVote.status == VoteStatus.active &&
-      new Date(currentVote.startDate) > hourAgo;
+      new Date(currentVote.startDate) > threeHoursAgo;
     const pendingToActive = () =>
-      previousVote.status == VoteStatus.pending &&
-      currentVote.status == VoteStatus.active;
+      previousVote.status == VoteStatus.pending && currentVote.status == VoteStatus.active;
     const activeToFailedByQuorum = () => {
       return (
         previousVote.status == VoteStatus.active &&
@@ -121,9 +102,7 @@ export class SnapshotService {
       );
     };
     const activeToSuccess = () => {
-      const successChoices = this.configService
-        .get('SNAPSHOT_SUCCESS_CHOICES')
-        .split(',');
+      const successChoices = this.configService.get('SNAPSHOT_SUCCESS_CHOICES').split(',');
       return (
         previousVote.status == VoteStatus.active &&
         currentVote.status == VoteStatus.closed &&
@@ -133,9 +112,7 @@ export class SnapshotService {
       );
     };
     const activeToAgainst = () => {
-      const againstChoices = this.configService
-        .get('SNAPSHOT_AGAINST_CHOICES')
-        .split(',');
+      const againstChoices = this.configService.get('SNAPSHOT_AGAINST_CHOICES').split(',');
       return (
         previousVote.status == VoteStatus.active &&
         currentVote.status == VoteStatus.closed &&
@@ -145,14 +122,9 @@ export class SnapshotService {
       );
     };
     const activeToClosed = () => {
-      return (
-        previousVote.status == VoteStatus.active &&
-        currentVote.status == VoteStatus.closed
-      );
+      return previousVote.status == VoteStatus.active && currentVote.status == VoteStatus.closed;
     };
-    const previousVote = previousVotes.find(
-      (item) => item.link == currentVote.link,
-    );
+    const previousVote = previousVotes.find((item) => item.link == currentVote.link);
     if (noneToActive()) {
       return this.getStartMessage(currentVote);
     }
@@ -190,9 +162,7 @@ export class SnapshotService {
       `The [${vote.name}](${vote.link}) Snapshot has started! ` +
         `Please cast your votes before ${dateToUtc(vote.endDate)} 🙏`,
       `Please get your wallets ready to cast a vote ✅, the [${vote.name}](${vote.link}) ` +
-        `Snapshot has started! The Snapshots ends on ${dateToUtc(
-          vote.endDate,
-        )}.`,
+        `Snapshot has started! The Snapshots ends on ${dateToUtc(vote.endDate)}.`,
       `We’re starting the [${vote.name}](${vote.link}) Snapshot, active till ` +
         `${dateToUtc(vote.endDate)} . Please don’t forget to cast your vote!`,
     ];
@@ -205,9 +175,7 @@ export class SnapshotService {
       `The [${vote.name}](${vote.link}) Snapshot has reached a quorum and completed successfully!`,
       `Thank you all who participated in the [${vote.name}](${vote.link}) Snapshot, the proposal passed! 🙏`,
     ];
-    return (
-      VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote)
-    );
+    return VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote);
   }
 
   private getFailedMessageWithoutQuorum(vote: VoteEntity) {
@@ -217,9 +185,7 @@ export class SnapshotService {
       `The [${vote.name}](${vote.link}) Snapshot was missing some of your votes 
       necessary to reach a quorum and failed, unfortunately. 😢`,
     ];
-    return (
-      VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote)
-    );
+    return VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote);
   }
 
   private getFailedMessageVotedAgainst(vote: VoteEntity) {
@@ -229,9 +195,7 @@ export class SnapshotService {
       `The [${vote.name}](${vote.link}) proposal was rejected by Lido DAO. 🚫 
       Please consider gathered feedback and the proposal reworking.`,
     ];
-    return (
-      VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote)
-    );
+    return VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote);
   }
 
   private getClosedMessage(vote: VoteEntity) {
@@ -240,8 +204,6 @@ export class SnapshotService {
       `The [${vote.name}](${vote.link}) Snapshot has reached a quorum and completed!`,
       `Thank you all who participated in [${vote.name}](${vote.link}) Snapshot, we reached a quorum! 🙏`,
     ];
-    return (
-      VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote)
-    );
+    return VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote);
   }
 }

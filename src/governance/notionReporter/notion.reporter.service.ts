@@ -67,7 +67,13 @@ export class NotionReporterService {
         createdCount++;
       }
     }
-    this.logger.log(`Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`);
+    if (votes.length > 0) {
+      this.logger.log(
+        `Reporting has completed for ${votes[0].source} records. Created: ${createdCount}, Updated: ${updatedCount}`,
+      );
+    } else {
+      this.logger.log('Nothing to report');
+    }
   }
 
   async reportTopics(topics: TopicEntity[]) {

@@ -67,16 +67,12 @@ export class ResearchForumProvider {
     }
   }
   async getLatestTopics(): Promise<ResearchForumTopic[]> {
-    const r = await this.get<{ topic_list: { topics: ResearchForumTopic[] } }>(
-      'latest.json',
-    );
+    const r = await this.get<{ topic_list: { topics: ResearchForumTopic[] } }>('latest.json');
     return r.topic_list.topics;
   }
 
   async getTopicPosts(topicUrl): Promise<ResearchForumPost[]> {
-    const r = await this.get<{ post_stream: { posts: ResearchForumPost[] } }>(
-      topicUrl + '.json',
-    );
+    const r = await this.get<{ post_stream: { posts: ResearchForumPost[] } }>(topicUrl + '.json');
     return r.post_stream.posts;
   }
 
@@ -85,9 +81,7 @@ export class ResearchForumProvider {
   }
 
   async getCurrentUser() {
-    const r = await this.get<{ current_user: ResearchForumUser }>(
-      'session/current.json',
-    );
+    const r = await this.get<{ current_user: ResearchForumUser }>('session/current.json');
     return r.current_user;
   }
 
@@ -105,15 +99,17 @@ export class ResearchForumProvider {
     const resp = await this.fetchService.fetchJson(url, {
       method: 'GET',
       headers: this.headers,
+      retryPolicy: {
+        attempts: 2,
+        delay: 1000,
+      },
     });
     return resp as T;
   }
 
   private async post<T>(url, body): Promise<T> {
     if (!this.token)
-      throw Error(
-        'You should specify research forum token if you want to post topics',
-      );
+      throw Error('You should specify research forum token if you want to post topics');
     this.prometheusService.externalServiceRequestsCount.inc({
       serviceName: ResearchForumProvider.name,
     });
