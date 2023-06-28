@@ -100,7 +100,9 @@ export class NotionReporterService {
         createdCount++;
       }
     }
-    this.logger.log(`Reporting has completed. Created: ${createdCount}, Updated: ${updatedCount}`);
+    this.logger.log(
+      `Reporting topics has completed. Created: ${createdCount}, Updated: ${updatedCount}`,
+    );
   }
 
   async getVoteRecords(): Promise<SourceAndNameToVotePage> {
