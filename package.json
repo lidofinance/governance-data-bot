@@ -43,7 +43,6 @@
     "ethers": "^5.7.2",
     "fastify-swagger": "^5.2.0",
     "lodash": "^4.17.21",
-    "node-fetch-retry": "^2.0.1",
     "prom-client": "^14.2.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.0",

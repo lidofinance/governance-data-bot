@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { GraphqlService } from '../../common/graphql/graphql.service';
 import { ConfigService } from '../../common/config';
 import { SnapshotConfig } from './snapshot.config';
-import fetch from 'node-fetch-retry';
+import { FetchService } from '@lido-nestjs/fetch';
 
 const RETRIES_COUNT = 5;
 const RETRY_PAUSE = 3000;
@@ -27,21 +27,29 @@ export interface GraphqlProposal {
   votes: number;
 }
 
+export interface GraphqlVote {
+  scores: any;
+  vp;
+  choice;
+  voter;
+}
+
 @Injectable()
 export class SnapshotGraphqlService extends GraphqlService {
   constructor(
     private prometheusService: PrometheusService,
     private configService: ConfigService,
     private config: SnapshotConfig,
+    fetchService: FetchService,
   ) {
-    super();
+    super(fetchService);
   }
 
-  async query(url, query) {
+  async query<T>(query) {
     this.prometheusService.externalServiceRequestsCount.inc({
       serviceName: SnapshotGraphqlService.name,
     });
-    return await super.query(url, query);
+    return await super.query<T>(query);
   }
 
   async getActiveProposals() {
@@ -97,9 +105,7 @@ export class SnapshotGraphqlService extends GraphqlService {
         votes
       }
     }`;
-    return (
-      await this.query(this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'), query)
-    ).proposals.filter(
+    return (await this.query<{ proposals: GraphqlProposal[] }>(query)).proposals.filter(
       (proposal) =>
         !this.configService
           .get('SNAPSHOT_SPAM_ADDRESSES')
@@ -129,18 +135,7 @@ export class SnapshotGraphqlService extends GraphqlService {
     return finalVotes;
   }
 
-  async votesQuery(
-    proposalId,
-    first = 1000,
-    skip = 0,
-  ): Promise<
-    {
-      scores: any;
-      vp;
-      choice;
-      voter;
-    }[]
-  > {
+  async votesQuery(proposalId, first = 1000, skip = 0): Promise<GraphqlVote[]> {
     const query = `query Votes {
       votes(
         first: ${first},
@@ -162,8 +157,7 @@ export class SnapshotGraphqlService extends GraphqlService {
     this.prometheusService.externalServiceRequestsCount.inc({
       serviceName: SnapshotGraphqlService.name,
     });
-    return (await this.query(this.configService.get('SNAPSHOT_PROPOSALS_GRAPHQL_URL'), query))
-      .votes;
+    return (await this.query<{ votes: GraphqlVote[] }>(query)).votes;
   }
 
   private async fillActualVotesAndScores(proposals: GraphqlProposal[]) {
@@ -204,18 +198,19 @@ export class SnapshotGraphqlService extends GraphqlService {
         strategies,
         addresses,
       };
-      const res = await fetch(this.configService.get('SNAPSHOT_SCORES_API'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ params }),
-        retry: RETRIES_COUNT,
-        pause: RETRY_PAUSE,
-      });
-      if (!res.ok) {
-        throw new Error(`HTTP Error Response: ${res.status} ${res.statusText}`);
-      }
-      const obj = await res.json();
-      return obj.result.scores;
+      const res: { result: { scores: any } } = await this.fetchService.fetchJson(
+        this.configService.get('SNAPSHOT_SCORES_API'),
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ params }),
+          retryPolicy: {
+            attempts: RETRIES_COUNT,
+            delay: RETRY_PAUSE,
+          },
+        },
+      );
+      return res.result.scores;
     } catch (e) {
       return Promise.reject(e);
     }

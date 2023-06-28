@@ -2,6 +2,7 @@ import { PrometheusService } from '../../common/prometheus';
 import { GraphqlService } from '../../common/graphql/graphql.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../common/config';
+import { FetchService } from '@lido-nestjs/fetch';
 
 export interface GraphqlMotion {
   id: string;
@@ -25,8 +26,9 @@ export class EasyTrackGraphqlService extends GraphqlService {
   constructor(
     private prometheusService: PrometheusService,
     private configService: ConfigService,
+    fetchService: FetchService,
   ) {
-    super();
+    super(fetchService);
   }
 
   async getMotions(whereCondition: string): Promise<GraphqlMotion[]> {
@@ -52,16 +54,13 @@ export class EasyTrackGraphqlService extends GraphqlService {
         rejected_at
       }
     }`;
-    return (await this.query(query)).motions;
+    return (await this.query<{ motions: GraphqlMotion[] }>(query)).motions;
   }
 
-  async query(query: string) {
+  async query<T>(query: string) {
     this.prometheusService.externalServiceRequestsCount.inc({
       serviceName: EasyTrackGraphqlService.name,
     });
-    return await super.query(
-      this.configService.get('EASYTRACK_MOTIONS_GRAPHQL_URL'),
-      query,
-    );
+    return await super.query<T>(query);
   }
 }

@@ -2,24 +2,18 @@ import { Test } from '@nestjs/testing';
 import { SnapshotService } from './snapshot.service';
 import { SnapshotGraphqlService } from './snapshot.graphql.service';
 import { GraphqlService } from '../../common/graphql/graphql.service';
-import { PrometheusService } from '../../common/prometheus';
-import { ConfigService } from '../../common/config';
+import { PrometheusModule, PrometheusService } from '../../common/prometheus';
+import { ConfigModule, ConfigService } from '../../common/config';
 import { SnapshotConfig } from './snapshot.config';
 import { VoteEntity, VoteStatus } from '../vote.entity';
+import { SnapshotModule } from './snapshot.module';
 
 describe('Test snapshot collection', () => {
   let snapshotService: SnapshotService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        SnapshotService,
-        SnapshotGraphqlService,
-        SnapshotConfig,
-        GraphqlService,
-        PrometheusService,
-        ConfigService,
-      ],
+      imports: [SnapshotModule, PrometheusModule, ConfigModule],
     }).compile();
     snapshotService = moduleRef.get<SnapshotService>(SnapshotService);
   });
@@ -55,9 +49,7 @@ describe('Test snapshot messages', () => {
       ],
     }).compile();
     snapshotService = moduleRef.get<SnapshotService>(SnapshotService);
-    snapshotGraphqlService = moduleRef.get<SnapshotGraphqlService>(
-      SnapshotGraphqlService,
-    );
+    snapshotGraphqlService = moduleRef.get<SnapshotGraphqlService>(SnapshotGraphqlService);
     configService = moduleRef.get<ConfigService>(ConfigService);
   });
 
@@ -106,10 +98,7 @@ describe('Test snapshot messages', () => {
       startDate: '',
       status: VoteStatus.active,
     };
-    const message = await snapshotService.getChangesMessage(
-      [previousVote],
-      currentVote,
-    );
+    const message = await snapshotService.getChangesMessage([previousVote], currentVote);
     expect(message).toMatch('start');
   });
 
@@ -134,10 +123,7 @@ describe('Test snapshot messages', () => {
       choice2: 'nay',
       status: VoteStatus.closed,
     };
-    const message = await snapshotService.getChangesMessage(
-      [previousVote],
-      currentVote,
-    );
+    const message = await snapshotService.getChangesMessage([previousVote], currentVote);
     expect(message).toMatch(/passed|reached/);
   });
 
@@ -162,10 +148,7 @@ describe('Test snapshot messages', () => {
       choice2: 'nay',
       status: VoteStatus.closed,
     };
-    const message = await snapshotService.getChangesMessage(
-      [previousVote],
-      currentVote,
-    );
+    const message = await snapshotService.getChangesMessage([previousVote], currentVote);
     expect(message).toMatch(/against|rejected/);
   });
 
@@ -190,10 +173,7 @@ describe('Test snapshot messages', () => {
       choice2: 'nay',
       status: VoteStatus.closed,
     };
-    const message = await snapshotService.getChangesMessage(
-      [previousVote],
-      currentVote,
-    );
+    const message = await snapshotService.getChangesMessage([previousVote], currentVote);
     expect(message).toMatch(/quorum/);
   });
 
@@ -220,10 +200,7 @@ describe('Test snapshot messages', () => {
       choice3: 'blue',
       status: VoteStatus.closed,
     };
-    const message = await snapshotService.getChangesMessage(
-      [previousVote],
-      currentVote,
-    );
+    const message = await snapshotService.getChangesMessage([previousVote], currentVote);
     expect(message).toMatch(/concluded|completed|participated/);
   });
 

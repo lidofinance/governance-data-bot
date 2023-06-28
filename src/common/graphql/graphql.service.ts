@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import fetch from 'node-fetch-retry';
+import { FetchService } from '@lido-nestjs/fetch';
 
 const RETRIES_COUNT = 5;
 const RETRY_PAUSE = 1000;
 
 @Injectable()
 export class GraphqlService {
-  async query(url: string, query: string) {
+  constructor(protected fetchService: FetchService) {}
+  async query<T>(query: string) {
     try {
-      const resp = await fetch(url, {
+      const resp: { data: T } = await this.fetchService.fetchJson('', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
         },
         body: JSON.stringify({ query }),
-        retry: RETRIES_COUNT,
-        pause: RETRY_PAUSE,
+        retryPolicy: {
+          attempts: RETRIES_COUNT,
+          delay: RETRY_PAUSE,
+        },
       });
-      if (!resp.ok)
-        throw new Error(`Request failed with ${resp.status} error: ${await resp.text()}`);
-      const respData = await resp.json();
-      return respData.data;
+      return resp.data;
     } catch (e) {
       await Promise.reject(e);
     }
