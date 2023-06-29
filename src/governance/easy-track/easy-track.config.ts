@@ -25,6 +25,8 @@ export class EasyTrackConfig {
         allowedRecipientsReferralProgramDAIRegistryAddress:
           '0xa295C212B44a48D07746d70d32Aa6Ca9b09Fb846',
         allowedRecipientsTRPRegistryAddress: '0x231Ac69A1A37649C6B06a71Ab32DdD92158C80b8',
+        allowedRecipientsStETHRegistryAddress: '0x48c4929630099b217136b64089E8543dB0E5163a',
+        allowedRecipientsGasStETHRegistryAddress: '0x49d1363016aA899bba09ae972a1BF200dDf8C55F',
         easyTrackBaseUrl: 'https://easytrack.lido.fi/motions/',
         etherscanBaseUrl: 'https://etherscan.io/',
         easyTrackStartBlock: 13676729,
@@ -56,6 +58,9 @@ export class EasyTrackConfig {
           '0x935cb3366faf2cfc415b2099d1f974fd27202b77': MotionType.AddAllowedRecipientStETH,
           '0x22010d1747cafc370b1f1fbba61022a313c5693b': MotionType.RemoveAllowedRecipientStETH,
           '0x1f2b79fe297b7098875930bba6dd17068103897e': MotionType.TopUpAllowedRecipientsStETH,
+          '0x200dA0b6a9905A377CF8D469664C65dB267009d1': MotionType.TopUpAllowedRecipientsGasStETH,
+          '0x48c135Ff690C2Aa7F5B11C539104B5855A4f9252': MotionType.AddAllowedRecipientGasStETH,
+          '0x7E8eFfAb3083fB26aCE6832bFcA4C377905F97d7': MotionType.RemoveAllowedRecipientGasStETH,
         },
       },
       [Network.goerli]: {
@@ -75,6 +80,8 @@ export class EasyTrackConfig {
         allowedRecipientsReferralProgramDAIRegistryAddress:
           '0x8fB566b1e78e603a86b97ada5FcA858764dF4088',
         allowedRecipientsTRPRegistryAddress: '0x8C96a6522aEc036C4a384f8B7e05D93d6f3Dae39',
+        allowedRecipientsStETHRegistryAddress: '0x78797efCca6C537BF92FA6b25cBb14A6f1c128A0',
+        allowedRecipientsGasStETHRegistryAddress: '0xF08a5f00824D4554a1FBebaE726609418dc819fb',
         easyTrackBaseUrl: 'https://easytrack.testnet.fi/motions/',
         etherscanBaseUrl: 'https://goerli.etherscan.io/',
         easyTrackStartBlock: 5574275,
@@ -105,6 +112,9 @@ export class EasyTrackConfig {
           '0x785a8b1cdc03bb191670ed4696e9ed5b11af910a': MotionType.AddAllowedRecipientStETH,
           '0xefea524d1739800ff6f7d2532ed4c8508220239a': MotionType.RemoveAllowedRecipientStETH,
           '0xf2f7fc1e8879c10d4579bc82d5fea923a5a228de': MotionType.TopUpAllowedRecipientsStETH,
+          '0x960CcA0BE6419e9684796Ce3ABE980E8a2d0cd80': MotionType.TopUpAllowedRecipientsGasStETH,
+          '0xa2286d37Af8F8e84428151bF72922c5Fe5c1EeED': MotionType.AddAllowedRecipientGasStETH,
+          '0x48D01979eD9e6CE70a6496B111F5728f9a547C96': MotionType.RemoveAllowedRecipientGasStETH,
         },
       },
     };

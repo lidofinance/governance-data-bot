@@ -43,9 +43,16 @@ import * as TopUpAllowedRecipientsReferralProgramDAI from './abi/EvmTopUpAllowed
 import * as AllowedRecipientsRegistryTRP from './abi/EvmAllowedRecipientsRegistryTRP.abi.json';
 import * as TopUpAllowedRecipientsTRP from './abi/EvmTopUpAllowedRecipientsTRP.abi.json';
 
+import * as AllowedRecipientsRegistryStETH from './abi/EvmAllowedRecipientsRegistryStETH.abi.json';
 import * as AddAllowedRecipientStETH from './abi/EvmAddAllowedRecipientStETH.abi.json';
 import * as RemoveAllowedRecipientStETH from './abi/EvmRemoveAllowedRecipientStETH.abi.json';
 import * as TopUpAllowedRecipientsStETH from './abi/EvmTopUpAllowedRecipientsStETH.abi.json';
+
+import * as AddGasSupplyAllowedRecipientStETH from './abi/EvmAddGasSupplyAllowedRecipientStETH.abi.json';
+import * as AllowedRecipientsRegistryGasStETH from './abi/EvmAllowedRecipientsRegistryGasStETH.abi.json';
+import * as RemoveGasSupplyAllowedRecipientStETH from './abi/EvmRemoveGasSupplyAllowedRecipientStETH.abi.json';
+import * as TopUpGasSupplyAllowedRecipientsStETH from './abi/EvmTopUpGasSupplyAllowedRecipientsStETH.abi.json';
+
 import { BigNumber } from 'ethers';
 
 export const EASYTRACK_CONTRACT_ABI = EasyTrack;
@@ -86,9 +93,14 @@ export const abi = {
   TopUpAllowedRecipientsReferralProgramDAI,
   AllowedRecipientsRegistryTRP,
   TopUpAllowedRecipientsTRP,
+  AllowedRecipientsRegistryStETH,
   AddAllowedRecipientStETH,
   RemoveAllowedRecipientStETH,
   TopUpAllowedRecipientsStETH,
+  AllowedRecipientsRegistryGasStETH,
+  AddGasSupplyAllowedRecipientStETH,
+  RemoveGasSupplyAllowedRecipientStETH,
+  TopUpGasSupplyAllowedRecipientsStETH,
 };
 
 export enum MotionType {
@@ -119,6 +131,10 @@ export enum MotionType {
   TopUpAllowedRecipientsStETH = 'Top up recipients (stETH)',
   AddAllowedRecipientStETH = 'Add recipient (stETH)',
   RemoveAllowedRecipientStETH = 'Remove recipient (stETH)',
+
+  AddAllowedRecipientGasStETH = 'Add recipient (GAS stETH)',
+  RemoveAllowedRecipientGasStETH = 'Remove recipient (GAS stETH)',
+  TopUpAllowedRecipientsGasStETH = 'Top up recipient (GAS stETH)',
 }
 
 export const MotionTypeEvmContractAbi = {
@@ -148,6 +164,9 @@ export const MotionTypeEvmContractAbi = {
   [MotionType.AddAllowedRecipientStETH]: abi.AddAllowedRecipientStETH,
   [MotionType.RemoveAllowedRecipientStETH]: abi.RemoveAllowedRecipientStETH,
   [MotionType.TopUpAllowedRecipientsStETH]: abi.TopUpAllowedRecipientsStETH,
+  [MotionType.AddAllowedRecipientGasStETH]: abi.AddGasSupplyAllowedRecipientStETH,
+  [MotionType.RemoveAllowedRecipientGasStETH]: abi.RemoveGasSupplyAllowedRecipientStETH,
+  [MotionType.TopUpAllowedRecipientsGasStETH]: abi.TopUpGasSupplyAllowedRecipientsStETH,
 };
 
 export interface MotionCreatedEventArgs {
