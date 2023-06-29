@@ -76,6 +76,11 @@ export class EasyTrackDescriptionCollector {
     [MotionType.AddAllowedRecipientStETH]: (args) => this.descAddAllowedRecipientStETH(args),
     [MotionType.RemoveAllowedRecipientStETH]: (args) => this.descRemoveAllowedRecipientStETH(args),
     [MotionType.TopUpAllowedRecipientsStETH]: (args) => this.descTopUpAllowedRecipientsStETH(args),
+    [MotionType.AddAllowedRecipientGasStETH]: (args) => this.descAddAllowedRecipientGasStETH(args),
+    [MotionType.RemoveAllowedRecipientGasStETH]: (args) =>
+      this.descRemoveAllowedRecipientGasStETH(args),
+    [MotionType.TopUpAllowedRecipientsGasStETH]: (args) =>
+      this.descTopUpAllowedRecipientsGasStETH(args),
   };
 
   private async descNodeOperatorIncreaseLimit([_nodeOperatorId, _stakingLimit]) {
@@ -338,12 +343,42 @@ export class EasyTrackDescriptionCollector {
   }
 
   private async descTopUpAllowedRecipientsStETH([_recipients, _amounts]) {
-    const results = _recipients.map((address, index) => {
-      return `${this.getEtherscanAddressLink(address, address)} with **${formatEther(
-        _amounts[index],
-      )} stETH**`;
-    });
+    const results = await Promise.all(
+      _recipients.map(async (address, index) => {
+        const name = await this.easyTrackProvider.getRecipientName({
+          AbiRegistry: abi.AllowedRecipientsRegistryStETH,
+          contractAddress: this.config.get('allowedRecipientsStETHRegistryAddress'),
+          address: address,
+        });
+        return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
+          _amounts[index],
+        )} stETH**`;
+      }),
+    );
+    return `Top up recipients:\n${results.join(';\n')}`;
+  }
 
+  private async descAddAllowedRecipientGasStETH([_recipient, _recipientName]) {
+    return `Add allowed recipient ${this.getEtherscanAddressLink(_recipientName, _recipient)}`;
+  }
+
+  private async descRemoveAllowedRecipientGasStETH(_recipient) {
+    return `Remove allowed recipient ${this.getEtherscanAddressLink(_recipient, _recipient)}`;
+  }
+
+  private async descTopUpAllowedRecipientsGasStETH([_recipients, _amounts]) {
+    const results = await Promise.all(
+      _recipients.map(async (address, index) => {
+        const name = await this.easyTrackProvider.getRecipientName({
+          AbiRegistry: abi.AllowedRecipientsRegistryGasStETH,
+          contractAddress: this.config.get('allowedRecipientsGasStETHRegistryAddress'),
+          address: address,
+        });
+        return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
+          _amounts[index],
+        )} stETH**`;
+      }),
+    );
     return `Top up recipients:\n${results.join(';\n')}`;
   }
 }
