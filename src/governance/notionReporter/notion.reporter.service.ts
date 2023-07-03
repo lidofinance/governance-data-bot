@@ -51,7 +51,7 @@ export class NotionReporterService {
       const properties = new NotionVoteEntity(vote).properties();
       const voteFromPage = records[`${vote.source}|${vote.name}`];
       if (voteFromPage !== undefined) {
-        if (objectsAreEqual(vote, voteFromPage.vote)) continue;
+        if (objectsAreEqual(voteFromNotionProperties(properties), voteFromPage.vote)) continue;
         if (!this.configService.isDryRun())
           await this.notion.pages.update({
             page_id: records[`${vote.source}|${vote.name}`].pageId,

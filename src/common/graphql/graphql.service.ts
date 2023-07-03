@@ -8,21 +8,18 @@ const RETRY_PAUSE = 1000;
 export class GraphqlService {
   constructor(protected fetchService: FetchService) {}
   async query<T>(query: string) {
-    try {
-      const resp: { data: T } = await this.fetchService.fetchJson('', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({ query }),
-        retryPolicy: {
-          attempts: RETRIES_COUNT,
-          delay: RETRY_PAUSE,
-        },
-      });
-      return resp.data;
-    } catch (e) {
-      await Promise.reject(e);
-    }
+    const resp: { data: T } = await this.fetchService.fetchJson('', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ query }),
+      retryPolicy: {
+        attempts: RETRIES_COUNT,
+        delay: RETRY_PAUSE,
+      },
+    });
+    if (resp.data !== undefined) return resp.data;
+    throw Error(`No data from graphql query, response: ${JSON.stringify(resp)}`);
   }
 }
