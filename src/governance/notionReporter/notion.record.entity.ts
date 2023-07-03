@@ -2,6 +2,8 @@ import { VoteEntity } from '../vote.entity';
 import { formatDate } from '../governance.utils';
 import { TopicEntity } from '../topic.entity';
 
+const MAX_RICH_TEXT_LENGTH = 2000;
+
 export class NotionTypes {
   static title = {
     schema: { title: {} },
@@ -19,7 +21,12 @@ export class NotionTypes {
   static rich_text = {
     schema: { rich_text: {} },
     value: (content: string | undefined, annotations) => {
-      return { rich_text: [{ text: { content: content || '' }, annotations }] };
+      content = content || '';
+      const short_content =
+        content.length > MAX_RICH_TEXT_LENGTH
+          ? content.substring(0, MAX_RICH_TEXT_LENGTH - 5) + '...'
+          : content;
+      return { rich_text: [{ text: { content: short_content }, annotations }] };
     },
   };
 

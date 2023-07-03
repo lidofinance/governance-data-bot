@@ -190,29 +190,25 @@ export class SnapshotGraphqlService extends GraphqlService {
     addresses: string[],
     snapshot: number | string = 'latest',
   ) {
-    try {
-      const params = {
-        space,
-        network,
-        snapshot,
-        strategies,
-        addresses,
-      };
-      const res: { result: { scores: any } } = await this.fetchService.fetchJson(
-        this.configService.get('SNAPSHOT_SCORES_API'),
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ params }),
-          retryPolicy: {
-            attempts: RETRIES_COUNT,
-            delay: RETRY_PAUSE,
-          },
+    const params = {
+      space,
+      network,
+      snapshot,
+      strategies,
+      addresses,
+    };
+    const res: { result: { scores: any } } = await this.fetchService.fetchJson(
+      this.configService.get('SNAPSHOT_SCORES_API'),
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ params }),
+        retryPolicy: {
+          attempts: RETRIES_COUNT,
+          delay: RETRY_PAUSE,
         },
-      );
-      return res.result.scores;
-    } catch (e) {
-      return Promise.reject(e);
-    }
+      },
+    );
+    return res.result.scores;
   }
 }
