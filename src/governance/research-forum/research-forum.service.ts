@@ -13,8 +13,7 @@ export class ResearchForumService {
     private configService: ConfigService,
   ) {
     this.logger = new Logger(
-      (this.configService.isDryRun() ? 'DryRun' : '') +
-        ResearchForumService.name,
+      (this.configService.isDryRun() ? 'DryRun' : '') + ResearchForumService.name,
     );
   }
 
@@ -41,17 +40,17 @@ export class ResearchForumService {
     const user = await this.researchForumProvider.getCurrentUser();
     const posts = await this.researchForumProvider.getTopicPosts(topicUrl);
     const userPosts = posts.filter(
-      (item) =>
-        item.username == user.username && item.cooked.startsWith(firstLine),
+      (item) => item.username == user.username && item.cooked.startsWith(firstLine),
     );
     return userPosts.length == 0;
   }
 
   async notifySnapshotVoteChange(message: string, vote: VoteEntity) {
-    if (
-      vote.discussion &&
-      (await this.noPostsFromUserYet(message, vote.discussion))
-    ) {
+    if (vote.discussion && (await this.noPostsFromUserYet(message, vote.discussion))) {
+      if (!vote.discussion.startsWith(this.configService.get('RESEARCH_FORUM_DISCOURSE_URL'))) {
+        this.logger.warn('Suspicious discussion URL for vote ' + vote.link);
+        return;
+      }
       const topic = await this.researchForumProvider.getTopic(vote.discussion);
       if (this.configService.isDryRun()) {
         this.logger.debug(`Notify to topic ${topic.id}`);
