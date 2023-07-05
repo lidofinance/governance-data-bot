@@ -37,10 +37,7 @@ export class GovernanceService {
       await func();
       this.prometheusService.taskCount.inc({ name, status: TaskStatus.passed });
     } catch (error) {
-      this.logger.error(
-        `An error occurred when task ${name} executed:`,
-        error.stack,
-      );
+      this.logger.error(`An error occurred when task ${name} executed:`, error.stack);
       this.prometheusService.taskCount.inc({ name, status: TaskStatus.failed });
     }
     stop();
@@ -63,9 +60,7 @@ export class GovernanceService {
   @Cron(EVERY_10_MINUTES_OFFSET_3)
   async updateSnapshotRecords() {
     if (this.configService.get('NETWORK') == Network.goerli) {
-      this.logger.warn(
-        `There is no ${Network.goerli} config for Snapshot service`,
-      );
+      this.logger.warn(`There is no ${Network.goerli} config for Snapshot service`);
       return;
     }
     await this.startTask('update-Snapshot-records', async () => {
@@ -74,22 +69,21 @@ export class GovernanceService {
       const previousVotes = Object.values(records)
         .map((record) => record.vote)
         .filter((value) => value.source === VoteSources.snapshot);
-      const ids = previousVotes.map(
-        (value) => value.link.split('/').slice(-1)[0],
-      );
+      const ids = previousVotes.map((value) => value.link.split('/').slice(-1)[0]);
       const votes = await this.snapshotService.collectNewAndRefresh(ids);
       await this.notionReporterService.reportVotes(votes);
       await Promise.all(
         votes.map(async (vote) => {
-          const message = await this.snapshotService.getChangesMessage(
-            previousVotes,
-            vote,
-          );
+          const message = await this.snapshotService.getChangesMessage(previousVotes, vote);
           if (message)
-            await this.researchForumService.notifySnapshotVoteChange(
-              message,
-              vote,
-            );
+            try {
+              await this.researchForumService.notifySnapshotVoteChange(message, vote);
+            } catch (error) {
+              this.logger.error(
+                `An error occurred when Snapshot vote ${vote.link} change notification sent:`,
+                error.stack,
+              );
+            }
         }),
       );
       this.logger.log('Snapshot records are up to date');
@@ -113,9 +107,7 @@ export class GovernanceService {
   @Cron(EVERY_10_MINUTES_OFFSET_8)
   async updateResearchForumRecords() {
     if (this.configService.get('NETWORK') == Network.goerli) {
-      this.logger.warn(
-        `There is no ${Network.goerli} config for Research forum service`,
-      );
+      this.logger.warn(`There is no ${Network.goerli} config for Research forum service`);
       return;
     }
     await this.startTask('update-ResearchForum-records', async () => {
@@ -139,9 +131,7 @@ export class GovernanceService {
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async fullSyncSnapshotRecords() {
     if (this.configService.get('NETWORK') == Network.goerli) {
-      this.logger.warn(
-        `There is no ${Network.goerli} config for Snapshot service`,
-      );
+      this.logger.warn(`There is no ${Network.goerli} config for Snapshot service`);
       return;
     }
     await this.startTask('daily-Snapshot-sync', async () => {
