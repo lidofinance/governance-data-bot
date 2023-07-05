@@ -46,11 +46,12 @@ export class ResearchForumService {
   }
 
   async notifySnapshotVoteChange(message: string, vote: VoteEntity) {
-    if (vote.discussion && (await this.noPostsFromUserYet(message, vote.discussion))) {
-      if (!vote.discussion.startsWith(this.configService.get('RESEARCH_FORUM_DISCOURSE_URL'))) {
-        this.logger.warn('Suspicious discussion URL for vote ' + vote.link);
-        return;
-      }
+    if (!vote.discussion) return;
+    if (!vote.discussion.startsWith(this.configService.get('RESEARCH_FORUM_DISCOURSE_URL'))) {
+      this.logger.warn('Suspicious discussion URL for vote ' + vote.link);
+      return;
+    }
+    if (await this.noPostsFromUserYet(message, vote.discussion)) {
       const topic = await this.researchForumProvider.getTopic(vote.discussion);
       if (this.configService.isDryRun()) {
         this.logger.debug(`Notify to topic ${topic.id}`);
