@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ResearchForumProvider } from './research-forum.provider';
 import { TopicEntity } from '../topic.entity';
 import { formatDate } from '../governance.utils';
-import { VoteEntity } from '../vote.entity';
+import { VoteEntity, VoteStatus } from '../vote.entity';
 import { ConfigService } from '../../common/config';
 
 @Injectable()
@@ -13,8 +13,7 @@ export class ResearchForumService {
     private configService: ConfigService,
   ) {
     this.logger = new Logger(
-      (this.configService.isDryRun() ? 'DryRun' : '') +
-        ResearchForumService.name,
+      (this.configService.isDryRun() ? 'DryRun' : '') + ResearchForumService.name,
     );
   }
 
@@ -36,25 +35,40 @@ export class ResearchForumService {
     return topicEntities;
   }
 
-  async noPostsFromUserYet(message: string, topicUrl: string) {
-    const firstLine = message.split('\n')[0];
+  async noPostsFromUserYet(vote: VoteEntity) {
+    let voteDate: Date;
+    switch (vote.status) {
+      case VoteStatus.active:
+        voteDate = new Date(vote.startDate);
+        break;
+      case VoteStatus.closed:
+        voteDate = new Date(vote.endDate);
+        break;
+      default:
+        this.logger.warn('Unexpected vote status ' + vote.status + ' for vote ' + vote.link);
+        return false;
+    }
     const user = await this.researchForumProvider.getCurrentUser();
-    const posts = await this.researchForumProvider.getTopicPosts(topicUrl);
+    const posts = await this.researchForumProvider.getTopicPosts(vote.discussion);
     const userPosts = posts.filter(
       (item) =>
-        item.username == user.username && item.cooked.startsWith(firstLine),
+        item.username == user.username &&
+        item.cooked.includes(vote.link) &&
+        new Date(item.created_at) > voteDate,
     );
     return userPosts.length == 0;
   }
 
   async notifySnapshotVoteChange(message: string, vote: VoteEntity) {
-    if (
-      vote.discussion &&
-      (await this.noPostsFromUserYet(message, vote.discussion))
-    ) {
+    if (!vote.discussion) return;
+    if (!vote.discussion.startsWith(this.configService.get('RESEARCH_FORUM_DISCOURSE_URL'))) {
+      this.logger.warn('Suspicious discussion URL for vote ' + vote.link);
+      return;
+    }
+    if (await this.noPostsFromUserYet(vote)) {
       const topic = await this.researchForumProvider.getTopic(vote.discussion);
+      this.logger.debug(`Notify snapshot status ${vote.status} to topic ${topic.id}`);
       if (this.configService.isDryRun()) {
-        this.logger.debug(`Notify to topic ${topic.id}`);
         return;
       }
       await this.researchForumProvider.createPost(Number(topic.id), message);
