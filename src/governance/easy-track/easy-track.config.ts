@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService, Network, NetworkConfig } from '../../common/config';
 import { MotionType } from './easy-track.constants';
+import { CaseInsensitiveMap } from '../governance.utils';
 
 @Injectable()
 export class EasyTrackConfig {
@@ -30,38 +31,40 @@ export class EasyTrackConfig {
         easyTrackBaseUrl: 'https://easytrack.lido.fi/motions/',
         etherscanBaseUrl: 'https://etherscan.io/',
         easyTrackStartBlock: 13676729,
-        factoryToMotionType: {
-          '0xfebd8fac16de88206d4b18764e826af38546afe0': MotionType.NodeOperatorIncreaseLimit,
-          '0x648c8be548f43eca4e482c0801ebccccfb944931': MotionType.LEGOTopUp,
-          '0x9d15032b91d01d5c1d940eb919461426ab0dd4e3': MotionType.RewardProgramAdd,
-          '0xc21e5e72ffc223f02fc410aaede3084a63963932': MotionType.RewardProgramRemove,
-          '0x77781a93c4824d2299a38ac8bbb11eb3cd6bc3b7': MotionType.RewardProgramTopUp,
-          '0x929547490ceb6aeedd7d72f1ab8957c0210b6e51': MotionType.ReferralPartnerAdd,
-          '0xe9eb838fb3a288bf59e9275ccd7e124fdff88a9c': MotionType.ReferralPartnerRemove,
-          '0x54058ee0e0c87ad813c002262cd75b98a7f59218': MotionType.ReferralPartnerTopUp,
-          '0x1dcfc37719a99d73a0ce25ceecbefbf39938cf2c': MotionType.AddAllowedRecipientReWARDS,
-          '0x00bb68a12180a8f7e20d8422ba9f81c07a19a79e': MotionType.RemoveAllowedRecipientReWARDS,
-          '0x85d703b2a4bad713b596c647badac9a1e95bb03d': MotionType.TopUpAllowedRecipientsReWARDS,
-          '0x00caaef11ec545b192f16313f53912e453c91458': MotionType.TopUpAllowedRecipientsLegoLDO,
-          '0x0535a67ea2d6d46f85fe568b7eaa91ca16824fec': MotionType.TopUpAllowedRecipientsLegoDAI,
-          '0x84f74733ede9bfd53c1b3ea96338867c94ec313e': MotionType.TopUpAllowedRecipientsRccDAI,
-          '0x4e6d3a5023a38ce2c4c5456d3760357fd93a22cd': MotionType.TopUpAllowedRecipientsPmlDAI,
-          '0x67fb97abb9035e2e93a7e3761a0d0571c5d7cd07': MotionType.TopUpAllowedRecipientsAtcDAI,
-          '0x41f9dac5f89092dd6061e59578a2611849317dc8': MotionType.TopUpAllowedRecipientsGasETH,
-          '0x8f06a7f244f6bb4b68cd6db05213042bfc0d7151':
-            MotionType.AddAllowedRecipientReferralProgramDAI,
-          '0xd8f9b72cd97388f23814ecf429cd18815f6352c1':
-            MotionType.RemoveAllowedRecipientReferralProgramDAI,
-          '0x009ffa22ce4388d2f5de128ca8e6fd229a312450':
-            MotionType.TopUpAllowedRecipientsReferralProgramDAI,
-          '0xbd2b6dc189eefd51b273f5cb2d99ba1ce565fb8c': MotionType.TopUpAllowedRecipientsTRP,
-          '0x935cb3366faf2cfc415b2099d1f974fd27202b77': MotionType.AddAllowedRecipientStETH,
-          '0x22010d1747cafc370b1f1fbba61022a313c5693b': MotionType.RemoveAllowedRecipientStETH,
-          '0x1f2b79fe297b7098875930bba6dd17068103897e': MotionType.TopUpAllowedRecipientsStETH,
-          '0x200dA0b6a9905A377CF8D469664C65dB267009d1': MotionType.TopUpAllowedRecipientsGasStETH,
-          '0x48c135Ff690C2Aa7F5B11C539104B5855A4f9252': MotionType.AddAllowedRecipientGasStETH,
-          '0x7E8eFfAb3083fB26aCE6832bFcA4C377905F97d7': MotionType.RemoveAllowedRecipientGasStETH,
-        },
+        factoryToMotionType: new CaseInsensitiveMap<MotionType>(
+          Object.entries({
+            '0xfebd8fac16de88206d4b18764e826af38546afe0': MotionType.NodeOperatorIncreaseLimit,
+            '0x648c8be548f43eca4e482c0801ebccccfb944931': MotionType.LEGOTopUp,
+            '0x9d15032b91d01d5c1d940eb919461426ab0dd4e3': MotionType.RewardProgramAdd,
+            '0xc21e5e72ffc223f02fc410aaede3084a63963932': MotionType.RewardProgramRemove,
+            '0x77781a93c4824d2299a38ac8bbb11eb3cd6bc3b7': MotionType.RewardProgramTopUp,
+            '0x929547490ceb6aeedd7d72f1ab8957c0210b6e51': MotionType.ReferralPartnerAdd,
+            '0xe9eb838fb3a288bf59e9275ccd7e124fdff88a9c': MotionType.ReferralPartnerRemove,
+            '0x54058ee0e0c87ad813c002262cd75b98a7f59218': MotionType.ReferralPartnerTopUp,
+            '0x1dcfc37719a99d73a0ce25ceecbefbf39938cf2c': MotionType.AddAllowedRecipientReWARDS,
+            '0x00bb68a12180a8f7e20d8422ba9f81c07a19a79e': MotionType.RemoveAllowedRecipientReWARDS,
+            '0x85d703b2a4bad713b596c647badac9a1e95bb03d': MotionType.TopUpAllowedRecipientsReWARDS,
+            '0x00caaef11ec545b192f16313f53912e453c91458': MotionType.TopUpAllowedRecipientsLegoLDO,
+            '0x0535a67ea2d6d46f85fe568b7eaa91ca16824fec': MotionType.TopUpAllowedRecipientsLegoDAI,
+            '0x84f74733ede9bfd53c1b3ea96338867c94ec313e': MotionType.TopUpAllowedRecipientsRccDAI,
+            '0x4e6d3a5023a38ce2c4c5456d3760357fd93a22cd': MotionType.TopUpAllowedRecipientsPmlDAI,
+            '0x67fb97abb9035e2e93a7e3761a0d0571c5d7cd07': MotionType.TopUpAllowedRecipientsAtcDAI,
+            '0x41f9dac5f89092dd6061e59578a2611849317dc8': MotionType.TopUpAllowedRecipientsGasETH,
+            '0x8f06a7f244f6bb4b68cd6db05213042bfc0d7151':
+              MotionType.AddAllowedRecipientReferralProgramDAI,
+            '0xd8f9b72cd97388f23814ecf429cd18815f6352c1':
+              MotionType.RemoveAllowedRecipientReferralProgramDAI,
+            '0x009ffa22ce4388d2f5de128ca8e6fd229a312450':
+              MotionType.TopUpAllowedRecipientsReferralProgramDAI,
+            '0xbd2b6dc189eefd51b273f5cb2d99ba1ce565fb8c': MotionType.TopUpAllowedRecipientsTRP,
+            '0x935cb3366faf2cfc415b2099d1f974fd27202b77': MotionType.AddAllowedRecipientStETH,
+            '0x22010d1747cafc370b1f1fbba61022a313c5693b': MotionType.RemoveAllowedRecipientStETH,
+            '0x1f2b79fe297b7098875930bba6dd17068103897e': MotionType.TopUpAllowedRecipientsStETH,
+            '0x200dA0b6a9905A377CF8D469664C65dB267009d1': MotionType.TopUpAllowedRecipientsGasStETH,
+            '0x48c135Ff690C2Aa7F5B11C539104B5855A4f9252': MotionType.AddAllowedRecipientGasStETH,
+            '0x7E8eFfAb3083fB26aCE6832bFcA4C377905F97d7': MotionType.RemoveAllowedRecipientGasStETH,
+          }),
+        ),
       },
       [Network.goerli]: {
         easyTrackContract: '0xAf072C8D368E4DD4A9d4fF6A76693887d6ae92Af',
@@ -85,43 +88,45 @@ export class EasyTrackConfig {
         easyTrackBaseUrl: 'https://easytrack.testnet.fi/motions/',
         etherscanBaseUrl: 'https://goerli.etherscan.io/',
         easyTrackStartBlock: 5574275,
-        factoryToMotionType: {
-          '0xe033673d83a8a60500bce02abd9007ffab587714': MotionType.NodeOperatorIncreaseLimit,
-          '0xb2bcf211f103d7f13789394dd475c2274e044c4c': MotionType.LEGOTopUp,
-          '0x5560d40b00ea3a64e9431f97b3c79b04e0cdf6f2': MotionType.RewardProgramAdd,
-          '0x31b68d81125e52fe1adfe4076f8945d1014753b5': MotionType.RewardProgramRemove,
-          '0x8180949ac41ef18e844ff8dafe604a195d86aea9': MotionType.RewardProgramTopUp,
-          '0xe54ca3e867c52a34d262e94606c7a9371ab820c9': MotionType.ReferralPartnerAdd,
-          '0x2a0c343087c6cfb721ffa20608a6ed0473c71275': MotionType.ReferralPartnerRemove,
-          '0xb1e898fac74c377bef16712ba1cd4738606c19ee': MotionType.ReferralPartnerTopUp,
-          '0x3ef70849fdbee7b1f0a43179a3f788a8949b8abe': MotionType.AddAllowedRecipientReWARDS,
-          '0x6c2e12d9c1d6e3de146a7519ecbcb79c96fe3146': MotionType.RemoveAllowedRecipientReWARDS,
-          '0xd928dc9e4dabee939d3237a4f41983ff5b6308db': MotionType.TopUpAllowedRecipientsReWARDS,
-          '0xc39dd5b66968e364d99e0c9e7089049351ab89ca': MotionType.TopUpAllowedRecipientsLegoLDO,
-          '0xbf44ec2b23ca105f8a62e0587900a09a473288c6': MotionType.TopUpAllowedRecipientsLegoDAI,
-          '0xd0411e7c4a24e7d4509d5f13aed19aeb8e5644ab': MotionType.TopUpAllowedRecipientsRccDAI,
-          '0xc749ad24572263887bc888d3cb854fcd50eccb61': MotionType.TopUpAllowedRecipientsPmlDAI,
-          '0xf4b8b5760ee4b5c5cb154edd0f0841465d821006': MotionType.TopUpAllowedRecipientsAtcDAI,
-          '0x734458219be229f6631f083ea574ebaca2f9beaf':
-            MotionType.AddAllowedRecipientReferralProgramDAI,
-          '0x5fec0bcd7519c4fe41eca5fe1dd94345fa100a67':
-            MotionType.RemoveAllowedRecipientReferralProgramDAI,
-          '0x9534a77029d57e249c467e5a1e0854cc26cd75a0':
-            MotionType.TopUpAllowedRecipientsReferralProgramDAI,
-          '0x43f33c52156d1fb2ea24d82abfd342e69835e79f': MotionType.TopUpAllowedRecipientsTRP,
-          '0x785a8b1cdc03bb191670ed4696e9ed5b11af910a': MotionType.AddAllowedRecipientStETH,
-          '0xefea524d1739800ff6f7d2532ed4c8508220239a': MotionType.RemoveAllowedRecipientStETH,
-          '0xf2f7fc1e8879c10d4579bc82d5fea923a5a228de': MotionType.TopUpAllowedRecipientsStETH,
-          '0x960CcA0BE6419e9684796Ce3ABE980E8a2d0cd80': MotionType.TopUpAllowedRecipientsGasStETH,
-          '0xa2286d37Af8F8e84428151bF72922c5Fe5c1EeED': MotionType.AddAllowedRecipientGasStETH,
-          '0x48D01979eD9e6CE70a6496B111F5728f9a547C96': MotionType.RemoveAllowedRecipientGasStETH,
-        },
+        factoryToMotionType: new CaseInsensitiveMap<MotionType>(
+          Object.entries({
+            '0xe033673d83a8a60500bce02abd9007ffab587714': MotionType.NodeOperatorIncreaseLimit,
+            '0xb2bcf211f103d7f13789394dd475c2274e044c4c': MotionType.LEGOTopUp,
+            '0x5560d40b00ea3a64e9431f97b3c79b04e0cdf6f2': MotionType.RewardProgramAdd,
+            '0x31b68d81125e52fe1adfe4076f8945d1014753b5': MotionType.RewardProgramRemove,
+            '0x8180949ac41ef18e844ff8dafe604a195d86aea9': MotionType.RewardProgramTopUp,
+            '0xe54ca3e867c52a34d262e94606c7a9371ab820c9': MotionType.ReferralPartnerAdd,
+            '0x2a0c343087c6cfb721ffa20608a6ed0473c71275': MotionType.ReferralPartnerRemove,
+            '0xb1e898fac74c377bef16712ba1cd4738606c19ee': MotionType.ReferralPartnerTopUp,
+            '0x3ef70849fdbee7b1f0a43179a3f788a8949b8abe': MotionType.AddAllowedRecipientReWARDS,
+            '0x6c2e12d9c1d6e3de146a7519ecbcb79c96fe3146': MotionType.RemoveAllowedRecipientReWARDS,
+            '0xd928dc9e4dabee939d3237a4f41983ff5b6308db': MotionType.TopUpAllowedRecipientsReWARDS,
+            '0xc39dd5b66968e364d99e0c9e7089049351ab89ca': MotionType.TopUpAllowedRecipientsLegoLDO,
+            '0xbf44ec2b23ca105f8a62e0587900a09a473288c6': MotionType.TopUpAllowedRecipientsLegoDAI,
+            '0xd0411e7c4a24e7d4509d5f13aed19aeb8e5644ab': MotionType.TopUpAllowedRecipientsRccDAI,
+            '0xc749ad24572263887bc888d3cb854fcd50eccb61': MotionType.TopUpAllowedRecipientsPmlDAI,
+            '0xf4b8b5760ee4b5c5cb154edd0f0841465d821006': MotionType.TopUpAllowedRecipientsAtcDAI,
+            '0x734458219be229f6631f083ea574ebaca2f9beaf':
+              MotionType.AddAllowedRecipientReferralProgramDAI,
+            '0x5fec0bcd7519c4fe41eca5fe1dd94345fa100a67':
+              MotionType.RemoveAllowedRecipientReferralProgramDAI,
+            '0x9534a77029d57e249c467e5a1e0854cc26cd75a0':
+              MotionType.TopUpAllowedRecipientsReferralProgramDAI,
+            '0x43f33c52156d1fb2ea24d82abfd342e69835e79f': MotionType.TopUpAllowedRecipientsTRP,
+            '0x785a8b1cdc03bb191670ed4696e9ed5b11af910a': MotionType.AddAllowedRecipientStETH,
+            '0xefea524d1739800ff6f7d2532ed4c8508220239a': MotionType.RemoveAllowedRecipientStETH,
+            '0xf2f7fc1e8879c10d4579bc82d5fea923a5a228de': MotionType.TopUpAllowedRecipientsStETH,
+            '0x960CcA0BE6419e9684796Ce3ABE980E8a2d0cd80': MotionType.TopUpAllowedRecipientsGasStETH,
+            '0xa2286d37Af8F8e84428151bF72922c5Fe5c1EeED': MotionType.AddAllowedRecipientGasStETH,
+            '0x48D01979eD9e6CE70a6496B111F5728f9a547C96': MotionType.RemoveAllowedRecipientGasStETH,
+          }),
+        ),
       },
     };
     this.config = networks[this.configService.get('NETWORK')];
   }
 
-  get(key: string): string {
+  get<T = string>(key: string): T {
     return this.config[key];
   }
 }

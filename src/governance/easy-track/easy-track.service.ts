@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EASYTRACK_CONTRACT_ABI } from './easy-track.constants';
+import { EASYTRACK_CONTRACT_ABI, MotionType } from './easy-track.constants';
 import { VoteEntity, VoteSources } from '../vote.entity';
 import { eventAndDurationInfoToStatus, getEasyTrackType } from './easy-track.helpers';
 import { EasyTrackDescriptionCollector } from './easy-track-description-collector.service';
@@ -60,7 +60,7 @@ export class EasyTrackService {
         executionEndDate: formatDate(eventInfo.executionEndDate),
         type: await getEasyTrackType(
           motion.evmScriptFactory,
-          this.config.get('factoryToMotionType'),
+          this.config.get<Map<string, MotionType>>('factoryToMotionType'),
         ),
         description: await this.descriptionCollector.getMotionDescription(
           motion.evmScriptFactory,
