@@ -1,12 +1,13 @@
 import { EasyTrackEventInfo } from './easy-track-event-collector.service';
 import { VoteStatus } from '../vote.entity';
+import { MotionType } from './easy-track.constants';
 
 export async function getEasyTrackType(
   evmScriptFactory: string,
-  factoryToMotionType,
+  factoryToMotionType: Map<string, MotionType>,
 ) {
-  const name = factoryToMotionType[evmScriptFactory.toLowerCase()];
-  return name ? name : 'Motion type placeholder';
+  const name = factoryToMotionType.get(evmScriptFactory);
+  return name ? name : 'Unknown motion type';
 }
 
 // filter numeric keys from object and optional keys from excluded list
@@ -16,11 +17,7 @@ export function filterArgs(args: unknown, exclude = []) {
     .reduce((a, k) => ({ ...a, [k]: args[k] }), {});
 }
 
-export function eventAndDurationInfoToStatus(
-  eventInfo: EasyTrackEventInfo,
-  startDate,
-  duration,
-) {
+export function eventAndDurationInfoToStatus(eventInfo: EasyTrackEventInfo, startDate, duration) {
   if (eventInfo.passed) return VoteStatus.passed;
   if (eventInfo.cancelled) return VoteStatus.cancelled;
   if (eventInfo.enacted) return VoteStatus.enacted;
