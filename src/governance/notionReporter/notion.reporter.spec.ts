@@ -29,18 +29,17 @@ describe('Test EasyTrack notion reporting', () => {
         LoggerModule,
         EasyTrackModule,
         NotionReporterModule,
+        EtherscanProviderModule,
       ],
       providers: [],
     }).compile();
     moduleRef.useLogger(new Logger());
-    notionReporterService = moduleRef.get<NotionReporterService>(
-      NotionReporterService,
-    );
+    notionReporterService = moduleRef.get<NotionReporterService>(NotionReporterService);
     easyTrackService = moduleRef.get<EasyTrackService>(EasyTrackService);
   });
 
   it('Test notion votes reporting', async () => {
-    const votes = await easyTrackService.collectNewAndRefresh([185]);
+    const votes = await easyTrackService.collectByMaxPastDays();
     await notionReporterService.reportVotes(votes);
   }, 360000);
 });
@@ -62,9 +61,7 @@ describe('Test Snapshot notion reporting', () => {
       providers: [],
     }).compile();
     moduleRef.useLogger(new Logger());
-    notionReporterService = moduleRef.get<NotionReporterService>(
-      NotionReporterService,
-    );
+    notionReporterService = moduleRef.get<NotionReporterService>(NotionReporterService);
     snapshotService = moduleRef.get<SnapshotService>(SnapshotService);
   });
 
@@ -92,14 +89,12 @@ describe('Test Aragon notion reporting', () => {
       providers: [],
     }).compile();
     moduleRef.useLogger(new Logger());
-    notionReporterService = moduleRef.get<NotionReporterService>(
-      NotionReporterService,
-    );
+    notionReporterService = moduleRef.get<NotionReporterService>(NotionReporterService);
     aragonService = moduleRef.get<AragonService>(AragonService);
   });
 
   it('Test notion votes reporting', async () => {
-    const votes = await aragonService.collectNewAndRefresh([130]);
+    const votes = await aragonService.collectNewAndRefresh([160]);
     // const votes = await aragonService.collectByMaxPastDays();
     await notionReporterService.reportVotes(votes);
   }, 360000);
@@ -122,11 +117,8 @@ describe('Test Research forum notion reporting', () => {
       providers: [],
     }).compile();
     moduleRef.useLogger(new Logger());
-    notionReporterService = moduleRef.get<NotionReporterService>(
-      NotionReporterService,
-    );
-    researchForumService =
-      moduleRef.get<ResearchForumService>(ResearchForumService);
+    notionReporterService = moduleRef.get<NotionReporterService>(NotionReporterService);
+    researchForumService = moduleRef.get<ResearchForumService>(ResearchForumService);
   });
 
   it('Test notion topics reporting', async () => {
