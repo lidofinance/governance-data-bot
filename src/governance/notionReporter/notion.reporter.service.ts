@@ -52,6 +52,7 @@ export class NotionReporterService {
       const voteFromPage = records[`${vote.source}|${vote.name}`];
       if (voteFromPage !== undefined) {
         if (objectsAreEqual(voteFromNotionProperties(properties), voteFromPage.vote)) continue;
+        this.logger.debug(`Vote ${vote.link} has changed. Updating...`);
         if (!this.configService.isDryRun())
           await this.notion.pages.update({
             page_id: records[`${vote.source}|${vote.name}`].pageId,
@@ -59,6 +60,7 @@ export class NotionReporterService {
           });
         updatedCount++;
       } else {
+        this.logger.debug(`Vote ${vote.link} is new. Creating...`);
         if (!this.configService.isDryRun())
           await this.notion.pages.create({
             parent: { database_id: this.votesDatabaseId },
