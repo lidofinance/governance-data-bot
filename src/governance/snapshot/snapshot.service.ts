@@ -60,6 +60,7 @@ export class SnapshotService {
         choice1: proposal.choices[0] === undefined ? '' : proposal.choices[0],
         choice2: proposal.choices[1] === undefined ? '' : proposal.choices[1],
         choice3: proposal.choices[2] === undefined ? '' : proposal.choices[2],
+        flagged: proposal.flagged
       });
     }
     return votes;
