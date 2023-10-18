@@ -30,6 +30,14 @@ describe('Test snapshot collection', () => {
     ]);
     expect(votes.length).toBeGreaterThan(0);
   }, 360000);
+
+  it('Test Snapshot votes collection by ids with spam flagged', async () => {
+    const votes = await snapshotService.collectNewAndRefresh([
+      '0x1c8f0090d6fd106f237f6d30fc8417afc61315aadc400bc1748863b1b1eb25bb',
+    ]);
+    expect(votes.length).toBe(0);
+  }, 360000);
+
 });
 
 describe('Test snapshot messages', () => {

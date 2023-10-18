@@ -25,6 +25,7 @@ export interface GraphqlProposal {
   type: string;
   discussion: string;
   votes: number;
+  flagged: boolean;
 }
 
 export interface GraphqlVote {
@@ -103,6 +104,7 @@ export class SnapshotGraphqlService extends GraphqlService {
         type
         discussion
         votes
+        flagged
       }
     }`;
     return (await this.query<{ proposals: GraphqlProposal[] }>(query)).proposals.filter(
@@ -111,7 +113,7 @@ export class SnapshotGraphqlService extends GraphqlService {
           .get('SNAPSHOT_SPAM_ADDRESSES')
           .toLowerCase()
           .split(',')
-          .includes(proposal.author.toLowerCase()),
+          .includes(proposal.author.toLowerCase()) && !proposal.flagged,
     );
   }
 
