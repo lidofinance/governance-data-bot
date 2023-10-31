@@ -81,14 +81,9 @@ export class SnapshotService {
   }
 
   hasQuorum(vote: VoteEntity): boolean {
-    // if proposal is an approval proposal and has multiple choices (1a, 1b, 2a, 2b),
-    // count quorum percent using just the first choice (1a, 1b)
-    const additionalQuorumSubtrahend =
-      vote.proposalType === 'approval' ? 0 : (vote.result3 ?? 0) - (vote.result4 ?? 0);
-    const percent =
-      Math.round(LDO_5_PERCENT_QUORUM - vote.result1 - vote.result2 - additionalQuorumSubtrahend) /
-      1e5 /
-      10000;
+    // quorum def from docs: more than 5% of the total token supply must vote for one of the options
+    const maxScore = Math.max(vote.result1, vote.result2, vote.result3 ?? 0, vote.result4 ?? 0);
+    const percent = Math.round(LDO_5_PERCENT_QUORUM - maxScore) / 1e5 / 10000;
     return percent < 0;
   }
 
