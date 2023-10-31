@@ -31,7 +31,7 @@ export interface GraphqlProposal {
 export interface GraphqlVote {
   scores: any;
   vp;
-  choice;
+  choice: number | number[];
   voter;
 }
 
@@ -101,10 +101,10 @@ export class SnapshotGraphqlService extends GraphqlService {
         author
         link
         scores
-        type
         discussion
         votes
         flagged
+        type
       }
     }`;
     return (await this.query<{ proposals: GraphqlProposal[] }>(query)).proposals.filter(
@@ -117,16 +117,9 @@ export class SnapshotGraphqlService extends GraphqlService {
     );
   }
 
-  async getActualVotes(proposalId): Promise<
-    {
-      scores: any;
-      vp;
-      choice;
-      voter;
-    }[]
-  > {
-    const finalVotes = [];
-    let votes = [];
+  async getActualVotes(proposalId): Promise<GraphqlVote[]> {
+    const finalVotes: GraphqlVote[] = [];
+    let votes: GraphqlVote[] = [];
     const first = 1000;
     let skip = 0;
     do {
@@ -179,8 +172,12 @@ export class SnapshotGraphqlService extends GraphqlService {
       proposal.votes = votes.length;
       proposal.scores = [];
       votes.map((vote) => {
-        if (!proposal.scores[vote.choice - 1]) proposal.scores[vote.choice - 1] = 0;
-        proposal.scores[vote.choice - 1] += vote.scores.reduce((sum, current) => sum + current);
+        const choices = Array.isArray(vote.choice) ? vote.choice : [vote.choice];
+        for (const choice of choices) {
+          const scoreIndex = choice - 1;
+          if (!proposal.scores[scoreIndex]) proposal.scores[scoreIndex] = 0;
+          proposal.scores[scoreIndex] += vote.scores.reduce((sum, current) => sum + current);
+        }
       });
     }
   }
