@@ -54,12 +54,15 @@ export class SnapshotService {
         result1: proposal.scores[0] === undefined ? null : proposal.scores[0],
         result2: proposal.scores[1] === undefined ? null : proposal.scores[1],
         result3: proposal.scores[2] === undefined ? null : proposal.scores[2],
+        result4: proposal.scores[3] === undefined ? null : proposal.scores[3],
         proposalType: proposal.type,
         discussion: proposal.discussion || null,
         votersNumber: proposal.votes,
         choice1: proposal.choices[0] === undefined ? '' : proposal.choices[0],
         choice2: proposal.choices[1] === undefined ? '' : proposal.choices[1],
         choice3: proposal.choices[2] === undefined ? '' : proposal.choices[2],
+        choice4: proposal.choices[3] === undefined ? '' : proposal.choices[3],
+        flagged: proposal.flagged,
       });
     }
     return votes;
@@ -70,6 +73,7 @@ export class SnapshotService {
       [vote.choice1]: vote.result1,
       [vote.choice2]: vote.result2,
       [vote.choice3]: vote.result3 ?? 0,
+      [vote.choice4]: vote.result4 ?? 0,
     };
     return Object.keys(choiceResults).reduce((a, b) =>
       choiceResults[a] > choiceResults[b] ? a : b,
@@ -77,10 +81,9 @@ export class SnapshotService {
   }
 
   hasQuorum(vote: VoteEntity): boolean {
-    const percent =
-      Math.round(LDO_5_PERCENT_QUORUM - vote.result1 - vote.result2 - (vote.result3 ?? 0)) /
-      1e5 /
-      10000;
+    // quorum def from docs: more than 5% of the total token supply must vote for one of the options
+    const maxScore = Math.max(vote.result1, vote.result2, vote.result3 ?? 0, vote.result4 ?? 0);
+    const percent = Math.round(LDO_5_PERCENT_QUORUM - maxScore) / 1e5 / 10000;
     return percent < 0;
   }
 
@@ -153,7 +156,8 @@ export class SnapshotService {
       'The results are:\n' +
       resultMessage(vote.choice1, vote.result1) +
       resultMessage(vote.choice2, vote.result2) +
-      resultMessage(vote.choice3, vote.result3)
+      resultMessage(vote.choice3, vote.result3) +
+      resultMessage(vote.choice4, vote.result4)
     );
   }
 
@@ -182,7 +186,7 @@ export class SnapshotService {
     const options = [
       `The [${vote.name}](${vote.link}) Snapshot hadn’t reached a quorum. 😔`,
       `Unfortunately, the [${vote.name}](${vote.link}) Snapshot hadn’t reached a quorum. ⛔`,
-      `The [${vote.name}](${vote.link}) Snapshot was missing some of your votes 
+      `The [${vote.name}](${vote.link}) Snapshot was missing some of your votes
       necessary to reach a quorum and failed, unfortunately. 😢`,
     ];
     return VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote);
@@ -192,7 +196,7 @@ export class SnapshotService {
     const options = [
       `The DAO decided to vote against the [${vote.name}](${vote.link}) proposal. ✋🚫`,
       `The [${vote.name}](${vote.link}) proposal was rejected by Lido DAO. 🚫`,
-      `The [${vote.name}](${vote.link}) proposal was rejected by Lido DAO. 🚫 
+      `The [${vote.name}](${vote.link}) proposal was rejected by Lido DAO. 🚫
       Please consider gathered feedback and the proposal reworking.`,
     ];
     return VOTE_ENDED_TITLE + _.sample(options) + '\n' + this.getResultMessage(vote);

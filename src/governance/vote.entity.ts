@@ -15,12 +15,15 @@ export interface VoteEntity {
   result1?: number;
   result2?: number;
   result3?: number;
+  result4?: number;
   proposalType?: string;
   discussion?: string;
   votersNumber?: number;
   choice1?: string;
   choice2?: string;
   choice3?: string;
+  choice4?: string;
+  flagged?: boolean;
 }
 
 export enum VoteSources {
