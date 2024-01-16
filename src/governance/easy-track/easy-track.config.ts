@@ -26,7 +26,6 @@ export class EasyTrackConfig {
         allowedRecipientsReferralProgramDAIRegistryAddress:
           '0xa295C212B44a48D07746d70d32Aa6Ca9b09Fb846',
         allowedRecipientsTRPRegistryAddress: '0x231Ac69A1A37649C6B06a71Ab32DdD92158C80b8',
-        allowedRecipientsStETHRegistryAddress: '0x48c4929630099b217136b64089E8543dB0E5163a',
         allowedRecipientsGasStETHRegistryAddress: '0x49d1363016aA899bba09ae972a1BF200dDf8C55F',
         easyTrackBaseUrl: 'https://easytrack.lido.fi/motions/',
         etherscanBaseUrl: 'https://etherscan.io/',
@@ -63,8 +62,17 @@ export class EasyTrackConfig {
             '0x200dA0b6a9905A377CF8D469664C65dB267009d1': MotionType.TopUpAllowedRecipientsGasStETH,
             '0x48c135Ff690C2Aa7F5B11C539104B5855A4f9252': MotionType.AddAllowedRecipientGasStETH,
             '0x7E8eFfAb3083fB26aCE6832bFcA4C377905F97d7': MotionType.RemoveAllowedRecipientGasStETH,
+            '0xcD42Eb8a5db5a80Dc8f643745528DD77cf4C7D35': MotionType.TopUpAllowedRecipientsRccStETH,
+            '0xc5527396DDC353BD05bBA578aDAa1f5b6c721136': MotionType.TopUpAllowedRecipientsPmlStETH,
+            '0x87b02dF27cd6ec128532Add7C8BC19f62E6f1fB9': MotionType.TopUpAllowedRecipientsAtcStETH,
           }),
         ),
+        motionTypeToRecipientsRegistryAddress: {
+          [MotionType.TopUpAllowedRecipientsRccStETH]: '0xAAC4FcE2c5d55D1152512fe5FAA94DB267EE4863',
+          [MotionType.TopUpAllowedRecipientsPmlStETH]: '0x7b9B8d00f807663d46Fb07F87d61B79884BC335B',
+          [MotionType.TopUpAllowedRecipientsAtcStETH]: '0xd3950eB3d7A9B0aBf8515922c0d35D13e85a2c91',
+          [MotionType.TopUpAllowedRecipientsStETH]: '0x48c4929630099b217136b64089E8543dB0E5163a',
+        },
       },
       [Network.goerli]: {
         easyTrackContract: '0xAf072C8D368E4DD4A9d4fF6A76693887d6ae92Af',
@@ -83,7 +91,6 @@ export class EasyTrackConfig {
         allowedRecipientsReferralProgramDAIRegistryAddress:
           '0x8fB566b1e78e603a86b97ada5FcA858764dF4088',
         allowedRecipientsTRPRegistryAddress: '0x8C96a6522aEc036C4a384f8B7e05D93d6f3Dae39',
-        allowedRecipientsStETHRegistryAddress: '0x78797efCca6C537BF92FA6b25cBb14A6f1c128A0',
         allowedRecipientsGasStETHRegistryAddress: '0xF08a5f00824D4554a1FBebaE726609418dc819fb',
         easyTrackBaseUrl: 'https://easytrack.testnet.fi/motions/',
         etherscanBaseUrl: 'https://goerli.etherscan.io/',
@@ -121,6 +128,9 @@ export class EasyTrackConfig {
             '0x48D01979eD9e6CE70a6496B111F5728f9a547C96': MotionType.RemoveAllowedRecipientGasStETH,
           }),
         ),
+        motionTypeToRecipientsRegistryAddress: {
+          [MotionType.TopUpAllowedRecipientsStETH]: '0x78797efCca6C537BF92FA6b25cBb14A6f1c128A0',
+        },
       },
     };
     this.config = networks[this.configService.get('NETWORK')];

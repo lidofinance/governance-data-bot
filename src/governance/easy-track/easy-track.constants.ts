@@ -135,9 +135,13 @@ export enum MotionType {
   AddAllowedRecipientGasStETH = 'Add recipient (GAS stETH)',
   RemoveAllowedRecipientGasStETH = 'Remove recipient (GAS stETH)',
   TopUpAllowedRecipientsGasStETH = 'Top up recipient (GAS stETH)',
+
+  TopUpAllowedRecipientsRccStETH = 'Top up recipients (RCC stETH)',
+  TopUpAllowedRecipientsPmlStETH = 'Top up recipients (PML stETH)',
+  TopUpAllowedRecipientsAtcStETH = 'Top up recipients (ATC stETH)',
 }
 
-export const MotionTypeEvmContractAbi = {
+export const MotionTypeEvmContractAbi: Record<MotionType, any> = {
   [MotionType.NodeOperatorIncreaseLimit]: abi.EvmIncreaseNodeOperatorStakingLimit,
   [MotionType.LEGOTopUp]: abi.EvmTopUpLegoProgram,
   [MotionType.RewardProgramAdd]: abi.EvmAddRewardProgram,
@@ -167,6 +171,9 @@ export const MotionTypeEvmContractAbi = {
   [MotionType.AddAllowedRecipientGasStETH]: abi.AddGasSupplyAllowedRecipientStETH,
   [MotionType.RemoveAllowedRecipientGasStETH]: abi.RemoveGasSupplyAllowedRecipientStETH,
   [MotionType.TopUpAllowedRecipientsGasStETH]: abi.TopUpGasSupplyAllowedRecipientsStETH,
+  [MotionType.TopUpAllowedRecipientsRccStETH]: abi.TopUpAllowedRecipientsStETH,
+  [MotionType.TopUpAllowedRecipientsPmlStETH]: abi.TopUpAllowedRecipientsStETH,
+  [MotionType.TopUpAllowedRecipientsAtcStETH]: abi.TopUpAllowedRecipientsStETH,
 };
 
 export interface MotionCreatedEventArgs {
