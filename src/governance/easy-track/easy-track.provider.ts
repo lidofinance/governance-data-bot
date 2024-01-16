@@ -140,4 +140,11 @@ export class EasyTrackProvider {
       objectionsPctFormatted,
     };
   }
+
+  async getTokenMetadata(tokenAddress: string) {
+    const contract = await this.getContract(tokenAddress, abi.ERC20);
+    const decimals = await contract.decimals();
+    const symbol = await contract.symbol();
+    return { decimals, symbol };
+  }
 }

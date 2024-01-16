@@ -1,8 +1,9 @@
 import { abi, MotionType, MotionTypeEvmContractAbi } from './easy-track.constants';
 import { EasyTrackProvider } from './easy-track.provider';
-import { formatEther, getAddress } from 'ethers/lib/utils';
+import { formatEther, getAddress, formatUnits } from 'ethers/lib/utils';
 import { Injectable } from '@nestjs/common';
 import { EasyTrackConfig } from './easy-track.config';
+import { BigNumber, BigNumberish } from 'ethers';
 
 @Injectable()
 export class EasyTrackDescriptionCollector {
@@ -27,6 +28,23 @@ export class EasyTrackDescriptionCollector {
 
   getEtherscanAddressLink(name: string, address: string) {
     return `[${name}](<${this.config.get('etherscanBaseUrl')}address/${address}>)`;
+  }
+
+  getRecipientsRegistryAddress(type: MotionType) {
+    return this.config.get<Record<MotionType, string | undefined>>(
+      'motionTypeToRecipientsRegistryAddress',
+    )[type];
+  }
+
+  formatToken(amount: BigNumber, decimals: BigNumberish): string {
+    const amountStr = formatUnits(amount, decimals);
+
+    const formatter = new Intl.NumberFormat('en', {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 2,
+    });
+
+    return formatter.format(parseFloat(amountStr));
   }
 
   async getMotionDescription(evmScriptFactory: string, evmScriptCallData?: string) {
@@ -63,12 +81,9 @@ export class EasyTrackDescriptionCollector {
       this.descTopUpAllowedRecipientsLegoLDO(args),
     [MotionType.TopUpAllowedRecipientsLegoDAI]: (args) =>
       this.descTopUpAllowedRecipientsLegoDAI(args),
-    [MotionType.TopUpAllowedRecipientsRccDAI]: (args) =>
-      this.descTopUpAllowedRecipientsRccDAI(args),
-    [MotionType.TopUpAllowedRecipientsPmlDAI]: (args) =>
-      this.descTopUpAllowedRecipientsPmlDAI(args),
-    [MotionType.TopUpAllowedRecipientsAtcDAI]: (args) =>
-      this.descTopUpAllowedRecipientsAtcDAI(args),
+    [MotionType.TopUpAllowedRecipientsRccDAI]: this.descTopUpAllowedRecipientsDAI,
+    [MotionType.TopUpAllowedRecipientsPmlDAI]: this.descTopUpAllowedRecipientsDAI,
+    [MotionType.TopUpAllowedRecipientsAtcDAI]: this.descTopUpAllowedRecipientsDAI,
     [MotionType.TopUpAllowedRecipientsGasETH]: (args) =>
       this.descTopUpAllowedRecipientsGasETH(args),
     [MotionType.AddAllowedRecipientReferralProgramDAI]: (args) =>
@@ -89,6 +104,9 @@ export class EasyTrackDescriptionCollector {
     [MotionType.TopUpAllowedRecipientsRccStETH]: this.descTopUpAllowedRecipientsStETH,
     [MotionType.TopUpAllowedRecipientsPmlStETH]: this.descTopUpAllowedRecipientsStETH,
     [MotionType.TopUpAllowedRecipientsAtcStETH]: this.descTopUpAllowedRecipientsStETH,
+    [MotionType.TopUpAllowedRecipientsRccStables]: this.descTopUpAllowedRecipientsStables,
+    [MotionType.TopUpAllowedRecipientsPmlStables]: this.descTopUpAllowedRecipientsStables,
+    [MotionType.TopUpAllowedRecipientsAtcStables]: this.descTopUpAllowedRecipientsStables,
   };
 
   private async descNodeOperatorIncreaseLimit([_nodeOperatorId, _stakingLimit]) {
@@ -239,46 +257,14 @@ export class EasyTrackDescriptionCollector {
     return `Top up recipients:\n${results.join(';\n')}`;
   }
 
-  private async descTopUpAllowedRecipientsRccDAI([_recipients, _amounts]) {
+  private async descTopUpAllowedRecipientsDAI([_recipients, _amounts], type: MotionType) {
+    const registryAddress = this.getRecipientsRegistryAddress(type);
+
     const results = await Promise.all(
       _recipients.map(async (address, index) => {
         const name = await this.easyTrackProvider.getRecipientName({
-          AbiRegistry: abi.AllowedRecipientsRegistryRccDAI,
-          contractAddress: this.config.get('allowedRecipientsRccDAIRegistryAddress'),
-          address: address,
-        });
-        return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
-          _amounts[index],
-        )} DAI**`;
-      }),
-    );
-
-    return `Top up recipients:\n${results.join(';\n')}`;
-  }
-
-  private async descTopUpAllowedRecipientsPmlDAI([_recipients, _amounts]) {
-    const results = await Promise.all(
-      _recipients.map(async (address, index) => {
-        const name = await this.easyTrackProvider.getRecipientName({
-          AbiRegistry: abi.AllowedRecipientsRegistryPmlDAI,
-          contractAddress: this.config.get('allowedRecipientsPmlDAIRegistryAddress'),
-          address: address,
-        });
-        return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
-          _amounts[index],
-        )} DAI**`;
-      }),
-    );
-
-    return `Top up recipients:\n${results.join(';\n')}`;
-  }
-
-  private async descTopUpAllowedRecipientsAtcDAI([_recipients, _amounts]) {
-    const results = await Promise.all(
-      _recipients.map(async (address, index) => {
-        const name = await this.easyTrackProvider.getRecipientName({
-          AbiRegistry: abi.AllowedRecipientsRegistryAtcDAI,
-          contractAddress: this.config.get('allowedRecipientsAtcDAIRegistryAddress'),
+          AbiRegistry: abi.AllowedRecipientsRegistryDAI,
+          contractAddress: registryAddress,
           address: address,
         });
         return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
@@ -351,9 +337,7 @@ export class EasyTrackDescriptionCollector {
   }
 
   private async descTopUpAllowedRecipientsStETH([_recipients, _amounts], type: MotionType) {
-    const registryAddress = this.config.get<Record<MotionType, string | undefined>>(
-      'motionTypeToRecipientsRegistryAddress',
-    )[type];
+    const registryAddress = this.getRecipientsRegistryAddress(type);
 
     const results = await Promise.all(
       _recipients.map(async (address, index) => {
@@ -391,6 +375,30 @@ export class EasyTrackDescriptionCollector {
         )} stETH**`;
       }),
     );
+    return `Top up recipients:\n${results.join(';\n')}`;
+  }
+
+  private async descTopUpAllowedRecipientsStables(
+    [_token, _recipients, _amounts],
+    type: MotionType,
+  ) {
+    const registryAddress = this.getRecipientsRegistryAddress(type);
+
+    const { decimals, symbol } = await this.easyTrackProvider.getTokenMetadata(_token);
+    const results = await Promise.all(
+      _recipients.map(async (address, index) => {
+        const name = await this.easyTrackProvider.getRecipientName({
+          AbiRegistry: abi.AllowedRecipientsRegistryStables,
+          contractAddress: registryAddress,
+          address,
+        });
+        return `${this.getEtherscanAddressLink(name, address)} with **${this.formatToken(
+          _amounts[index],
+          decimals,
+        )} ${symbol}**`;
+      }),
+    );
+
     return `Top up recipients:\n${results.join(';\n')}`;
   }
 }

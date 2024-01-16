@@ -19,9 +19,6 @@ export class EasyTrackConfig {
         allowedRecipientsReWARDSRegistryAddress: '0xAa47c268e6b2D4ac7d7f7Ffb28A39484f5212c2A',
         allowedRecipientsLegoLDORegistryAddress: '0x97615f72c3428A393d65A84A3ea6BBD9ad6C0D74',
         allowedRecipientsLegoDAIRegistryAddress: '0xb0FE4D300334461523D9d61AaD90D0494e1Abb43',
-        allowedRecipientsRccDAIRegistryAddress: '0xDc1A0C7849150f466F07d48b38eAA6cE99079f80',
-        allowedRecipientsPmlDAIRegistryAddress: '0xDFfCD3BF14796a62a804c1B16F877Cf7120379dB',
-        allowedRecipientsAtcDAIRegistryAddress: '0xe07305F43B11F230EaA951002F6a55a16419B707',
         allowedRecipientsGasETHRegistryAddress: '0xCf46c4c7f936dF6aE12091ADB9897E3F2363f16F',
         allowedRecipientsReferralProgramDAIRegistryAddress:
           '0xa295C212B44a48D07746d70d32Aa6Ca9b09Fb846',
@@ -65,6 +62,12 @@ export class EasyTrackConfig {
             '0xcD42Eb8a5db5a80Dc8f643745528DD77cf4C7D35': MotionType.TopUpAllowedRecipientsRccStETH,
             '0xc5527396DDC353BD05bBA578aDAa1f5b6c721136': MotionType.TopUpAllowedRecipientsPmlStETH,
             '0x87b02dF27cd6ec128532Add7C8BC19f62E6f1fB9': MotionType.TopUpAllowedRecipientsAtcStETH,
+            '0x75bDecbb6453a901EBBB945215416561547dfDD4':
+              MotionType.TopUpAllowedRecipientsRccStables,
+            '0x92a27C4e5e35cFEa112ACaB53851Ec70e2D99a8D':
+              MotionType.TopUpAllowedRecipientsPmlStables,
+            '0x1843Bc35d1fD15AbE1913b9f72852a79457C42Ab':
+              MotionType.TopUpAllowedRecipientsAtcStables,
           }),
         ),
         motionTypeToRecipientsRegistryAddress: {
@@ -72,6 +75,15 @@ export class EasyTrackConfig {
           [MotionType.TopUpAllowedRecipientsPmlStETH]: '0x7b9B8d00f807663d46Fb07F87d61B79884BC335B',
           [MotionType.TopUpAllowedRecipientsAtcStETH]: '0xd3950eB3d7A9B0aBf8515922c0d35D13e85a2c91',
           [MotionType.TopUpAllowedRecipientsStETH]: '0x48c4929630099b217136b64089E8543dB0E5163a',
+          [MotionType.TopUpAllowedRecipientsRccDAI]: '0xDc1A0C7849150f466F07d48b38eAA6cE99079f80',
+          [MotionType.TopUpAllowedRecipientsPmlDAI]: '0xDFfCD3BF14796a62a804c1B16F877Cf7120379dB',
+          [MotionType.TopUpAllowedRecipientsAtcDAI]: '0xe07305F43B11F230EaA951002F6a55a16419B707',
+          [MotionType.TopUpAllowedRecipientsRccStables]:
+            '0xDc1A0C7849150f466F07d48b38eAA6cE99079f80',
+          [MotionType.TopUpAllowedRecipientsPmlStables]:
+            '0xDFfCD3BF14796a62a804c1B16F877Cf7120379dB',
+          [MotionType.TopUpAllowedRecipientsAtcStables]:
+            '0xe07305F43B11F230EaA951002F6a55a16419B707',
         },
       },
       [Network.goerli]: {
@@ -84,9 +96,6 @@ export class EasyTrackConfig {
         allowedRecipientsReWARDSRegistryAddress: '0xaDA19288575f611A6487365f0fE2A742a90BB2C6',
         allowedRecipientsLegoLDORegistryAddress: '0x6342213719839c56fEe817539863aFB9821B03cb',
         allowedRecipientsLegoDAIRegistryAddress: '0x5884f5849414D4317d175fEc144e2F87f699B082',
-        allowedRecipientsRccDAIRegistryAddress: '0x1440E8aDbE3a42a9EDB4b30059df8F6c35205a15',
-        allowedRecipientsPmlDAIRegistryAddress: '0xAadfBd1ADE92d85c967f4aE096141F0F802F46Db',
-        allowedRecipientsAtcDAIRegistryAddress: '0xedD3B813275e1A88c2283FAfa5bf5396938ef59e',
         allowedRecipientsGasETHRegistryAddress: '0x0000000000000000000000000000000000000000',
         allowedRecipientsReferralProgramDAIRegistryAddress:
           '0x8fB566b1e78e603a86b97ada5FcA858764dF4088',
@@ -126,10 +135,25 @@ export class EasyTrackConfig {
             '0x960CcA0BE6419e9684796Ce3ABE980E8a2d0cd80': MotionType.TopUpAllowedRecipientsGasStETH,
             '0xa2286d37Af8F8e84428151bF72922c5Fe5c1EeED': MotionType.AddAllowedRecipientGasStETH,
             '0x48D01979eD9e6CE70a6496B111F5728f9a547C96': MotionType.RemoveAllowedRecipientGasStETH,
+            '0xd50eE42B31Bc500409B7caD99A2D16FB1Bfecdc6':
+              MotionType.TopUpAllowedRecipientsRccStables,
+            '0x5F379512158A46ab7a91f8b799A97691eC498b9a':
+              MotionType.TopUpAllowedRecipientsPmlStables,
+            '0xB87300405050e7f1dBC35c6C9ce9ea4417D3Ad81':
+              MotionType.TopUpAllowedRecipientsAtcStables,
           }),
         ),
         motionTypeToRecipientsRegistryAddress: {
           [MotionType.TopUpAllowedRecipientsStETH]: '0x78797efCca6C537BF92FA6b25cBb14A6f1c128A0',
+          [MotionType.TopUpAllowedRecipientsRccDAI]: '0x1440E8aDbE3a42a9EDB4b30059df8F6c35205a15',
+          [MotionType.TopUpAllowedRecipientsPmlDAI]: '0xAadfBd1ADE92d85c967f4aE096141F0F802F46Db',
+          [MotionType.TopUpAllowedRecipientsAtcDAI]: '0xedD3B813275e1A88c2283FAfa5bf5396938ef59e',
+          [MotionType.TopUpAllowedRecipientsRccStables]:
+            '0x1440E8aDbE3a42a9EDB4b30059df8F6c35205a15',
+          [MotionType.TopUpAllowedRecipientsPmlStables]:
+            '0xAadfBd1ADE92d85c967f4aE096141F0F802F46Db',
+          [MotionType.TopUpAllowedRecipientsAtcStables]:
+            '0xedD3B813275e1A88c2283FAfa5bf5396938ef59e',
         },
       },
     };
