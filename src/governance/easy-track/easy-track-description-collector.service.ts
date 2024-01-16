@@ -79,8 +79,7 @@ export class EasyTrackDescriptionCollector {
       this.descTopUpAllowedRecipientsReWARDS(args),
     [MotionType.TopUpAllowedRecipientsLegoLDO]: (args) =>
       this.descTopUpAllowedRecipientsLegoLDO(args),
-    [MotionType.TopUpAllowedRecipientsLegoDAI]: (args) =>
-      this.descTopUpAllowedRecipientsLegoDAI(args),
+    [MotionType.TopUpAllowedRecipientsLegoDAI]: this.descTopUpAllowedRecipientsDAI,
     [MotionType.TopUpAllowedRecipientsRccDAI]: this.descTopUpAllowedRecipientsDAI,
     [MotionType.TopUpAllowedRecipientsPmlDAI]: this.descTopUpAllowedRecipientsDAI,
     [MotionType.TopUpAllowedRecipientsAtcDAI]: this.descTopUpAllowedRecipientsDAI,
@@ -107,6 +106,7 @@ export class EasyTrackDescriptionCollector {
     [MotionType.TopUpAllowedRecipientsRccStables]: this.descTopUpAllowedRecipientsStables,
     [MotionType.TopUpAllowedRecipientsPmlStables]: this.descTopUpAllowedRecipientsStables,
     [MotionType.TopUpAllowedRecipientsAtcStables]: this.descTopUpAllowedRecipientsStables,
+    [MotionType.TopUpAllowedRecipientsLegoStables]: this.descTopUpAllowedRecipientsStables,
   };
 
   private async descNodeOperatorIncreaseLimit([_nodeOperatorId, _stakingLimit]) {
@@ -234,23 +234,6 @@ export class EasyTrackDescriptionCollector {
         return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
           _amounts[index],
         )} LDO**`;
-      }),
-    );
-
-    return `Top up recipients:\n${results.join(';\n')}`;
-  }
-
-  private async descTopUpAllowedRecipientsLegoDAI([_recipients, _amounts]) {
-    const results = await Promise.all(
-      _recipients.map(async (address, index) => {
-        const name = await this.easyTrackProvider.getRecipientName({
-          AbiRegistry: abi.AllowedRecipientsRegistryLegoDAI,
-          contractAddress: this.config.get('allowedRecipientsLegoDAIRegistryAddress'),
-          address: address,
-        });
-        return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
-          _amounts[index],
-        )} DAI**`;
       }),
     );
 

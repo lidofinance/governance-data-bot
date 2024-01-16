@@ -18,7 +18,6 @@ export class EasyTrackConfig {
         referralPartnersRegistry: '0xfCaD241D9D2A2766979A2de208E8210eDf7b7D4F',
         allowedRecipientsReWARDSRegistryAddress: '0xAa47c268e6b2D4ac7d7f7Ffb28A39484f5212c2A',
         allowedRecipientsLegoLDORegistryAddress: '0x97615f72c3428A393d65A84A3ea6BBD9ad6C0D74',
-        allowedRecipientsLegoDAIRegistryAddress: '0xb0FE4D300334461523D9d61AaD90D0494e1Abb43',
         allowedRecipientsGasETHRegistryAddress: '0xCf46c4c7f936dF6aE12091ADB9897E3F2363f16F',
         allowedRecipientsReferralProgramDAIRegistryAddress:
           '0xa295C212B44a48D07746d70d32Aa6Ca9b09Fb846',
@@ -68,6 +67,8 @@ export class EasyTrackConfig {
               MotionType.TopUpAllowedRecipientsPmlStables,
             '0x1843Bc35d1fD15AbE1913b9f72852a79457C42Ab':
               MotionType.TopUpAllowedRecipientsAtcStables,
+            '0x6AB39a8Be67D9305799c3F8FdFc95Caf3150d17c':
+              MotionType.TopUpAllowedRecipientsLegoStables,
           }),
         ),
         motionTypeToRecipientsRegistryAddress: {
@@ -84,6 +85,9 @@ export class EasyTrackConfig {
             '0xDFfCD3BF14796a62a804c1B16F877Cf7120379dB',
           [MotionType.TopUpAllowedRecipientsAtcStables]:
             '0xe07305F43B11F230EaA951002F6a55a16419B707',
+          [MotionType.TopUpAllowedRecipientsLegoDAI]: '0xb0FE4D300334461523D9d61AaD90D0494e1Abb43',
+          [MotionType.TopUpAllowedRecipientsLegoStables]:
+            '0xb0FE4D300334461523D9d61AaD90D0494e1Abb43',
         },
       },
       [Network.goerli]: {
@@ -95,7 +99,6 @@ export class EasyTrackConfig {
         referralPartnersRegistry: '0x4CB0c9987fd670069e4b24c653981E86b261A2ca',
         allowedRecipientsReWARDSRegistryAddress: '0xaDA19288575f611A6487365f0fE2A742a90BB2C6',
         allowedRecipientsLegoLDORegistryAddress: '0x6342213719839c56fEe817539863aFB9821B03cb',
-        allowedRecipientsLegoDAIRegistryAddress: '0x5884f5849414D4317d175fEc144e2F87f699B082',
         allowedRecipientsGasETHRegistryAddress: '0x0000000000000000000000000000000000000000',
         allowedRecipientsReferralProgramDAIRegistryAddress:
           '0x8fB566b1e78e603a86b97ada5FcA858764dF4088',
@@ -154,6 +157,9 @@ export class EasyTrackConfig {
             '0xAadfBd1ADE92d85c967f4aE096141F0F802F46Db',
           [MotionType.TopUpAllowedRecipientsAtcStables]:
             '0xedD3B813275e1A88c2283FAfa5bf5396938ef59e',
+          [MotionType.TopUpAllowedRecipientsLegoDAI]: '0x5884f5849414D4317d175fEc144e2F87f699B082',
+          [MotionType.TopUpAllowedRecipientsLegoStables]:
+            '0x5884f5849414D4317d175fEc144e2F87f699B082',
         },
       },
     };

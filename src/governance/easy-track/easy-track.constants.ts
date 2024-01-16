@@ -141,6 +141,7 @@ export enum MotionType {
   TopUpAllowedRecipientsRccStables = 'Top up recipients (RCC Stablecoins)',
   TopUpAllowedRecipientsPmlStables = 'Top up recipients (PML Stablecoins)',
   TopUpAllowedRecipientsAtcStables = 'Top up recipients (ATC Stablecoins)',
+  TopUpAllowedRecipientsLegoStables = 'Top up recipients (LEGO Stablecoins)',
 }
 
 export const MotionTypeEvmContractAbi: Record<MotionType, any> = {
@@ -179,6 +180,7 @@ export const MotionTypeEvmContractAbi: Record<MotionType, any> = {
   [MotionType.TopUpAllowedRecipientsRccStables]: abi.TopUpAllowedRecipientsStables,
   [MotionType.TopUpAllowedRecipientsPmlStables]: abi.TopUpAllowedRecipientsStables,
   [MotionType.TopUpAllowedRecipientsAtcStables]: abi.TopUpAllowedRecipientsStables,
+  [MotionType.TopUpAllowedRecipientsLegoStables]: abi.TopUpAllowedRecipientsStables,
 };
 
 export interface MotionCreatedEventArgs {
