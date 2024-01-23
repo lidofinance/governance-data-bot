@@ -11,6 +11,7 @@ import * as EvmTopUpRewardPrograms from './abi/EvmTopUpRewardPrograms.abi.json';
 import * as NodeOperatorsRegistry from './abi/NodeOperators.abi.json';
 import * as ReferralPartnersRegistry from './abi/ReferralPartnersRegistry.abi.json';
 import * as RewardProgramRegistry from './abi/RewardProgramRegistry.abi.json';
+import * as AllowedRecipientsRegistryDAI from './abi/EvmAllowedRecipientsRegistryDAI.abi.json';
 
 import * as AddAllowedRecipientReWARDS from './abi/EvmAddAllowedRecipientReWards.abi.json';
 import * as AllowedRecipientsRegistryReWARDS from './abi/EvmAllowedRecipientsRegistryReWards.abi.json';
@@ -23,13 +24,10 @@ import * as TopUpAllowedRecipientsLegoLDO from './abi/EvmTopUpAllowedRecipientsL
 import * as AllowedRecipientsRegistryLegoDAI from './abi/EvmAllowedRecipientsRegistryLegoDAI.abi.json';
 import * as TopUpAllowedRecipientsLegoDAI from './abi/EvmTopUpAllowedRecipientsLegoDAI.abi.json';
 
-import * as AllowedRecipientsRegistryRccDAI from './abi/EvmAllowedRecipientsRegistryRccDAI.abi.json';
 import * as TopUpAllowedRecipientsRccDAI from './abi/EvmTopUpAllowedRecipientsRccDAI.abi.json';
 
-import * as AllowedRecipientsRegistryPmlDAI from './abi/EvmAllowedRecipientsRegistryPmlDAI.abi.json';
 import * as TopUpAllowedRecipientsPmlDAI from './abi/EvmTopUpAllowedRecipientsPmlDAI.abi.json';
 
-import * as AllowedRecipientsRegistryAtcDAI from './abi/EvmAllowedRecipientsRegistryAtcDAI.abi.json';
 import * as TopUpAllowedRecipientsAtcDAI from './abi/EvmTopUpAllowedRecipientsAtcDAI.abi.json';
 
 import * as AllowedRecipientsRegistryGasETH from './abi/EvmAllowedRecipientsRegistryGasETH.abi.json';
@@ -52,6 +50,7 @@ import * as AddGasSupplyAllowedRecipientStETH from './abi/EvmAddGasSupplyAllowed
 import * as AllowedRecipientsRegistryGasStETH from './abi/EvmAllowedRecipientsRegistryGasStETH.abi.json';
 import * as RemoveGasSupplyAllowedRecipientStETH from './abi/EvmRemoveGasSupplyAllowedRecipientStETH.abi.json';
 import * as TopUpGasSupplyAllowedRecipientsStETH from './abi/EvmTopUpGasSupplyAllowedRecipientsStETH.abi.json';
+import * as TopUpAllowedRecipientsStables from './abi/EvmTopUpAllowedRecipientsStables.abi.json';
 
 import { BigNumber } from 'ethers';
 
@@ -79,11 +78,9 @@ export const abi = {
   TopUpAllowedRecipientsLegoLDO,
   AllowedRecipientsRegistryLegoDAI,
   TopUpAllowedRecipientsLegoDAI,
-  AllowedRecipientsRegistryRccDAI,
+  AllowedRecipientsRegistryDAI,
   TopUpAllowedRecipientsRccDAI,
-  AllowedRecipientsRegistryPmlDAI,
   TopUpAllowedRecipientsPmlDAI,
-  AllowedRecipientsRegistryAtcDAI,
   TopUpAllowedRecipientsAtcDAI,
   AllowedRecipientsRegistryGasETH,
   TopUpAllowedRecipientsGasETH,
@@ -101,6 +98,8 @@ export const abi = {
   AddGasSupplyAllowedRecipientStETH,
   RemoveGasSupplyAllowedRecipientStETH,
   TopUpGasSupplyAllowedRecipientsStETH,
+  TopUpAllowedRecipientsStables,
+  AllowedRecipientsRegistryStables: AllowedRecipientsRegistryDAI,
 };
 
 export enum MotionType {
@@ -135,9 +134,17 @@ export enum MotionType {
   AddAllowedRecipientGasStETH = 'Add recipient (GAS stETH)',
   RemoveAllowedRecipientGasStETH = 'Remove recipient (GAS stETH)',
   TopUpAllowedRecipientsGasStETH = 'Top up recipient (GAS stETH)',
+
+  TopUpAllowedRecipientsRccStETH = 'Top up recipients (RCC stETH)',
+  TopUpAllowedRecipientsPmlStETH = 'Top up recipients (PML stETH)',
+  TopUpAllowedRecipientsAtcStETH = 'Top up recipients (ATC stETH)',
+  TopUpAllowedRecipientsRccStables = 'Top up recipients (RCC Stablecoins)',
+  TopUpAllowedRecipientsPmlStables = 'Top up recipients (PML Stablecoins)',
+  TopUpAllowedRecipientsAtcStables = 'Top up recipients (ATC Stablecoins)',
+  TopUpAllowedRecipientsLegoStables = 'Top up recipients (LEGO Stablecoins)',
 }
 
-export const MotionTypeEvmContractAbi = {
+export const MotionTypeEvmContractAbi: Record<MotionType, any> = {
   [MotionType.NodeOperatorIncreaseLimit]: abi.EvmIncreaseNodeOperatorStakingLimit,
   [MotionType.LEGOTopUp]: abi.EvmTopUpLegoProgram,
   [MotionType.RewardProgramAdd]: abi.EvmAddRewardProgram,
@@ -167,6 +174,13 @@ export const MotionTypeEvmContractAbi = {
   [MotionType.AddAllowedRecipientGasStETH]: abi.AddGasSupplyAllowedRecipientStETH,
   [MotionType.RemoveAllowedRecipientGasStETH]: abi.RemoveGasSupplyAllowedRecipientStETH,
   [MotionType.TopUpAllowedRecipientsGasStETH]: abi.TopUpGasSupplyAllowedRecipientsStETH,
+  [MotionType.TopUpAllowedRecipientsRccStETH]: abi.TopUpAllowedRecipientsStETH,
+  [MotionType.TopUpAllowedRecipientsPmlStETH]: abi.TopUpAllowedRecipientsStETH,
+  [MotionType.TopUpAllowedRecipientsAtcStETH]: abi.TopUpAllowedRecipientsStETH,
+  [MotionType.TopUpAllowedRecipientsRccStables]: abi.TopUpAllowedRecipientsStables,
+  [MotionType.TopUpAllowedRecipientsPmlStables]: abi.TopUpAllowedRecipientsStables,
+  [MotionType.TopUpAllowedRecipientsAtcStables]: abi.TopUpAllowedRecipientsStables,
+  [MotionType.TopUpAllowedRecipientsLegoStables]: abi.TopUpAllowedRecipientsStables,
 };
 
 export interface MotionCreatedEventArgs {
