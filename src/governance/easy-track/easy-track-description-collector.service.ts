@@ -1,8 +1,9 @@
 import { abi, MotionType, MotionTypeEvmContractAbi } from './easy-track.constants';
 import { EasyTrackProvider } from './easy-track.provider';
-import { formatEther, getAddress } from 'ethers/lib/utils';
+import { formatEther, getAddress, formatUnits } from 'ethers/lib/utils';
 import { Injectable } from '@nestjs/common';
 import { EasyTrackConfig } from './easy-track.config';
+import { BigNumber, BigNumberish } from 'ethers';
 
 @Injectable()
 export class EasyTrackDescriptionCollector {
@@ -29,6 +30,23 @@ export class EasyTrackDescriptionCollector {
     return `[${name}](<${this.config.get('etherscanBaseUrl')}address/${address}>)`;
   }
 
+  getRecipientsRegistryAddress(type: MotionType) {
+    return this.config.get<Record<MotionType, string | undefined>>(
+      'motionTypeToRecipientsRegistryAddress',
+    )[type];
+  }
+
+  formatToken(amount: BigNumber, decimals: BigNumberish): string {
+    const amountStr = formatUnits(amount, decimals);
+
+    const formatter = new Intl.NumberFormat('en', {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 2,
+    });
+
+    return formatter.format(parseFloat(amountStr));
+  }
+
   async getMotionDescription(evmScriptFactory: string, evmScriptCallData?: string) {
     const type = this.config
       .get<Map<string, MotionType>>('factoryToMotionType')
@@ -40,10 +58,13 @@ export class EasyTrackDescriptionCollector {
     );
     const decoded = await contract.decodeEVMScriptCallData(evmScriptCallData);
 
-    return this.MotionTypeDescriptionDecoders[type](decoded);
+    return this.MotionTypeDescriptionDecoders[type](decoded, type);
   }
 
-  MotionTypeDescriptionDecoders = {
+  MotionTypeDescriptionDecoders: Record<
+    MotionType,
+    (args: any, motionType: MotionType) => Promise<string> | string
+  > = {
     [MotionType.NodeOperatorIncreaseLimit]: (args) => this.descNodeOperatorIncreaseLimit(args),
     [MotionType.LEGOTopUp]: (args) => this.descLEGOTopUp(args),
     [MotionType.RewardProgramAdd]: (args) => this.descRewardProgramAdd(args),
@@ -58,14 +79,10 @@ export class EasyTrackDescriptionCollector {
       this.descTopUpAllowedRecipientsReWARDS(args),
     [MotionType.TopUpAllowedRecipientsLegoLDO]: (args) =>
       this.descTopUpAllowedRecipientsLegoLDO(args),
-    [MotionType.TopUpAllowedRecipientsLegoDAI]: (args) =>
-      this.descTopUpAllowedRecipientsLegoDAI(args),
-    [MotionType.TopUpAllowedRecipientsRccDAI]: (args) =>
-      this.descTopUpAllowedRecipientsRccDAI(args),
-    [MotionType.TopUpAllowedRecipientsPmlDAI]: (args) =>
-      this.descTopUpAllowedRecipientsPmlDAI(args),
-    [MotionType.TopUpAllowedRecipientsAtcDAI]: (args) =>
-      this.descTopUpAllowedRecipientsAtcDAI(args),
+    [MotionType.TopUpAllowedRecipientsLegoDAI]: this.descTopUpAllowedRecipientsDAI,
+    [MotionType.TopUpAllowedRecipientsRccDAI]: this.descTopUpAllowedRecipientsDAI,
+    [MotionType.TopUpAllowedRecipientsPmlDAI]: this.descTopUpAllowedRecipientsDAI,
+    [MotionType.TopUpAllowedRecipientsAtcDAI]: this.descTopUpAllowedRecipientsDAI,
     [MotionType.TopUpAllowedRecipientsGasETH]: (args) =>
       this.descTopUpAllowedRecipientsGasETH(args),
     [MotionType.AddAllowedRecipientReferralProgramDAI]: (args) =>
@@ -77,12 +94,19 @@ export class EasyTrackDescriptionCollector {
     [MotionType.TopUpAllowedRecipientsTRP]: (args) => this.descTopUpAllowedRecipientsTRP(args),
     [MotionType.AddAllowedRecipientStETH]: (args) => this.descAddAllowedRecipientStETH(args),
     [MotionType.RemoveAllowedRecipientStETH]: (args) => this.descRemoveAllowedRecipientStETH(args),
-    [MotionType.TopUpAllowedRecipientsStETH]: (args) => this.descTopUpAllowedRecipientsStETH(args),
+    [MotionType.TopUpAllowedRecipientsStETH]: this.descTopUpAllowedRecipientsStETH,
     [MotionType.AddAllowedRecipientGasStETH]: (args) => this.descAddAllowedRecipientGasStETH(args),
     [MotionType.RemoveAllowedRecipientGasStETH]: (args) =>
       this.descRemoveAllowedRecipientGasStETH(args),
     [MotionType.TopUpAllowedRecipientsGasStETH]: (args) =>
       this.descTopUpAllowedRecipientsGasStETH(args),
+    [MotionType.TopUpAllowedRecipientsRccStETH]: this.descTopUpAllowedRecipientsStETH,
+    [MotionType.TopUpAllowedRecipientsPmlStETH]: this.descTopUpAllowedRecipientsStETH,
+    [MotionType.TopUpAllowedRecipientsAtcStETH]: this.descTopUpAllowedRecipientsStETH,
+    [MotionType.TopUpAllowedRecipientsRccStables]: this.descTopUpAllowedRecipientsStables,
+    [MotionType.TopUpAllowedRecipientsPmlStables]: this.descTopUpAllowedRecipientsStables,
+    [MotionType.TopUpAllowedRecipientsAtcStables]: this.descTopUpAllowedRecipientsStables,
+    [MotionType.TopUpAllowedRecipientsLegoStables]: this.descTopUpAllowedRecipientsStables,
   };
 
   private async descNodeOperatorIncreaseLimit([_nodeOperatorId, _stakingLimit]) {
@@ -216,63 +240,14 @@ export class EasyTrackDescriptionCollector {
     return `Top up recipients:\n${results.join(';\n')}`;
   }
 
-  private async descTopUpAllowedRecipientsLegoDAI([_recipients, _amounts]) {
+  private async descTopUpAllowedRecipientsDAI([_recipients, _amounts], type: MotionType) {
+    const registryAddress = this.getRecipientsRegistryAddress(type);
+
     const results = await Promise.all(
       _recipients.map(async (address, index) => {
         const name = await this.easyTrackProvider.getRecipientName({
-          AbiRegistry: abi.AllowedRecipientsRegistryLegoDAI,
-          contractAddress: this.config.get('allowedRecipientsLegoDAIRegistryAddress'),
-          address: address,
-        });
-        return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
-          _amounts[index],
-        )} DAI**`;
-      }),
-    );
-
-    return `Top up recipients:\n${results.join(';\n')}`;
-  }
-
-  private async descTopUpAllowedRecipientsRccDAI([_recipients, _amounts]) {
-    const results = await Promise.all(
-      _recipients.map(async (address, index) => {
-        const name = await this.easyTrackProvider.getRecipientName({
-          AbiRegistry: abi.AllowedRecipientsRegistryRccDAI,
-          contractAddress: this.config.get('allowedRecipientsRccDAIRegistryAddress'),
-          address: address,
-        });
-        return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
-          _amounts[index],
-        )} DAI**`;
-      }),
-    );
-
-    return `Top up recipients:\n${results.join(';\n')}`;
-  }
-
-  private async descTopUpAllowedRecipientsPmlDAI([_recipients, _amounts]) {
-    const results = await Promise.all(
-      _recipients.map(async (address, index) => {
-        const name = await this.easyTrackProvider.getRecipientName({
-          AbiRegistry: abi.AllowedRecipientsRegistryPmlDAI,
-          contractAddress: this.config.get('allowedRecipientsPmlDAIRegistryAddress'),
-          address: address,
-        });
-        return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
-          _amounts[index],
-        )} DAI**`;
-      }),
-    );
-
-    return `Top up recipients:\n${results.join(';\n')}`;
-  }
-
-  private async descTopUpAllowedRecipientsAtcDAI([_recipients, _amounts]) {
-    const results = await Promise.all(
-      _recipients.map(async (address, index) => {
-        const name = await this.easyTrackProvider.getRecipientName({
-          AbiRegistry: abi.AllowedRecipientsRegistryAtcDAI,
-          contractAddress: this.config.get('allowedRecipientsAtcDAIRegistryAddress'),
+          AbiRegistry: abi.AllowedRecipientsRegistryDAI,
+          contractAddress: registryAddress,
           address: address,
         });
         return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
@@ -344,13 +319,15 @@ export class EasyTrackDescriptionCollector {
     return `Remove allowed recipient ${this.getEtherscanAddressLink(_recipient, _recipient)}`;
   }
 
-  private async descTopUpAllowedRecipientsStETH([_recipients, _amounts]) {
+  private async descTopUpAllowedRecipientsStETH([_recipients, _amounts], type: MotionType) {
+    const registryAddress = this.getRecipientsRegistryAddress(type);
+
     const results = await Promise.all(
       _recipients.map(async (address, index) => {
         const name = await this.easyTrackProvider.getRecipientName({
           AbiRegistry: abi.AllowedRecipientsRegistryStETH,
-          contractAddress: this.config.get('allowedRecipientsStETHRegistryAddress'),
-          address: address,
+          contractAddress: registryAddress,
+          address,
         });
         return `${this.getEtherscanAddressLink(name, address)} with **${formatEther(
           _amounts[index],
@@ -381,6 +358,30 @@ export class EasyTrackDescriptionCollector {
         )} stETH**`;
       }),
     );
+    return `Top up recipients:\n${results.join(';\n')}`;
+  }
+
+  private async descTopUpAllowedRecipientsStables(
+    [_token, _recipients, _amounts],
+    type: MotionType,
+  ) {
+    const registryAddress = this.getRecipientsRegistryAddress(type);
+
+    const { decimals, symbol } = await this.easyTrackProvider.getTokenMetadata(_token);
+    const results = await Promise.all(
+      _recipients.map(async (address, index) => {
+        const name = await this.easyTrackProvider.getRecipientName({
+          AbiRegistry: abi.AllowedRecipientsRegistryStables,
+          contractAddress: registryAddress,
+          address,
+        });
+        return `${this.getEtherscanAddressLink(name, address)} with **${this.formatToken(
+          _amounts[index],
+          decimals,
+        )} ${symbol}**`;
+      }),
+    );
+
     return `Top up recipients:\n${results.join(';\n')}`;
   }
 }
