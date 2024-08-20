@@ -5,6 +5,6 @@ import { FastifyRequest } from 'fastify';
 @Injectable()
 export class ThrottlerBehindProxyGuard extends ThrottlerGuard {
   protected getTracker(request: FastifyRequest): string {
-    return request.ips?.length ? request.ips[0] : request.ip;
+    return request.ip;
   }
 }
