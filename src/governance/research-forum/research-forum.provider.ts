@@ -72,12 +72,16 @@ export class ResearchForumProvider {
   }
 
   async getTopicPosts(topicUrl): Promise<ResearchForumPost[]> {
-    const r = await this.get<{ post_stream: { posts: ResearchForumPost[] } }>(topicUrl + '.json');
+    // sanitize link like this - https://research.lido.fi/t/post-title/3264/10?u=zuzu_eeka
+    const topicUrlJSON = topicUrl.split('/').slice(0,6).join('/') + '.json'
+    const r = await this.get<{ post_stream: { posts: ResearchForumPost[] } }>(topicUrlJSON);
     return r.post_stream.posts;
   }
 
   async getTopic(topicUrl): Promise<ResearchForumTopic> {
-    return await this.get<ResearchForumTopic>(topicUrl + '.json');
+    // sanitize link like this - https://research.lido.fi/t/post-title/3264/10?u=zuzu_eeka
+    const topicUrlJSON = topicUrl.split('/').slice(0,6).join('/') + '.json'
+    return await this.get<ResearchForumTopic>(topicUrlJSON);
   }
 
   async getCurrentUser() {
